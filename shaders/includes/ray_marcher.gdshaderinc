@@ -13,6 +13,12 @@ uniform vec3 ambientColor = vec3(1.0, 1.0, 1.0); // ambient color
 
 const float DERIVATIVE_STEP = 0.0001;
 
+// to remove pre-include error messages
+#ifndef CUSTOM_SDF_PROVIDED
+float sdf(vec3 pos) { return 0.0; }
+vec3 phong(vec3 normal, vec3 viewDir, vec3 lightDir) { return vec3(0.0); }
+#endif
+
 vec3 getRayDirection(vec2 resolution, vec2 uv) {
 	float aspect = resolution.x / resolution.y;
     float fov2 = radians(fov) / 2.0;
