@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dcgcssobxgh5o"]
+[gd_scene load_steps=5 format=3 uid="uid://dcgcssobxgh5o"]
 
-[ext_resource type="Script" uid="uid://dhkkxkeslipur" path="res://modules/renderer/renderer_controller.gd" id="1_o25sa"]
+[ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Shader" uid="uid://bbydmriffyul3" path="res://shaders/fragment/mandelbulb.gdshader" id="2_pm1k6"]
+[ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dws3f"]
 shader = ExtResource("2_pm1k6")
@@ -11,20 +12,19 @@ shader_parameter/globalSpecular = Vector3(1, 1, 1)
 shader_parameter/power = 8.0
 shader_parameter/iterations = 10
 shader_parameter/fov = 45.0
-shader_parameter/cameraPos = Vector3(0, 0, 5)
+shader_parameter/cameraPos = Vector3(0.75, -0.82, 3.955)
 shader_parameter/lookAt = Vector3(0, 0, -1)
 shader_parameter/up = Vector3(0, 1, 0)
 shader_parameter/MAX_STEPS = 250
 shader_parameter/MAX_DIST = 20.0
-shader_parameter/MIN_HIT_DIST = 1e-05
+shader_parameter/MIN_HIT_DIST = 0.001
 shader_parameter/lightPos = Vector3(-2, 5, 3)
 shader_parameter/lightColor = Vector3(0.9, 0.9, 0.68)
 shader_parameter/ambientColor = Vector3(1, 1, 1)
 
 [node name="FractalRenderer" type="Node"]
-script = ExtResource("1_o25sa")
 
-[node name="Control" type="Control" parent="."]
+[node name="FractalScreen" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -34,7 +34,7 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ColorRect" type="ColorRect" parent="Control"]
+[node name="ColorRect" type="ColorRect" parent="FractalScreen"]
 material = SubResource("ShaderMaterial_dws3f")
 layout_mode = 1
 anchors_preset = 15
@@ -46,3 +46,15 @@ offset_right = 36.0
 offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("color_rect", "virtual_camera")]
+script = ExtResource("2_dws3f")
+color_rect = NodePath("../FractalScreen/ColorRect")
+virtual_camera = NodePath("../CameraRig/VirtualCamera")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_dws3f")
+
+[node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
+transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
+near = 0.066
