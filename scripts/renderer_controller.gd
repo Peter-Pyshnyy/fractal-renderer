@@ -6,7 +6,6 @@ extends Node
 var fractal_material: ShaderMaterial
 
 func _ready() -> void:
-	# При старті сцени беремо гарантовано той самий матеріал, що висить на екрані
 	if color_rect:
 		fractal_material = color_rect.material as ShaderMaterial
 		

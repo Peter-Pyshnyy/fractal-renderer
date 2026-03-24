@@ -1,46 +1,50 @@
-uniform float power = 8.0; // The "Power" of the Mandelbulb (8 is standard)
-uniform int iterations = 10; // Complexity of the fractal
+uniform float power = 8.0;     // mandelbulb power (8 = classic)
+uniform int iterations = 10;   // iteration count
+
 
 float sdf(vec3 pos) {
-    vec3 z = pos;
-    float dr = 1.0;
-    float r = 0.0;
-
-	// Розраховуємо відстань до безпечної обмежувальної сфери (радіус 1.2)
-    float safe_dist = length(pos) - 1.2;
-
-    // Якщо ми ще далеко від фрактала, безпечно крокуємо до сфери.
-    // Якщо ми близько (менше ніж 0.1 одиниці до сфери), використовуємо точний SDF фрактала.
-	// early exit
-    if (safe_dist > 0.1) {
-        return safe_dist;
+    // early bounding sphere (cheap rejection)
+    float safeDist = length(pos) - 1.2;
+    if (safeDist > 0.1) {
+        return safeDist;
     }
+
+    vec3 z = pos;
+    float r = 0.0;
+    float dr = 1.0;
+
+    // precompute constants
+    float powerMinus1 = power - 1.0;
 
     for (int i = 0; i < iterations; i++) {
         r = length(z);
-        if (r > 2.0) break; // Escape radius
+        if (r > 2.0) break; // escape radius
 
-        // Convert to polar coordinates
-        float theta = acos(z.z / r);
+        // avoid division instability near zero
+        float invR = 1.0 / max(r, 1e-6);
+
+        // spherical coordinates
+        float theta = acos(z.z * invR);
         float phi = atan(z.y, z.x);
 
-        // Scale the derivative for distance estimation
-        dr = pow(r, power - 1.0) * power * dr + 1.0;
+        // derivative update (distance estimation)
+        float rPow = pow(r, powerMinus1);
+        dr = rPow * power * dr + 1.0;
 
-        // Scale and rotate the point
-        float zr = pow(r, power);
-        theta = theta * power;
-        phi = phi * power;
+        // scale + rotate
+        float zr = rPow * r; // == pow(r, power)
+        theta *= power;
+        phi *= power;
 
-        // Convert back to cartesian coordinates
-        z = zr * vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
-        z += pos;
+        // back to cartesian
+        float sinTheta = sin(theta);
+        z = zr * vec3(
+            sinTheta * cos(phi),
+            sinTheta * sin(phi),
+            cos(theta)
+        ) + pos;
     }
 
-    // Розраховуємо оцінку відстані фрактала
-    float fractal_dist = 0.5 * log(r) * r / dr;
-
-
-
-    return fractal_dist;
+    // distance estimation
+    return 0.5 * log(r) * r / dr;
 }
