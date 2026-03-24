@@ -1,66 +1,17 @@
 // basic ray marcher, implemented as in https://cgmathprog.home.blog/2019/09/02/raymarching-from-scratch
-shader_type canvas_item;
-
-#include "res://shaders/includes/blinn_phong.gdshaderinc"
-
 uniform float fov = 45.0; // the vectical field of view (FOV) in degrees
 uniform vec3 cameraPos = vec3(0.0, 0.0, 5.0); // position of the camera in world coordinates
 uniform vec3 lookAt = vec3(0.0, 0.0, -1.0); // where are we looking at
 uniform vec3 up = vec3(0.0, 1.0, 0.0); // what we consider
 uniform int MAX_STEPS = 250; // march at most 250 times
 uniform float MAX_DIST = 20; // don't continue if depth if larger than 20
-uniform float MIN_HIT_DIST = 0.0001; // hit depth threshold
+uniform float MIN_HIT_DIST = 0.00001; // hit depth threshold
 
 uniform vec3 lightPos = vec3(-2.0, 5.0, 3.0); // position of the light source
 uniform vec3 lightColor = vec3(0.9, 0.9, 0.68); // color of the light source
 uniform vec3 ambientColor = vec3(1.0, 1.0, 1.0); // ambient color
 
-//---------------------------
-uniform float power = 8.0; // The "Power" of the Mandelbulb (8 is standard)
-uniform int iterations = 10; // Complexity of the fractal
-//---------------------------
-
 const float DERIVATIVE_STEP = 0.0001;
-
-float sdSphere( vec3 p, vec3 c, float r ) {
-    return length(c - p) - r;
-}
- 
-//float sdf(vec3 pos) {
-    //return sdSphere(pos, vec3(0), 1);
-//}
-
-float sdf(vec3 pos) {
-    vec3 z = pos;
-    float dr = 1.0;
-    float r = 0.0;
-    
-    for (int i = 0; i < iterations; i++) {
-        r = length(z);
-        if (r > 2.0) break; // Escape radius
-        
-        // Convert to polar coordinates
-        float theta = acos(z.z / r);
-        float phi = atan(z.y, z.x);
-        
-        // Scale the derivative for distance estimation
-        dr = pow(r, power - 1.0) * power * dr + 1.0;
-        
-        // Scale and rotate the point
-        float zr = pow(r, power);
-        theta = theta * power;
-        phi = phi * power;
-        
-        // Convert back to cartesian coordinates
-        z = zr * vec3(sin(theta) * cos(phi), sin(phi) * sin(theta), cos(theta));
-        z += pos;
-    }
-    return 0.5 * log(r) * r / dr;
-}
-
-float sdfTest(vec3 pos) {
-    return sdSphere(pos, vec3(0), 1.0);
-}
 
 vec3 getRayDirection(vec2 resolution, vec2 uv) {
 	float aspect = resolution.x / resolution.y;
@@ -70,7 +21,7 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     vec2 screenCoord = (uv - 0.5) * 2.0;
     screenCoord.x *= aspect;
     screenCoord.y = -screenCoord.y;
- 
+
     // contibutions of the up and right vectors
     vec2 offsets = screenCoord * tan(fov2);
 	// compute 3 orthogonal unit vectors
@@ -78,7 +29,7 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     vec3 rayRight = normalize(cross(rayLookAt, normalize(up)));
     vec3 rayUp = cross(rayRight, rayLookAt);
     vec3 rayDir = rayLookAt + rayRight * offsets.x + rayUp * offsets.y;
- 
+
     return normalize(rayDir);
 }
 
@@ -105,19 +56,10 @@ vec3 raymarch(vec3 rayDir) {
     		vec3 normal = estimateNormal(pos);
     		vec3 viewDir = normalize(cameraPos - pos);
     		vec3 lightDir = normalize(lightPos - pos);
-
     		return phong(normal, viewDir, lightDir);
 		}
 		it += 1.0;
         depth += dist;
     }
     return missColor;
-}
-
-void fragment() {
-	vec2 resolution = 1.0 / SCREEN_PIXEL_SIZE;
-     
-    vec3 rayDir = getRayDirection(resolution, UV);
-    vec3 raymarchColor = raymarch(rayDir);
-    COLOR = vec4(raymarchColor, 1.0);
 }

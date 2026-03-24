@@ -13,4 +13,3 @@ config_version=5
 config/name="fractal-renderer"
 run/main_scene="uid://dcgcssobxgh5o"
 config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="res://icon.svg"

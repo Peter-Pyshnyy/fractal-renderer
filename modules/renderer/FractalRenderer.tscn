@@ -1,25 +1,25 @@
 [gd_scene load_steps=4 format=3 uid="uid://dcgcssobxgh5o"]
 
 [ext_resource type="Script" uid="uid://dhkkxkeslipur" path="res://modules/renderer/renderer_controller.gd" id="1_o25sa"]
-[ext_resource type="Shader" uid="uid://b22yl7eoqdd27" path="res://shaders/fragment/ray_marcher.gdshader" id="2_pm1k6"]
+[ext_resource type="Shader" uid="uid://bbydmriffyul3" path="res://shaders/fragment/mandelbulb.gdshader" id="2_pm1k6"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dws3f"]
 shader = ExtResource("2_pm1k6")
 shader_parameter/globalAmbient = Vector3(0.1, 0.1, 0.1)
 shader_parameter/globalDiffuse = Vector3(0.4, 0.4, 0.4)
 shader_parameter/globalSpecular = Vector3(1, 1, 1)
+shader_parameter/power = 8.0
+shader_parameter/iterations = 10
 shader_parameter/fov = 45.0
-shader_parameter/cameraPos = Vector3(-0.12, -0.305, 0.52)
-shader_parameter/lookAt = Vector3(0.385, 0, -1)
-shader_parameter/up = Vector3(0.03, 0.92, 0)
-shader_parameter/MAX_STEPS = 575
+shader_parameter/cameraPos = Vector3(0, 0, 5)
+shader_parameter/lookAt = Vector3(0, 0, -1)
+shader_parameter/up = Vector3(0, 1, 0)
+shader_parameter/MAX_STEPS = 250
 shader_parameter/MAX_DIST = 20.0
-shader_parameter/MIN_HIT_DIST = 0.0001
+shader_parameter/MIN_HIT_DIST = 1e-05
 shader_parameter/lightPos = Vector3(-2, 5, 3)
 shader_parameter/lightColor = Vector3(0.9, 0.9, 0.68)
 shader_parameter/ambientColor = Vector3(1, 1, 1)
-shader_parameter/power = 2.0
-shader_parameter/iterations = 835
 
 [node name="FractalRenderer" type="Node"]
 script = ExtResource("1_o25sa")
@@ -35,7 +35,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ColorRect" type="ColorRect" parent="Control"]
-visible = false
 material = SubResource("ShaderMaterial_dws3f")
 layout_mode = 1
 anchors_preset = 15
