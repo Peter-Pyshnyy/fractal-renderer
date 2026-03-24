@@ -20,7 +20,9 @@ func _process(_delta: float) -> void:
 	var cam_forward = -virtual_camera.global_transform.basis.z
 	var cam_up = virtual_camera.global_transform.basis.y
 	
+	#TODO: pass on change only, as a callback
 	fractal_material.set_shader_parameter("cameraPos", cam_pos)
-	fractal_material.set_shader_parameter("lookAt", cam_forward) 
-	fractal_material.set_shader_parameter("up", cam_up)
-	fractal_material.set_shader_parameter("fov", virtual_camera.fov)
+	fractal_material.set_shader_parameter("forward", cam_forward.normalized()) 
+	fractal_material.set_shader_parameter("up", cam_up.normalized())
+	fractal_material.set_shader_parameter("right", cam_forward.cross(cam_up).normalized())
+	fractal_material.set_shader_parameter("fovScale", tan(deg_to_rad(virtual_camera.fov) * 0.5))

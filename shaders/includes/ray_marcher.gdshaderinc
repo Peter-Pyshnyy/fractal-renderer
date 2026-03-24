@@ -1,10 +1,11 @@
 // basic ray marcher (inspired by: https://cgmathprog.home.blog/2019/09/02/raymarching-from-scratch)
 
 // --- Camera ---
-uniform float fov = 45.0;                 // vertical FOV (degrees)
-uniform vec3 cameraPos = vec3(0.0, 0.0, 5.0); // camera position
-uniform vec3 lookAt = vec3(0.0, 0.0, -1.0);   // forward direction
-uniform vec3 up = vec3(0.0, 1.0, 0.0);        // world up
+uniform float fovScale;                 // vertical FOV (degrees)
+uniform vec3 cameraPos;
+uniform vec3 forward;
+uniform vec3 right;
+uniform vec3 up = vec3(0.0, 1.0, 0.0);    
 
 // --- Raymarch settings ---
 uniform int MAX_STEPS = 250;              // max iterations
@@ -31,7 +32,6 @@ vec3 phong(vec3 normal, vec3 viewDir, vec3 lightDir) { return vec3(0.0); }
 
 vec3 getRayDirection(vec2 resolution, vec2 uv) {
     float aspect = resolution.x / resolution.y;
-    float halfFov = radians(fov) * 0.5;
 
     // map UV [0,1] → [-1,1], flip Y
     vec2 screen = (uv - 0.5) * 2.0;
@@ -39,15 +39,10 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     screen.y = -screen.y;
 
     // screen-space offset scaled by FOV
-    vec2 offset = screen * tan(halfFov);
-
-    // build camera basis (forward, right, up)
-    vec3 forward = normalize(lookAt);
-    vec3 right = normalize(cross(forward, normalize(up)));
-    vec3 camUp = cross(right, forward);
+    vec2 offset = screen * fovScale;
 
     // combine into final ray direction
-    vec3 rayDir = forward + right * offset.x + camUp * offset.y;
+    vec3 rayDir = forward + right * offset.x + up * offset.y;
     return normalize(rayDir);
 }
 
