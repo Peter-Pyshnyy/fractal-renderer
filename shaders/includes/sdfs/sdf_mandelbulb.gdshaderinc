@@ -4,10 +4,10 @@ uniform int iterations = 10;   // iteration count
 
 float sdf(vec3 pos) {
     // early bounding sphere (cheap rejection)
-    float safeDist = length(pos) - 1.2;
-    if (safeDist > 0.1) {
-        return safeDist;
-    }
+    //float safeDist = length(pos) - 1.2;
+    //if (safeDist > 0.1) {
+        //return safeDist;
+    //}
 
     vec3 z = pos;
     float r = 0.0;
