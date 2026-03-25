@@ -4,8 +4,8 @@ render_mode unshaded; // to check what does
 #define CUSTOM_SDF_PROVIDED
 #include "res://shaders/includes/color/blinn_phong.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
-//#include "res://shaders/includes/rayMarcher/ray_marcher_ER.gdshaderinc"
 #include "res://shaders/includes/rayMarcher/ray_marcher.gdshaderinc"
+#include "res://shaders/includes/rayMarcher/ray_marcher_ER.gdshaderinc"
 
 void fragment() {
 	vec2 resolution = 1.0 / SCREEN_PIXEL_SIZE;

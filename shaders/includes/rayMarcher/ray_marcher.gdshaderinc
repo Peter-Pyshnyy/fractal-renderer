@@ -48,7 +48,8 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 
 vec3 estimateNormal(vec3 p, float t) {
     // central differences gradient approximation
-    float offset = DERIVATIVE_STEP * t;
+    //float offset = DERIVATIVE_STEP * t;
+    float offset = DERIVATIVE_STEP;
 	return normalize(vec3(
         sdf(p + vec3(offset, 0.0, 0.0)) - sdf(p - vec3(offset, 0.0, 0.0)),
         sdf(p + vec3(0.0, offset, 0.0)) - sdf(p - vec3(0.0, offset, 0.0)),

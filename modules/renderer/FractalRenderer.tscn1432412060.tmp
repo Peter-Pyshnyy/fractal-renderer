@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Shader" uid="uid://bbydmriffyul3" path="res://shaders/fragment/mandelbulb.gdshader" id="2_pm1k6"]
 [ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
-[ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
+[ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://modules/renderer/profiler.gd" id="4_mq4g3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dws3f"]
 shader = ExtResource("2_pm1k6")
@@ -58,6 +58,5 @@ script = ExtResource("3_dws3f")
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
 near = 0.066
 
-[node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
+[node name="Profiler" type="Node" parent="."]
 script = ExtResource("4_mq4g3")
-camera_rig = NodePath("../CameraRig")
