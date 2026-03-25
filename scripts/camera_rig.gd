@@ -7,7 +7,7 @@ enum CameraMode { FPS, ORBIT }
 @export var move_speed := 0.05
 @export var orbit_radius := 1.5
 
-@export var zoom_speed := 0.01
+@export var zoom_speed := 0.1
 @export var min_orbit_radius := 0.8 # prevent camera clipping into center
 @export var max_orbit_radius := 50.0
 
