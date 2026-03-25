@@ -19,12 +19,12 @@ shader_parameter/forward = Vector3(0, 0, 0)
 shader_parameter/right = Vector3(0, 0, 0)
 shader_parameter/up = Vector3(0, 1, 0)
 shader_parameter/MAX_STEPS = 250
-shader_parameter/epsilon = 1e-05
+shader_parameter/epsilon = 1e-07
 shader_parameter/color = Vector3(1, 1, 0.975)
 shader_parameter/lightPos = Vector3(-2, 5, 3)
 shader_parameter/lightColor = Vector3(0.9, 0.9, 0.68)
 shader_parameter/ambientColor = Vector3(1, 1, 1)
-shader_parameter/TEST = 0.7
+shader_parameter/TEST = 0.1
 
 [node name="FractalRenderer" type="Node"]
 
@@ -62,3 +62,4 @@ near = 0.066
 [node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
+benchmark_mode = 1

@@ -5,12 +5,14 @@ render_mode unshaded; // to check what does
 #include "res://shaders/includes/color/blinn_phong.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
 //#include "res://shaders/includes/rayMarcher/ray_marcher.gdshaderinc"
-#include "res://shaders/includes/rayMarcher/ray_marcher_ER.gdshaderinc"
+//#include "res://shaders/includes/rayMarcher/ray_marcher_ER.gdshaderinc"
+#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
 
 void fragment() {
 	vec2 resolution = 1.0 / SCREEN_PIXEL_SIZE;
     vec3 rayDir = getRayDirection(resolution, UV);
-    vec3 raymarchColor = raymarch_ER(rayDir, resolution);
+    //vec3 raymarchColor = raymarch_ER(rayDir, resolution);
     //vec3 raymarchColor = raymarch(rayDir);
+	vec3 raymarchColor = raymarch_enhanced(rayDir, resolution);
     COLOR = vec4(raymarchColor, 1.0);
 }
