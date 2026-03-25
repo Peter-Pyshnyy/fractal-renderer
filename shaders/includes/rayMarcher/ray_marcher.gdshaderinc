@@ -10,7 +10,7 @@ uniform vec3 up = vec3(0.0, 1.0, 0.0);
 
 // --- Raymarch settings ---
 uniform int MAX_STEPS = 250;              // max iterations
-uniform float epsilon = 0.0000001;     // hit threshold
+uniform float epsilon = 0.00001;     // hit threshold
 
 // --- Lighting ---
 uniform vec3 color = vec3(1.0);

@@ -78,7 +78,7 @@ vec3 raymarch_enhanced(vec3 rayDir, vec2 resolution) {
     for (int i = 0; i < MAX_STEPS; i++) {
         steps += 1.0;
         vec3 pos = cameraPos + rayDir * t;
-        float signedRadius = sdf(pos);
+        float signedRadius = sdf(pos) * 0.5;
         float radius = abs(signedRadius);
         
         bool sorFail = omega > 1.0 && (radius + previousRadius) < stepLength;
@@ -92,7 +92,10 @@ vec3 raymarch_enhanced(vec3 rayDir, vec2 resolution) {
         }
         previousRadius = radius;
         
-        float error = radius / max(t * TEST, pixelRadius);
+        //float error = radius / max(t * 0.2, pixelRadius);
+		
+		// much preciser close-up, but more noise
+        float error = radius / max(t * TEST, pixelRadius * 0.25);
         
         if (!sorFail && error < candidate_error) {
             candidate_t = t;
@@ -104,7 +107,7 @@ vec3 raymarch_enhanced(vec3 rayDir, vec2 resolution) {
             break;
         }
         
-        t += stepLength * 0.8;
+        t += stepLength;
     }
     
     t = candidate_t;
