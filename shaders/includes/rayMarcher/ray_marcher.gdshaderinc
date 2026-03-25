@@ -21,6 +21,8 @@ uniform vec3 ambientColor = vec3(1.0);
 // normal estimation step size
 const float DERIVATIVE_STEP = 0.01;
 
+// --- testing ---
+uniform float TEST;
 
 // fallback definitions (avoid compile errors)
 #ifndef CUSTOM_SDF_PROVIDED
@@ -47,37 +49,33 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 
 
 vec3 estimateNormal(vec3 p, float t) {
-    // central differences gradient approximation
-    //float offset = DERIVATIVE_STEP * t;
-    float offset = DERIVATIVE_STEP;
-	return normalize(vec3(
-        sdf(p + vec3(offset, 0.0, 0.0)) - sdf(p - vec3(offset, 0.0, 0.0)),
-        sdf(p + vec3(0.0, offset, 0.0)) - sdf(p - vec3(0.0, offset, 0.0)),
-        sdf(p + vec3(0.0, 0.0, offset)) - sdf(p - vec3(0.0, 0.0, offset))
+    vec3 e = vec3(0.01, 0.0, 0.0);
+
+	 return normalize(vec3(
+        sdf(p + e.xyy),
+        sdf(p + e.yxy),
+        sdf(p + e.yyx)
     ));
 }
 
 
 vec3 raymarch(vec3 rayDir) {
     float t = 0.0;
+    float steps = 0.0;
 
     for (int i = 0; i < MAX_STEPS; i++) {
+        steps += 1.0;
         vec3 pos = cameraPos + rayDir * t;
         float d = sdf(pos);
-
-        // hit surface
-        if (d < epsilon) {
-            vec3 normal = estimateNormal(pos, t);
-            vec3 viewDir = normalize(cameraPos - pos);
-            vec3 lightDir = normalize(lightPos - pos);
-
-            return color * phong(normal, viewDir, lightDir);
-        }
-
-        // advance along ray
+        if (d < epsilon) break;
         t += d;
+        if (t > 10.0) break;
     }
 
-    // miss → background color
-    return vec3(0.0);
+    float s0 = 1.0 - steps / float(MAX_STEPS);
+    float s1 = sin(steps * 0.01);
+    s1 = 1.0 - (0.5 + 0.5 * s1);
+    float shade = mix(s0, s1, 0.5);
+
+    return vec3(shade);
 }

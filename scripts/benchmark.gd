@@ -1,6 +1,9 @@
 extends Node
 
+enum BenchmarkMode { SHORT_10S, LONG_60S }
+
 @export var camera_rig: Node3D
+@export var benchmark_mode: BenchmarkMode = BenchmarkMode.SHORT_10S
 
 var is_profiling := false
 var time_accum := 0.0
@@ -11,7 +14,6 @@ const BENCHMARK_YAW := 0.0
 const BENCHMARK_PITCH := 0.3
 const BENCHMARK_RADIUS := 3.0
 const ZOOM_LEVEL := 2.0
-const BENCHMARK_DURATION := 10.0
 
 # saved user state
 var user_yaw := 0.0
@@ -40,7 +42,8 @@ func start_profiling() -> void:
 
 	await _warmup_frames(3)
 
-	print("=== BENCHMARK START: 10s ===")
+	var duration := _get_duration()
+	print("=== BENCHMARK START: ", duration, "s ===")
 
 	is_profiling = true
 	time_accum = 0.0
@@ -54,7 +57,8 @@ func _process(delta: float) -> void:
 	time_accum += delta
 	frame_count += 1
 
-	var progress := time_accum / BENCHMARK_DURATION
+	var duration := _get_duration()
+	var progress := time_accum / duration
 
 	if progress <= 1.0:
 		_update_camera(progress)
@@ -98,20 +102,32 @@ func _warmup_frames(count: int) -> void:
 # --- Benchmark update ---
 
 func _update_camera(progress: float) -> void:
-	# full rotation
-	var yaw = BENCHMARK_YAW + progress * TAU
+	var cycles := _get_cycles()
+
+	# full rotation(s)
+	var yaw = BENCHMARK_YAW + progress * TAU * cycles
 
 	# vertical oscillation
-	var pitch = BENCHMARK_PITCH + sin(progress * TAU) * 0.4
+	var pitch = BENCHMARK_PITCH + sin(progress * TAU * cycles) * 0.4
 
-	# zoom in/out (closer at mid-point)
-	var radius = BENCHMARK_RADIUS - sin(progress * PI) * ZOOM_LEVEL
+	# zoom in/out (use abs() to ensure it only zooms inward across multiple cycles)
+	var radius = BENCHMARK_RADIUS - abs(sin(progress * PI * cycles)) * ZOOM_LEVEL
 
 	camera_rig.yaw = yaw
 	camera_rig.pitch = pitch
 	camera_rig.orbit_radius = radius
 
 	_apply_rotation(pitch, yaw)
+
+
+# --- Helpers ---
+
+func _get_duration() -> float:
+	return 10.0 if benchmark_mode == BenchmarkMode.SHORT_10S else 60.0
+
+
+func _get_cycles() -> float:
+	return 1.0 if benchmark_mode == BenchmarkMode.SHORT_10S else 3.0
 
 
 # --- Finish ---
