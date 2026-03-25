@@ -43,15 +43,14 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 // --- Normal ---
 
 vec3 estimateNormal(vec3 p, float eps) {
-    vec3 e = vec3(0.001, 0.0, 0.0);
+    vec3 e = vec3(0.1, 0.0, 0.0) * eps;
 
-	vec3 d0 = normalize(vec3(
+	 return normalize(vec3(
         sdf(p + e.xyy),
         sdf(p + e.yxy),
         sdf(p + e.yyx)
     ));
 
-	return vec3(eps) - d0;
     // reuse offsets to reduce construction cost
     //return normalize(vec3(
         //sdf(p + e.xyy) - sdf(p - e.xyy),
@@ -112,7 +111,7 @@ vec3 raymarchER(vec3 rayDir, float screenWidth) {
     vec3 hitPos = cameraPos + rayDir * bestT;
 
     // cone-based normal smoothing
-    float hitEps = bestT * pixelAngle * 0.25;
+    float hitEps = bestT * pixelAngle;
     vec3 normal = estimateNormal(hitPos, hitEps);
 
     vec3 viewDir = normalize(cameraPos - hitPos);

@@ -19,7 +19,7 @@ uniform vec3 lightColor = vec3(0.9, 0.9, 0.68);
 uniform vec3 ambientColor = vec3(1.0);
 
 // normal estimation step size
-const float DERIVATIVE_STEP = 0.0001;
+const float DERIVATIVE_STEP = 0.01;
 
 
 // fallback definitions (avoid compile errors)
@@ -46,12 +46,13 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 }
 
 
-vec3 estimateNormal(vec3 p) {
+vec3 estimateNormal(vec3 p, float t) {
     // central differences gradient approximation
-    return normalize(vec3(
-        sdf(p + vec3(DERIVATIVE_STEP, 0.0, 0.0)) - sdf(p - vec3(DERIVATIVE_STEP, 0.0, 0.0)),
-        sdf(p + vec3(0.0, DERIVATIVE_STEP, 0.0)) - sdf(p - vec3(0.0, DERIVATIVE_STEP, 0.0)),
-        sdf(p + vec3(0.0, 0.0, DERIVATIVE_STEP)) - sdf(p - vec3(0.0, 0.0, DERIVATIVE_STEP))
+    float offset = DERIVATIVE_STEP * t;
+	return normalize(vec3(
+        sdf(p + vec3(offset, 0.0, 0.0)) - sdf(p - vec3(offset, 0.0, 0.0)),
+        sdf(p + vec3(0.0, offset, 0.0)) - sdf(p - vec3(0.0, offset, 0.0)),
+        sdf(p + vec3(0.0, 0.0, offset)) - sdf(p - vec3(0.0, 0.0, offset))
     ));
 }
 
@@ -65,7 +66,7 @@ vec3 raymarch(vec3 rayDir) {
 
         // hit surface
         if (d < epsilon) {
-            vec3 normal = estimateNormal(pos);
+            vec3 normal = estimateNormal(pos, t);
             vec3 viewDir = normalize(cameraPos - pos);
             vec3 lightDir = normalize(lightPos - pos);
 
