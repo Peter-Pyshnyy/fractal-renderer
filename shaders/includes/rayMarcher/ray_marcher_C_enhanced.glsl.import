@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://c5iw45dbiyqtm"
+path="res://.godot/imported/ray_marcher_C_enhanced.glsl-9b31b2af7eba9ce3f1adef2dde2858d9.res"
+
+[deps]
+
+source_file="res://shaders/includes/rayMarcher/ray_marcher_C_enhanced.glsl"
+dest_files=["res://.godot/imported/ray_marcher_C_enhanced.glsl-9b31b2af7eba9ce3f1adef2dde2858d9.res"]
+
+[params]
+

@@ -22,7 +22,7 @@ func _ready() -> void:
 	rd = RenderingServer.get_rendering_device()
 
 	# 1. Завантаження шейдера
-	var shader_file := load("res://shaders/includes/rayMarcher/ray_marcher_comp.glsl") as RDShaderFile
+	var shader_file := load("res://shaders/includes/rayMarcher/ray_marcher_C_enhanced.glsl") as RDShaderFile
 	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
 
 	# 2. Створення текстури для рендерингу

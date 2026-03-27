@@ -41,7 +41,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ColorRect" type="ColorRect" parent="FractalScreen"]
-visible = false
 material = SubResource("ShaderMaterial_dws3f")
 layout_mode = 1
 anchors_preset = 15
@@ -51,6 +50,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="FractalScreen" node_paths=PackedStringArray("target_camera")]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -60,6 +60,7 @@ grow_vertical = 2
 texture = ExtResource("2_c2qj7")
 script = ExtResource("3_4ov7m")
 target_camera = NodePath("../../CameraRig/VirtualCamera")
+render_resolution = Vector2(960, 540)
 
 [node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("color_rect", "virtual_camera")]
 script = ExtResource("2_dws3f")
@@ -76,4 +77,3 @@ near = 0.066
 [node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
-benchmark_mode = 1
