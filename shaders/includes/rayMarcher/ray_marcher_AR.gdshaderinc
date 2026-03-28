@@ -54,7 +54,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         }
 
         // --- error metric (avoid repeated divisions) ---
-        float denom = max(t * 0.3, 1.0 / invPixelFactor);
+        float denom = max(t * 0.1, 1.0 / invPixelFactor);
         float error = radius / denom;
 
         if (error < bestError) {

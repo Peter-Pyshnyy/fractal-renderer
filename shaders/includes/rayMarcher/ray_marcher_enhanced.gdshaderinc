@@ -1,11 +1,11 @@
-vec3 getRayDirection(vec2 resolution, vec2 uv) {
-	float aspectRatio = resolution.x / resolution.y;
-	vec2 screenCoords = uv*2.0 - 1.0; // Convert to range [-1, 1]
-	screenCoords.x *= aspectRatio; // Adjust for aspect ratio
-	screenCoords *= cam.fovScale; // Apply FOV scaling
-
-	return normalize(screenCoords.x * cam.right.xyz + screenCoords.y * cam.up.xyz + cam.forward.xyz);
-}
+//vec3 getRayDirection(vec2 resolution, vec2 uv) {
+	//float aspectRatio = resolution.x / resolution.y;
+	//vec2 screenCoords = uv*2.0 - 1.0; // Convert to range [-1, 1]
+	//screenCoords.x *= aspectRatio; // Adjust for aspect ratio
+	//screenCoords *= cam.fovScale; // Apply FOV scaling
+//
+	//return normalize(screenCoords.x * cam.right.xyz + screenCoords.y * cam.up.xyz + cam.forward.xyz);
+//}
 
 vec3 raymarch_enhanced(vec3 rayDir) {
 	float t = 0.0;
@@ -47,7 +47,7 @@ vec3 raymarch_enhanced(vec3 rayDir) {
         //float error = radius / max(t * 0.2, pixelRadius);
 		
 		// much preciser close-up, but more noise
-        float error = radius / max(t * 0.3, pixelRadius * 0.25);
+        float error = radius / max(t * 0.1, pixelRadius * 0.25);
         
         if (!sorFail && error < candidate_error) {
             candidate_t = t;

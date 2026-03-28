@@ -42,4 +42,3 @@ render_resolution = Vector2(960, 540)
 [node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
-benchmark_mode = 1
