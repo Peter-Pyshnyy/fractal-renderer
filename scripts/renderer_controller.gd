@@ -150,7 +150,6 @@ func _dispatch() -> void:
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
 	rd.compute_list_dispatch(list, x_groups, y_groups, 1)
 	rd.compute_list_end()
-	rd.submit()
 
 	frame_index += 1
 

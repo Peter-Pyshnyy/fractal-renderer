@@ -3,7 +3,8 @@
 
 #include "res://shaders/includes/shared_data.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
-#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
+#include "res://shaders/includes/rayMarcher/ray_marcher_AR.gdshaderinc"
+//#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
 
 void main() {
 	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
@@ -19,7 +20,8 @@ void main() {
 	vec3 rayOrigin = cam.position.xyz;
 	vec3 rayDirection = getRayDirection(cam.resolution, uv);
 
-	vec3 color = raymarch_enhanced(rayDirection);
+	vec3 color = raymarch_AR(rayDirection);
+	//color = raymarch_enhanced(rayDirection);
 
 	imageStore(output_image, pixel_coords, vec4(color, 1.0));
-}
+}  

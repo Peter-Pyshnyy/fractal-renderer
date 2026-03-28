@@ -8,9 +8,13 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 }
 
 vec3 raymarch_enhanced(vec3 rayDir) {
-    float t = 0.0;
+	float t = 0.0;
     float t_max = 10.0; 
     float steps = 0.0;
+	//float safeDist = length(cam.position.xyz) - 1.35;
+	//if (safeDist > 0.1) {
+    //t = safeDist;
+	//}
     
     float omega = 1.2; 
     float previousRadius = 0.0;
