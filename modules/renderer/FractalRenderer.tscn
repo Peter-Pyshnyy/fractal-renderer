@@ -38,11 +38,8 @@ script = ExtResource("2_dws3f")
 texture_rect = NodePath("../FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 render_resolution = Vector2(960, 540)
-fractal_power = 1.0
-fractal_iterations = 1
-fractal_bailout = 2.6
-step_scale = 0.6
-omega_beta = 0.4
+fractal_power = 9.9
+fractal_iterations = 20
 
 [node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("4_mq4g3")

@@ -4,6 +4,7 @@ layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 
 
 layout(set = 0, binding = 0) uniform writeonly image2D output_image;
+layout(set = 0, binding = 2) uniform sampler2D macro_depth_map;
 
 #include "res://shaders/includes/shared_data.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
@@ -26,6 +27,7 @@ void main() {
 
 	vec3 color = raymarch_AR(rayDirection);
 //		color = raymarch_enhanced(rayDirection);
+ 
 
 	imageStore(output_image, pixel_coords, vec4(color, 1.0));
 }

@@ -26,8 +26,9 @@ vec3 raymarch_AR(vec3 rayDir) {
     float pixelRadius = cam.fovScale / cam.resolution.y;
 
     // Line 4: t := 0, r := f(s(t)), i := 1, z := r, m := −1
-    float t = 0.0;
-    float r = sdf(cam.position.xyz) * params.step_scale;;
+    vec2 current_uv = gl_GlobalInvocationID.xy / cam.resolution;
+    float t = texture(macro_depth_map, current_uv).r;
+    float r = sdf(cam.position.xyz + rayDir * t) * params.step_scale;
     float z = r;
     float m = -1.0;
 
@@ -74,7 +75,8 @@ vec3 raymarch_AR(vec3 rayDir) {
         // Line 14: z := 2r / (1 − m)
         z = 2.0 * r / (1.0 - m);
     }
-
+	
+	//return vec3(t / 20.0);
     bool  isHit = (bestError < 1.0);
     float shade = isHit ? (1.0 - float(stepsTaken) / float(MAX_STEPS)) : 0.0;
     return vec3(shade);

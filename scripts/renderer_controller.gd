@@ -17,15 +17,21 @@ extends Node
 var rd: RenderingDevice
 var shader_rid: RID
 var pipeline_rid: RID
-#var texture_rid: RID
 var camera_buffer_rid: RID
-#var uniform_set_rid: RID
-#var tex_rd_resource: Texture2DRD
 
 var texture_rids: Array[RID]
 var tex_rd_resources: Array[Texture2DRD]
 var uniform_sets: Array[RID]
 var frame_index := 0
+
+var macro_shader_rid: RID
+var macro_pipeline_rid: RID
+var macro_uniform_set: RID
+
+var macro_scale: float = 4.0 # Зменшуємо роздільну здатність макро-проходу в 4 рази
+var macro_texture_rid: RID
+var sampler_rid: RID # Семплер для читання текстури
+
 
 # reuse buffer (avoid per-frame allocations)
 var cam_data := PackedFloat32Array()
@@ -47,6 +53,10 @@ func _ready() -> void:
 func _create_shader() -> void:
 	var shader_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
 	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
+	
+	# Завантажуємо макро шейдер (вкажіть ваш правильний шлях)
+	var macro_file := load("res://shaders/includes/macro_pass.glsl") as RDShaderFile
+	macro_shader_rid = rd.shader_create_from_spirv(macro_file.get_spirv())
 
 
 func _create_texture() -> void:
@@ -66,6 +76,21 @@ func _create_texture() -> void:
 
 	# initialize display
 	texture_rect.texture = tex_rd_resources[0]
+	
+	# --- СТВОРЕННЯ МАКРО-БУФЕРА ---
+	var m_fmt := RDTextureFormat.new()
+	m_fmt.width = int(ceil(render_resolution.x / macro_scale))
+	m_fmt.height = int(ceil(render_resolution.y / macro_scale))
+	m_fmt.format = RenderingDevice.DATA_FORMAT_R32_SFLOAT
+	m_fmt.usage_bits = RenderingDevice.TEXTURE_USAGE_STORAGE_BIT | RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+	macro_texture_rid = rd.texture_create(m_fmt, RDTextureView.new(), [])
+
+	# --- СТВОРЕННЯ СЕМПЛЕРА (Щоб фінальний шейдер міг читати макро-буфер) ---
+	var sampler_state := RDSamplerState.new()
+	# Використовуємо NEAREST, щоб не "розмивати" глибину між пікселями
+	sampler_state.mag_filter = RenderingDevice.SAMPLER_FILTER_NEAREST 
+	sampler_state.min_filter = RenderingDevice.SAMPLER_FILTER_NEAREST
+	sampler_rid = rd.sampler_create(sampler_state)
 
 func _create_camera_buffer() -> void:
 	# 5 vec4 = 20 floats
@@ -77,18 +102,36 @@ func _create_camera_buffer() -> void:
 
 
 func _create_pipeline() -> void:
+	var cam_uniform := RDUniform.new()
+	cam_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+	cam_uniform.binding = 1
+	cam_uniform.add_id(camera_buffer_rid)
+
+	# --- 1. ПАЙПЛАЙН ДЛЯ МАКРО ПРОХОДУ ---
+	var mac_img_uniform := RDUniform.new()
+	mac_img_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
+	mac_img_uniform.binding = 0
+	mac_img_uniform.add_id(macro_texture_rid)
+
+	macro_uniform_set = rd.uniform_set_create([mac_img_uniform, cam_uniform], macro_shader_rid, 0)
+	macro_pipeline_rid = rd.compute_pipeline_create(macro_shader_rid)
+
+	# --- 2. ПАЙПЛАЙН ДЛЯ ФІНАЛЬНОГО ПРОХОДУ ---
+	# Створюємо uniform для читання макро-текстури
+	var depth_uniform := RDUniform.new()
+	depth_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE
+	depth_uniform.binding = 2
+	depth_uniform.add_id(sampler_rid)
+	depth_uniform.add_id(macro_texture_rid)
+
 	for i in 2:
 		var img_uniform := RDUniform.new()
 		img_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		img_uniform.binding = 0
 		img_uniform.add_id(texture_rids[i])
 
-		var cam_uniform := RDUniform.new()
-		cam_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-		cam_uniform.binding = 1
-		cam_uniform.add_id(camera_buffer_rid)
-
-		var set = rd.uniform_set_create([img_uniform, cam_uniform], shader_rid, 0)
+		# Фінальний шейдер отримує 3 бінди: Output Image(0), Camera(1), Macro Depth(2)
+		var set = rd.uniform_set_create([img_uniform, cam_uniform, depth_uniform], shader_rid, 0)
 		uniform_sets.append(set)
 
 	pipeline_rid = rd.compute_pipeline_create(shader_rid)
@@ -148,37 +191,54 @@ func _update_camera_buffer() -> void:
 func _dispatch() -> void:
 	var write_i := frame_index & 1
 	var read_i := 1 - write_i
-
-	# display previous frame
 	texture_rect.texture = tex_rd_resources[read_i]
 
-	var x_groups := int(ceil(render_resolution.x / 16.0))
-	var y_groups := int(ceil(render_resolution.y / 16.0))
-
 	var list := rd.compute_list_begin()
+
+	# ==========================================
+	# ФАЗА 1: МАКРО-ПРОХІД (Cone Marching)
+	# ==========================================
+	var mac_x := int(ceil((render_resolution.x / macro_scale) / 16.0))
+	var mac_y := int(ceil((render_resolution.y / macro_scale) / 16.0))
+
+	rd.compute_list_bind_compute_pipeline(list, macro_pipeline_rid)
+	rd.compute_list_bind_uniform_set(list, macro_uniform_set, 0)
+
+	var pc_macro := PackedFloat32Array([
+		fractal_power, float(fractal_iterations), fractal_bailout, step_scale,
+		omega_max, omega_beta,
+		macro_scale, # ТУТ ПЕРЕДАЄМО 4.0!
+		0.0
+	])
+	var bytes_macro := pc_macro.to_byte_array()
+	rd.compute_list_set_push_constant(list, bytes_macro, bytes_macro.size())
+	
+	rd.compute_list_dispatch(list, mac_x, mac_y, 1)
+
+	# Godot автоматично ставить Бар'єр Пам'яті (Memory Barrier) тут, 
+	# бо бачить, що наступний пайплайн хоче читати macro_texture_rid
+
+	# ==========================================
+	# ФАЗА 2: ФІНАЛЬНИЙ ПРОХІД (Algorithm 4)
+	# ==========================================
+	var final_x := int(ceil(render_resolution.x / 16.0))
+	var final_y := int(ceil(render_resolution.y / 16.0))
+
 	rd.compute_list_bind_compute_pipeline(list, pipeline_rid)
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
 
-	# --- НОВИЙ БЛОК: ВІДПРАВКА PUSH CONSTANTS ---
-	# Порядок має строго відповідати layout в shared_data.gdshaderinc
-	var pc_data := PackedFloat32Array([
-		fractal_power, 
-		float(fractal_iterations), 
-		fractal_bailout, 
-		step_scale,
-		omega_max,
-		omega_beta,
-		1.0, # pass_scale (Для головного проходу він дорівнює 1.0)
-		0.0  # padding2 (для вирівнювання 32 байт)
+	var pc_final := PackedFloat32Array([
+		fractal_power, float(fractal_iterations), fractal_bailout, step_scale,
+		omega_max, omega_beta,
+		1.0, # ТУТ ПЕРЕДАЄМО 1.0
+		0.0
 	])
-	
-	var pc_bytes := pc_data.to_byte_array()
-	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
-	# --------------------------------------------
+	var bytes_final := pc_final.to_byte_array()
+	rd.compute_list_set_push_constant(list, bytes_final, bytes_final.size())
 
-	rd.compute_list_dispatch(list, x_groups, y_groups, 1)
+	rd.compute_list_dispatch(list, final_x, final_y, 1)
+
 	rd.compute_list_end()
-
 	frame_index += 1
 
 

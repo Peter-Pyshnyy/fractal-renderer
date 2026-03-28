@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dg2mf1o667yg8"
+path="res://.godot/imported/macro_pass.glsl-b9110d0687275718917dfe9f0370b8e0.res"
+
+[deps]
+
+source_file="res://shaders/includes/macro_pass.glsl"
+dest_files=["res://.godot/imported/macro_pass.glsl-b9110d0687275718917dfe9f0370b8e0.res"]
+
+[params]
+
