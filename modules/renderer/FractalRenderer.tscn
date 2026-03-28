@@ -26,17 +26,17 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_c2qj7")
 
-[node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("texture_rect", "target_camera")]
-script = ExtResource("2_dws3f")
-texture_rect = NodePath("../FractalScreen/TextureRect")
-target_camera = NodePath("../CameraRig/VirtualCamera")
-
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("3_dws3f")
 
 [node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
 near = 0.066
+
+[node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("texture_rect", "target_camera")]
+script = ExtResource("2_dws3f")
+texture_rect = NodePath("../FractalScreen/TextureRect")
+target_camera = NodePath("../CameraRig/VirtualCamera")
 
 [node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("4_mq4g3")
