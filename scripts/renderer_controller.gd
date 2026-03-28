@@ -4,6 +4,16 @@ extends Node
 @export var target_camera: Camera3D
 @export var render_resolution := Vector2(1920, 1080)
 
+@export_category("Fractal Settings")
+@export_range(1.0, 20.0, 0.1) var fractal_power: float = 8.0
+@export_range(1, 100, 1) var fractal_iterations: int = 15
+@export_range(1.0, 5.0, 0.1) var fractal_bailout: float = 2.0
+
+@export_category("Raymarching Tuning")
+@export_range(0.1, 1.0, 0.05) var step_scale: float = 0.4
+@export_range(1.0, 2.0, 0.05) var omega_max: float = 1.5
+@export_range(0.0, 0.95, 0.05) var omega_beta: float = 0.3
+
 var rd: RenderingDevice
 var shader_rid: RID
 var pipeline_rid: RID
@@ -148,6 +158,24 @@ func _dispatch() -> void:
 	var list := rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(list, pipeline_rid)
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
+
+	# --- НОВИЙ БЛОК: ВІДПРАВКА PUSH CONSTANTS ---
+	# Порядок має строго відповідати layout в shared_data.gdshaderinc
+	var pc_data := PackedFloat32Array([
+		fractal_power, 
+		float(fractal_iterations), 
+		fractal_bailout, 
+		step_scale,
+		omega_max,
+		omega_beta,
+		1.0, # pass_scale (Для головного проходу він дорівнює 1.0)
+		0.0  # padding2 (для вирівнювання 32 байт)
+	])
+	
+	var pc_bytes := pc_data.to_byte_array()
+	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
+	# --------------------------------------------
+
 	rd.compute_list_dispatch(list, x_groups, y_groups, 1)
 	rd.compute_list_end()
 

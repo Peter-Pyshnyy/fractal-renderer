@@ -1,7 +1,6 @@
-layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+// ТУТ БІЛЬШЕ НЕМАЄ layout(binding = 0) output_image!
 
-layout(set = 0, binding = 0) uniform writeonly image2D output_image;
-
+// Камера абсолютно однакова для всіх
 layout(set = 0, binding = 1, std430) buffer CameraData {
     vec4 position;
     vec4 forward;
@@ -11,6 +10,18 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
     float fovScale;
     float padding;
 } cam;
+
+// Push Constants однакові для всіх
+layout(push_constant, std430) uniform FractalParams {
+    float power;
+    float iterations;
+    float bailout;
+    float step_scale;
+    float omega_max;
+    float omega_beta;
+    float pass_scale; 
+    float padding2;
+} params;
 
 const int MAX_STEPS = 250;
 const float EPSILON = 0.00001;

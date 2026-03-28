@@ -12,8 +12,8 @@ float sdf(vec3 pos) {
     vec3 z = pos;
     float r = 0.0;
     float dr = 1.0;
-	float power = 8.0;
-	int iterations = 10;
+	float power = params.power;
+	float iterations = params.iterations;
 
     // precompute constants
     float powerMinus1 = power - 1.0;
