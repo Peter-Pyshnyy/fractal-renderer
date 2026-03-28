@@ -21,7 +21,7 @@ void main() {
 	vec3 rayDirection = getRayDirection(cam.resolution, uv);
 
 	vec3 color = raymarch_AR(rayDirection);
-		color = raymarch_enhanced(rayDirection);
+//		color = raymarch_enhanced(rayDirection);
 
 	imageStore(output_image, pixel_coords, vec4(color, 1.0));
-} 
+}
