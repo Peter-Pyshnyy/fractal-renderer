@@ -64,7 +64,7 @@ func _ready() -> void:
 	pipeline_rid = rd.compute_pipeline_create(shader_rid)
 
 # Функція _process викликається кожен кадр (60+ разів на секунду)
-func _process(_delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	# Етап 1: Оновлення даних камери та пакування їх у байтовий масив
 	var cam_transform = target_camera.global_transform
 	var fov = target_camera.fov

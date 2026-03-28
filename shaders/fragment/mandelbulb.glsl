@@ -3,7 +3,7 @@
 
 #include "res://shaders/includes/shared_data.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
-#include "res://shaders/includes/rayMarcher/ray_marcher_C_enhanced.glsl"
+#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
 
 void main() {
 	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
