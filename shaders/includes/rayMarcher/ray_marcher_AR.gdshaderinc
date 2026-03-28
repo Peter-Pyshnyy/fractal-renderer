@@ -20,7 +20,7 @@ vec3 raymarch_AR(vec3 rayDir) {
     float tMax = MAX_DIST;
 
     float omega = 1.0;
-    const float beta = 0.3;
+    float beta = 0.3;
 
     float prevRadius = 0.0;
     float stepLen = 0.0;
@@ -39,7 +39,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         steps += 1.0;
 
         vec3 pos = cam.position.xyz + rayDir * t;
-        float signedR = sdf(pos) * 0.5;
+        float signedR = sdf(pos) * 0.4;
         float radius = abs(signedR);
 
         // --- overshoot detection ---

@@ -24,4 +24,4 @@ void main() {
 	//color = raymarch_enhanced(rayDirection);
 
 	imageStore(output_image, pixel_coords, vec4(color, 1.0));
-}  
+}
