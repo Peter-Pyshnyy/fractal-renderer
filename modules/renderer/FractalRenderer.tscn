@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://dcgcssobxgh5o"]
 
-[ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://shaders/output_image.tres" id="2_c2qj7"]
+[ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Shader" uid="uid://bbydmriffyul3" path="res://shaders/fragment/mandelbulb.gdshader" id="2_pm1k6"]
 [ext_resource type="Script" uid="uid://ctedyk4ljt4vr" path="res://scripts/compute_shader_controller.gd" id="3_4ov7m"]
@@ -12,8 +12,6 @@ shader = ExtResource("2_pm1k6")
 shader_parameter/globalAmbient = Vector3(0.1, 0.1, 0.1)
 shader_parameter/globalDiffuse = Vector3(0.4, 0.4, 0.4)
 shader_parameter/globalSpecular = Vector3(1, 1, 1)
-shader_parameter/power = 8.0
-shader_parameter/iterations = 10
 shader_parameter/fov = 45.0
 shader_parameter/fovScale = 0.0
 shader_parameter/cameraPos = Vector3(0.75, -0.82, 3.955)
@@ -41,6 +39,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ColorRect" type="ColorRect" parent="FractalScreen"]
+visible = false
 material = SubResource("ShaderMaterial_dws3f")
 layout_mode = 1
 anchors_preset = 15
@@ -50,7 +49,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="FractalScreen" node_paths=PackedStringArray("target_camera")]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

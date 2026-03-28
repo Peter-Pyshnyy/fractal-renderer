@@ -95,7 +95,7 @@ vec3 raymarch_enhanced(vec3 rayDir, vec2 resolution) {
         //float error = radius / max(t * 0.2, pixelRadius);
 		
 		// much preciser close-up, but more noise
-        float error = radius / max(t * TEST, pixelRadius * 0.25);
+        float error = radius / max(t * 0.3, pixelRadius * 0.25);
         
         if (!sorFail && error < candidate_error) {
             candidate_t = t;

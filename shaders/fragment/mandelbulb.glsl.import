@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://d0pm6njp4w3fn"
+path="res://.godot/imported/mandelbulb.glsl-b381bb1382606a067f62b1892b4e26e0.res"
+
+[deps]
+
+source_file="res://shaders/fragment/mandelbulb.glsl"
+dest_files=["res://.godot/imported/mandelbulb.glsl-b381bb1382606a067f62b1892b4e26e0.res"]
+
+[params]
+

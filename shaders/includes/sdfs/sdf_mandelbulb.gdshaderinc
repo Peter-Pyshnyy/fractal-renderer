@@ -1,5 +1,5 @@
-uniform float power = 8.0;     // mandelbulb power (8 = classic)
-uniform int iterations = 10;   // iteration count
+//uniform float power = 8.0;     // mandelbulb power (8 = classic)
+//uniform int iterations = 10;   // iteration count
 
 
 float sdf(vec3 pos) {
@@ -12,6 +12,8 @@ float sdf(vec3 pos) {
     vec3 z = pos;
     float r = 0.0;
     float dr = 1.0;
+	float power = 8.0;
+	int iterations = 10;
 
     // precompute constants
     float powerMinus1 = power - 1.0;
