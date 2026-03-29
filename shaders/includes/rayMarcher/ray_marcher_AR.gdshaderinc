@@ -19,15 +19,15 @@ vec3 raymarch_AR(vec3 rayDir) {
     // Algorithm 4 — Bán & Valasek (2023)
     // with screen-size-dependent LOD convergence
 
-    float beta = params.omega_beta;
-
+    float beta = 0.3;
+	float steps = 0.0;
     // Angular size of one pixel. When r < t * pixelRadius, the unbounding
     // sphere is sub-pixel at that depth — no finer convergence is visible.
     float pixelRadius = cam.fovScale / cam.resolution.y;
 
     // Line 4: t := 0, r := f(s(t)), i := 1, z := r, m := −1
     float t = 0.0;
-    float r = sdf(cam.position.xyz) * params.step_scale;;
+    float r = sdf(cam.position.xyz); // later add * 0.4;
     float z = r;
     float m = -1.0;
 
@@ -36,15 +36,14 @@ vec3 raymarch_AR(vec3 rayDir) {
     float bestT    = t;
     float bestError = 1e9;
 
-    int stepsTaken = 1;
-
-    for (int i = 1; i < MAX_STEPS; i++) {
-        stepsTaken = i;
-
+    for (int i = 0; i < MAX_STEPS; i++) {
+		steps += 1.0;
+		
         // LOD-aware error: ratio of SDF radius to projected pixel size.
         // < 1.0 means the sphere is smaller than one pixel — converged.
         // Replaces the paper's fixed  r ≤ ε  stopping condition.
-        float pixelError = r / max(t * pixelRadius * 0.25 * params.resolution_scale, 1e-6);
+        //float pixelError = r / max(t * pixelRadius * 0.25 * params.resolution_scale, 1e-6);
+        float pixelError = r / max(t * pixelRadius, 1e-6);
 
         if (pixelError < bestError) {
             bestError = pixelError;
@@ -57,7 +56,8 @@ vec3 raymarch_AR(vec3 rayDir) {
         // Line 6: T := t + z,  R := f(s(T))
         float T = t + z;
         vec3  pos = cam.position.xyz + rayDir * T;
-        float R = sdf(pos) * params.step_scale;
+        float R = sdf(pos); // later add * 0.4;
+		
 
         // Line 7: if z ≤ r + |R|  (unbounding spheres overlap)
         if (z <= r + abs(R)) {
@@ -75,7 +75,8 @@ vec3 raymarch_AR(vec3 rayDir) {
         z = 2.0 * r / (1.0 - m);
     }
 
-    bool  isHit = (bestError < 1.0);
-    float shade = isHit ? (1.0 - float(stepsTaken) / float(MAX_STEPS)) : 0.0;
+	float s0    = 1.0 - steps / float(MAX_STEPS);
+    float s1    = 1.0 - (0.5 + 0.5 * sin(steps * 0.01));
+    float shade = mix(s0, s1, 0.5);
     return vec3(shade);
 }
