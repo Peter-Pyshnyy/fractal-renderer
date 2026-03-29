@@ -11,7 +11,7 @@ extends Node
 @export_range(1, 100, 1) var fractal_iterations: int = 15
 
 @export_category("Raymarching Tuning")
-@export_range(0.1, 1.0, 0.05) var step_scale: float = 0.4
+@export var step_scale: float = 0.4
 
 var rd: RenderingDevice
 var shader_rid: RID

@@ -8,9 +8,9 @@ layout(set = 0, binding = 0) uniform writeonly image2D output_image;
 #include "res://shaders/includes/shared_data.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
 //#include "res://shaders/includes/rayMarcher/ray_marcher.gdshaderinc" 
-#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
-//#include "res://shaders/includes/rayMarcher/ray_marcher_AR.gdshaderinc"
-
+//#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
+#include "res://shaders/includes/rayMarcher/ray_marcher_AR.gdshaderinc"
+  
 void main() {
     // Дізнаємося базову координату для нашого "товстого" пікселя
     ivec2 base_coord = ivec2(gl_GlobalInvocationID.xy) * params.resolution_scale;
@@ -22,9 +22,9 @@ void main() {
     vec2 offset = vec2(float(params.resolution_scale) * 0.5);
     vec2 uv = (vec2(base_coord) + offset) / vec2(image_size);
     uv.y = 1.0 - uv.y;
-     
+    
     vec3 rayDir = getRayDirection(cam.resolution, uv);
-    vec3 color = raymarch_enhanced(rayDir);
+    vec3 color = raymarch_AR(rayDir);
      
     // Записуємо один і той самий колір у всі пікселі квадрата (наприклад, 2x2)
     for (int y = 0; y < params.resolution_scale; y++) {
