@@ -26,13 +26,8 @@ vec3 raymarch_AR(vec3 rayDir) {
     float pixelRadius = cam.fovScale / cam.resolution.y;
 
     // Line 4: t := 0, r := f(s(t)), i := 1, z := r, m := −1
-    vec2 current_uv = gl_GlobalInvocationID.xy / cam.resolution;
-    float t = texture(macro_depth_map, current_uv).r;
-	if (t < MAX_DIST) {
-    vec3 probe = cam.position.xyz + rayDir * t;
-    	if (sdf(probe) < pixelRadius * t * 0.25) t = 0.0;  // one SDF call, saves hundreds
-	}
-    float r = sdf(cam.position.xyz + rayDir * t) * params.step_scale;
+    float t = 0.0;
+    float r = sdf(cam.position.xyz) * params.step_scale;;
     float z = r;
     float m = -1.0;
 
@@ -49,7 +44,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         // LOD-aware error: ratio of SDF radius to projected pixel size.
         // < 1.0 means the sphere is smaller than one pixel — converged.
         // Replaces the paper's fixed  r ≤ ε  stopping condition.
-        float pixelError = r / max(t * 0.025 * pixelRadius, 1e-6);
+        float pixelError = r / max(t * pixelRadius * 0.25, 1e-6);
 
         if (pixelError < bestError) {
             bestError = pixelError;
@@ -79,8 +74,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         // Line 14: z := 2r / (1 − m)
         z = 2.0 * r / (1.0 - m);
     }
-	
-	//return vec3(t / 20.0);
+
     bool  isHit = (bestError < 1.0);
     float shade = isHit ? (1.0 - float(stepsTaken) / float(MAX_STEPS)) : 0.0;
     return vec3(shade);

@@ -11,14 +11,18 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
 
 // Push Constants однакові для всіх
 layout(push_constant, std430) uniform FractalParams {
+    float TEST;
     float power;
     float iterations;
-    float bailout;
     float step_scale;
     float omega_max;
     float omega_beta;
     float pass_scale; 
-    float pass_index;
+	int resolution_scale;
+    float padding0;
+    float padding1;
+    float padding2;
+    float padding3;
 } params;
 
 const int MAX_STEPS = 250;

@@ -4,7 +4,6 @@ layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 
 
 layout(set = 0, binding = 0) uniform writeonly image2D output_image;
-layout(set = 0, binding = 2) uniform sampler2D macro_depth_map;
 
 #include "res://shaders/includes/shared_data.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
@@ -12,22 +11,27 @@ layout(set = 0, binding = 2) uniform sampler2D macro_depth_map;
 //#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
 
 void main() {
-	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
-	ivec2 image_size = imageSize(output_image);
+    // Дізнаємося базову координату для нашого "товстого" пікселя
+    ivec2 base_coord = ivec2(gl_GlobalInvocationID.xy) * params.resolution_scale;
+    ivec2 image_size = imageSize(output_image);
 
-	if (pixel_coords.x >= image_size.x || pixel_coords.y >= image_size.y) {
-		return; // Out of bounds
-	}
+    if (base_coord.x >= image_size.x || base_coord.y >= image_size.y) return;
 
-	vec2 uv = vec2(pixel_coords) / vec2(image_size);
-	uv.y = 1.0 - uv.y; // Flip Y coordinate for correct orientation
+    // Рахуємо UV по ЦЕНТРУ нашого блоку
+    vec2 offset = vec2(float(params.resolution_scale) * 0.5);
+    vec2 uv = (vec2(base_coord) + offset) / vec2(image_size);
+    uv.y = 1.0 - uv.y;
 
-	vec3 rayOrigin = cam.position.xyz;
-	vec3 rayDirection = getRayDirection(cam.resolution, uv);
+    vec3 rayDir = getRayDirection(cam.resolution, uv);
+    vec3 color = raymarch_AR(rayDir);
 
-	vec3 color = raymarch_AR(rayDirection);
-//		color = raymarch_enhanced(rayDirection);
- 
-
-	imageStore(output_image, pixel_coords, vec4(color, 1.0));
-}   
+    // Записуємо один і той самий колір у всі пікселі квадрата (наприклад, 2x2)
+    for (int y = 0; y < params.resolution_scale; y++) {
+        for (int x = 0; x < params.resolution_scale; x++) {
+            ivec2 write_coord = base_coord + ivec2(x, y);
+            if (write_coord.x < image_size.x && write_coord.y < image_size.y) {
+                imageStore(output_image, write_coord, vec4(color, 1.0));
+            }
+        }
+    }
+} 
