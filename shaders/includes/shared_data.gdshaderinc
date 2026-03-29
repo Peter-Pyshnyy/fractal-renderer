@@ -1,5 +1,3 @@
-// ТУТ БІЛЬШЕ НЕМАЄ layout(binding = 0) output_image!
-
 // Камера абсолютно однакова для всіх
 layout(set = 0, binding = 1, std430) buffer CameraData {
     vec4 position;
@@ -20,7 +18,7 @@ layout(push_constant, std430) uniform FractalParams {
     float omega_max;
     float omega_beta;
     float pass_scale; 
-    float padding2;
+    float pass_index;
 } params;
 
 const int MAX_STEPS = 250;
