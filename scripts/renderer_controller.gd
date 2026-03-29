@@ -156,8 +156,10 @@ func _dispatch() -> void:
 	# display previous frame
 	texture_rect.texture = tex_rd_resources[read_i]
 
-	var x_groups := int(ceil(render_resolution.x / 16.0))
-	var y_groups := int(ceil(render_resolution.y / 16.0))
+	var scaled_width := int(ceil(render_resolution.x / float(current_res_scale)))
+	var scaled_height := int(ceil(render_resolution.y / float(current_res_scale)))
+	var x_groups := int(ceil(scaled_width / 16.0))
+	var y_groups := int(ceil(scaled_height / 16.0))
 
 	var list := rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(list, pipeline_rid)
@@ -165,26 +167,27 @@ func _dispatch() -> void:
 
 	# --- НОВИЙ БЛОК: ВІДПРАВКА PUSH CONSTANTS ---
 	# Порядок має строго відповідати layout в shared_data.gdshaderinc
-	var pc_data := PackedFloat32Array([
-		test, 
-		fractal_power, 
-		float(fractal_iterations), 
+	var pc_bytes := PackedByteArray()
+	pc_bytes.append_array(PackedFloat32Array([
+		test,
+		fractal_power,
+		float(fractal_iterations),
 		step_scale,
 		omega_max,
 		omega_beta,
-		1.0, # pass_scale (Для головного проходу він дорівнює 1.0)
-		current_res_scale,
+		1.0 # pass_scale (Для головного проходу він дорівнює 1.0)
+		]).to_byte_array())
+	pc_bytes.append_array(PackedInt32Array([current_res_scale]).to_byte_array())
+	pc_bytes.append_array(PackedFloat32Array([
 		0.0,
 		0.0,
 		0.0,
 		0.0
-	])
-	
-	var pc_bytes := pc_data.to_byte_array()
+	]).to_byte_array())
 	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
 	# --------------------------------------------
 
-	rd.compute_list_dispatch(list, x_groups / current_res_scale, y_groups / current_res_scale, 1)
+	rd.compute_list_dispatch(list, x_groups, y_groups, 1)
 	rd.compute_list_end()
 
 	frame_index += 1
