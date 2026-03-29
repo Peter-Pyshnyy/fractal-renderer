@@ -28,10 +28,10 @@ vec3 raymarch_AR(vec3 rayDir) {
     // Line 4: t := 0, r := f(s(t)), i := 1, z := r, m := −1
     vec2 current_uv = gl_GlobalInvocationID.xy / cam.resolution;
     float t = texture(macro_depth_map, current_uv).r;
-	//if (t < MAX_DIST) {
-    //vec3 probe = cam.position.xyz + rayDir * t;
-    	//if (sdf(probe) < 0.005) t = 0.0;  // one SDF call, saves hundreds
-	//}
+	if (t < MAX_DIST) {
+    vec3 probe = cam.position.xyz + rayDir * t;
+    	if (sdf(probe) < pixelRadius * t * 0.25) t = 0.0;  // one SDF call, saves hundreds
+	}
     float r = sdf(cam.position.xyz + rayDir * t) * params.step_scale;
     float z = r;
     float m = -1.0;

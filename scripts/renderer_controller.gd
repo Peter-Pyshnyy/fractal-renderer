@@ -82,7 +82,8 @@ func _create_texture() -> void:
 		var m_fmt := RDTextureFormat.new()
 		m_fmt.width = int(ceil(render_resolution.x / scale))
 		m_fmt.height = int(ceil(render_resolution.y / scale))
-		m_fmt.format = RenderingDevice.DATA_FORMAT_R32_SFLOAT
+		# Macro depth is only a conservative warm start, 16-bit is enough and cuts bandwidth.
+		m_fmt.format = RenderingDevice.DATA_FORMAT_R16_SFLOAT
 		m_fmt.usage_bits = RenderingDevice.TEXTURE_USAGE_STORAGE_BIT | RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
 		var tex_rid = rd.texture_create(m_fmt, RDTextureView.new(), [])
 		macro_texture_rids.append(tex_rid)
@@ -231,10 +232,10 @@ func _dispatch() -> void:
 		rd.compute_list_set_push_constant(list, bytes_macro, bytes_macro.size())
 		
 		rd.compute_list_dispatch(list, mac_x, mac_y, 1)
-		#rd.compute_list_add_barrier(list)
+		rd.compute_list_add_barrier(list)
 
 	# --- ФАЗА 2: ФІНАЛЬНИЙ ПРОХІД ---
-	#rd.compute_list_add_barrier(list)
+	rd.compute_list_add_barrier(list)
 	rd.compute_list_bind_compute_pipeline(list, pipeline_rid)
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
 

@@ -37,10 +37,18 @@ void main() {
     // Якщо це не перший прохід (pass_index > 0), читаємо глибину від попередника
     if (params.pass_index > 0.5) {
         t = texture(prev_depth_map, uv_sample).r;
-    } 
+    // Previous pass already classified this ray as a miss.
+        if (t >= MAX_DIST) {
+            imageStore(out_depth_map, pixel_coords, vec4(MAX_DIST, 0.0, 0.0, 0.0));
+            return;
+        }
+    }
+
+    // Coarser passes should be cheap; finer passes can spend more work.
+    int max_steps = int(mix(48.0, 144.0, clamp((8.0 - params.pass_scale) / 7.0, 0.0, 1.0)));
 
     // Звичайний Cone Marching
-    for (int i = 0; i < MAX_STEPS; i++) {
+    for (int i = 0; i < max_steps; i++) {
         vec3 pos = cam.position.xyz + rayDir * t;
         float r = sdf(pos) * params.step_scale;
         float currentConeWidth = max(t * coneRadius, 1e-6);
@@ -50,7 +58,8 @@ void main() {
     }
 
     float cone_width = t * coneRadius;
-    float safe_t = max(0.0, t - cone_width);
+    float retreat_factor = mix(1.0, 0.8, clamp((8.0 - params.pass_scale) / 6.0, 0.0, 1.0));
+    float safe_t = max(0.0, t - cone_width * retreat_factor);
     if (t >= MAX_DIST) safe_t = MAX_DIST;
 
     imageStore(out_depth_map, pixel_coords, vec4(safe_t, 0.0, 0.0, 0.0));

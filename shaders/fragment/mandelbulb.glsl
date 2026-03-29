@@ -30,4 +30,4 @@ void main() {
  
 
 	imageStore(output_image, pixel_coords, vec4(color, 1.0));
-}
+}   
