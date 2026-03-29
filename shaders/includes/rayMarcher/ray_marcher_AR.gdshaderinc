@@ -44,7 +44,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         // LOD-aware error: ratio of SDF radius to projected pixel size.
         // < 1.0 means the sphere is smaller than one pixel — converged.
         // Replaces the paper's fixed  r ≤ ε  stopping condition.
-        float pixelError = r / max(t * pixelRadius * 0.25, 1e-6);
+        float pixelError = r / max(t * pixelRadius * 0.25 * params.resolution_scale, 1e-6);
 
         if (pixelError < bestError) {
             bestError = pixelError;

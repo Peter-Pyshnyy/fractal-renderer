@@ -100,7 +100,7 @@ func _process(_delta: float) -> void:
 	last_cam_transform = target_camera.global_transform
 	
    #Якщо рухаємося - знижуємо роздільну здатність у 3 рази (FPS злетить у 9 разів!)
-	current_res_scale = 3 if is_moving else 1
+	current_res_scale = 2 if is_moving else 1
 	_update_camera_buffer()
 	_dispatch()
 
