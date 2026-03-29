@@ -15,9 +15,9 @@ layout(push_constant, std430) uniform FractalParams {
     float power;
     float iterations;
     float step_scale;
-    float omega_max;
-    float omega_beta;
-	float padding;
+    float padding0;
+    float padding1;
+	float padding2;
 	int resolution_scale;
 } params;
 
