@@ -19,7 +19,7 @@ vec3 raymarch_AR(vec3 rayDir) {
     // Algorithm 4 — Bán & Valasek (2023)
     // with screen-size-dependent LOD convergence
 	
-	float sdfScaler = 0.4;
+	float sdfScaler = 1.0;
     float beta = 0.3;
 
     // Angular size of one pixel. When r < t * pixelRadius, the unbounding
