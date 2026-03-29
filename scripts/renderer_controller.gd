@@ -175,15 +175,9 @@ func _dispatch() -> void:
 		step_scale,
 		omega_max,
 		omega_beta,
-		1.0 # pass_scale (Для головного проходу він дорівнює 1.0)
+		0.0
 		]).to_byte_array())
 	pc_bytes.append_array(PackedInt32Array([current_res_scale]).to_byte_array())
-	pc_bytes.append_array(PackedFloat32Array([
-		0.0,
-		0.0,
-		0.0,
-		0.0
-	]).to_byte_array())
 	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
 	# --------------------------------------------
 

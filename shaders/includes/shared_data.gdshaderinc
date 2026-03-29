@@ -17,12 +17,8 @@ layout(push_constant, std430) uniform FractalParams {
     float step_scale;
     float omega_max;
     float omega_beta;
-    float pass_scale; 
+	float padding;
 	int resolution_scale;
-    float padding0;
-    float padding1;
-    float padding2;
-    float padding3;
 } params;
 
 const int MAX_STEPS = 250;
