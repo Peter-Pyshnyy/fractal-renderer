@@ -19,7 +19,7 @@ vec3 raymarch_AR(vec3 rayDir) {
     // Algorithm 4 — Bán & Valasek (2023)
     // with screen-size-dependent LOD convergence
 	
-	float sdfScaler = 0.2;
+	float sdfScaler = 0.4;
     float beta = 0.3;
 
     // Angular size of one pixel. When r < t * pixelRadius, the unbounding
@@ -28,7 +28,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 
     // Line 4: t := 0, r := f(s(t)), i := 1, z := r, m := −1
     float t = 0.0;
-    float r = sdf(cam.position.xyz) * sdfScaler * params.resolution_scale;
+    float r = sdf(cam.position.xyz) * (sdfScaler / params.resolution_scale);
     float z = r;
     float m = -1.0;
 
@@ -58,7 +58,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         // Line 6: T := t + z,  R := f(s(T))
         float T = t + z;
         vec3  pos = cam.position.xyz + rayDir * T;
-        float R = sdf(pos) * sdfScaler * params.resolution_scale;
+        float R = sdf(pos) * (sdfScaler / params.resolution_scale);
 
         // Line 7: if z ≤ r + |R|  (unbounding spheres overlap)
         if (z <= r + abs(R)) {

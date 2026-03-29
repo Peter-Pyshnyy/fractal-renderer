@@ -99,7 +99,7 @@ vec3 raymarch_ER(vec3 rayDir, vec2 resolution) {
     }
 
     float alpha = 1.0 - clamp(minCoverage, 0.0, 1.0);
-	
+
     if (alpha <= 0.0) return vec3(0.0);
 
     float s0 = 1.0 - steps / float(MAX_STEPS);

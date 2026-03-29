@@ -3,6 +3,7 @@ extends Node
 @export var texture_rect: TextureRect
 @export var target_camera: Camera3D
 @export var render_resolution := Vector2(1920, 1080)
+@export var VRSTimer : Timer
 
 @export var test: float = 0.1
 
@@ -97,8 +98,10 @@ func _process(_delta: float) -> void:
 	var is_moving = not target_camera.global_transform.is_equal_approx(last_cam_transform)
 	last_cam_transform = target_camera.global_transform
 	
-   #Якщо рухаємося - знижуємо роздільну здатність у 3 рази (FPS злетить у 9 разів!)
-	current_res_scale = 2 if is_moving else 1
+	if is_moving:
+		current_res_scale = 2
+		VRSTimer.start()
+	
 	_update_camera_buffer()
 	_dispatch()
 
@@ -208,3 +211,7 @@ func _exit_tree() -> void:
 	if pipeline_rid.is_valid(): rd.free_rid(pipeline_rid)
 	if shader_rid.is_valid(): rd.free_rid(shader_rid)
 	if camera_buffer_rid.is_valid(): rd.free_rid(camera_buffer_rid)
+
+
+func _on_vrs_timer_timeout() -> void:
+	current_res_scale = 1
