@@ -12,8 +12,6 @@ extends Node
 
 @export_category("Raymarching Tuning")
 @export_range(0.1, 1.0, 0.05) var step_scale: float = 0.4
-@export_range(1.0, 2.0, 0.05) var omega_max: float = 1.5
-@export_range(0.0, 0.95, 0.05) var omega_beta: float = 0.3
 
 var rd: RenderingDevice
 var shader_rid: RID
@@ -173,8 +171,8 @@ func _dispatch() -> void:
 		fractal_power,
 		float(fractal_iterations),
 		step_scale,
-		omega_max,
-		omega_beta,
+		0.0, #paddings
+		0.0,
 		0.0
 		]).to_byte_array())
 	pc_bytes.append_array(PackedInt32Array([current_res_scale]).to_byte_array())
@@ -192,6 +190,14 @@ func _dispatch() -> void:
 func _exit_tree() -> void:
 	if not rd:
 		return
+
+	# Release texture from UI
+	texture_rect.texture = null
+
+	# Clear resource references
+	tex_rd_resources.clear()
+	texture_rids.clear()
+	uniform_sets.clear()
 
 	for u in uniform_sets:
 		if u.is_valid(): rd.free_rid(u)
