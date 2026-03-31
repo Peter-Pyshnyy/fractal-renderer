@@ -3,18 +3,21 @@ extends Node3D
 enum CameraMode { FPS, ORBIT }
 
 @export var current_mode: CameraMode = CameraMode.ORBIT
-@export var mouse_sensitivity := 0.003
+@export var mouse_sensitivity := 0.03
 @export var move_speed := 0.05
 @export var orbit_radius := 1.5
 
 @export var zoom_speed := 0.1
 @export var min_orbit_radius := 0.8 # prevent camera clipping into center
-@export var max_orbit_radius := 50.0
+@export var max_orbit_radius := 4.0
+@export var test: float = 0.0
 
 @onready var camera: Camera3D = $VirtualCamera
 
 var yaw := 0.0
 var pitch := 0.0
+var orbit_zoom_speed:= 0.1
+var max_zoom_speed = 0.1
 
 
 func _ready() -> void:
@@ -43,7 +46,6 @@ func _process(delta: float) -> void:
 			_process_fps(delta)
 		CameraMode.ORBIT:
 			_process_orbit(delta)
-
 
 # --- Mode switching ---
 
@@ -88,13 +90,23 @@ func _set_mouse_capture(active: bool) -> void:
 
 
 func _zoom(direction: int) -> void:
+	print(camera.position)
 	if current_mode == CameraMode.ORBIT:
 		# change physical distance from center
-		orbit_radius = clamp(
-			orbit_radius + direction * zoom_speed,
-			min_orbit_radius,
-			max_orbit_radius
-		)
+		var dist: float = SDF.sdf(camera.global_position)
+		if direction > 0: 
+			orbit_radius = orbit_radius + direction * orbit_zoom_speed
+			# revert the /5
+			orbit_zoom_speed = min(orbit_zoom_speed * 1.5625, max_zoom_speed) 
+			orbit_radius = min(orbit_radius, max_orbit_radius)
+		else:
+			# block zoom-in when inside the sdf
+			if dist > 0.0: 
+				orbit_zoom_speed = (dist / 5)
+				orbit_radius = orbit_radius + direction * orbit_zoom_speed
+			else:
+				orbit_zoom_speed *= 4.0 # quick escape from inside the fractal
+		
 	else:
 		# adjust camera FOV (optical zoom)
 		camera.fov = clamp(camera.fov + direction, 10.0, 120.0)
@@ -111,8 +123,9 @@ func _handle_rotation(event: InputEventMouseMotion) -> void:
 		return
 
 	# update angles from mouse movement
-	yaw -= event.relative.x * mouse_sensitivity
-	pitch -= event.relative.y * mouse_sensitivity
+	var sens = min(mouse_sensitivity * orbit_zoom_speed, mouse_sensitivity * 0.1)
+	yaw -= event.relative.x * sens
+	pitch -= event.relative.y * sens
 	
 	# limit vertical rotation to avoid flipping
 	pitch = clamp(pitch, -PI / 2.1, PI / 2.1)
@@ -148,4 +161,5 @@ func _process_fps(delta: float) -> void:
 func _process_orbit(delta: float) -> void:
 	# keep camera at orbit radius behind rig
 	var target := Vector3(0, 0, orbit_radius)
-	camera.position = camera.position.lerp(target, delta * 10.0)
+	camera.position = camera.position.lerp(target, delta * test)
+	#camera.position = target
