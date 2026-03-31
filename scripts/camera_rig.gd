@@ -8,60 +8,60 @@ enum CameraMode { FPS, ORBIT }
 @export var orbit_radius := 1.5
 
 @export var zoom_speed := 0.1
-@export var min_orbit_radius := 0.8 # prevent camera clipping into center
+@export var min_orbit_radius := 0.8 # prevent clipping into center
 @export var max_orbit_radius := 4.0
-@export var test: float = 0.0
 
 @onready var camera: Camera3D = $VirtualCamera
+@onready var anchor: Node3D = $Anchor
 
 var yaw := 0.0
 var pitch := 0.0
-var orbit_zoom_speed:= 0.1
-var max_zoom_speed = 0.1
+
+# dynamic orbit tuning
+var orbit_zoom_speed := 0.1
+var orbit_sensitivity := 0.003
+var max_zoom_speed := 0.1
+
+var dist_to_sdf := 1.0
+var is_moving := false
 
 
 func _ready() -> void:
-	# start with free cursor (UI interaction)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
 func _input(event: InputEvent) -> void:
-	# toggle between FPS and Orbit modes
 	if event.is_action_pressed("switch_camera"):
 		_switch_mode()
 
-	# handle mouse clicks (capture + zoom)
 	if event is InputEventMouseButton:
 		_handle_mouse_buttons(event)
 
-	# handle camera rotation
 	if event is InputEventMouseMotion:
 		_handle_rotation(event)
 
 
 func _process(delta: float) -> void:
-	# update based on active mode
 	match current_mode:
 		CameraMode.FPS:
 			_process_fps(delta)
 		CameraMode.ORBIT:
 			_process_orbit(delta)
 
+
 # --- Mode switching ---
 
 func _switch_mode() -> void:
 	if current_mode == CameraMode.ORBIT:
 		current_mode = CameraMode.FPS
-		
-		# move rig to current camera world position
+
+		# move rig to camera
 		global_position = camera.global_position
-		
-		# reset local offset to avoid jump
-		camera.position = Vector3.ZERO
+		anchor.position = Vector3.ZERO
 	else:
 		current_mode = CameraMode.ORBIT
-		
-		# reset orbit center and FOV
+
+		# reset orbit center
 		camera.fov = 75.0
 		position = Vector3.ZERO
 
@@ -69,13 +69,15 @@ func _switch_mode() -> void:
 # --- Input handling ---
 
 func _handle_mouse_buttons(event: InputEventMouseButton) -> void:
-	# capture mouse only while rotating
 	if event.button_index == MOUSE_BUTTON_RIGHT and current_mode == CameraMode.FPS:
 		_set_mouse_capture(event.is_pressed())
 	elif event.button_index == MOUSE_BUTTON_LEFT and current_mode == CameraMode.ORBIT:
 		_set_mouse_capture(event.is_pressed())
 
-	# scroll controls zoom (mode-dependent)
+	# update sensitivity once after interaction
+	if event.button_index == MOUSE_BUTTON_LEFT and event.is_released() and current_mode == CameraMode.ORBIT:
+		_update_sdf_metrics()
+
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 		_zoom(-1)
 	elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
@@ -83,37 +85,52 @@ func _handle_mouse_buttons(event: InputEventMouseButton) -> void:
 
 
 func _set_mouse_capture(active: bool) -> void:
-	# lock/unlock cursor for continuous rotation
 	Input.set_mouse_mode(
 		Input.MOUSE_MODE_CAPTURED if active else Input.MOUSE_MODE_VISIBLE
 	)
 
 
-func _zoom(direction: int) -> void:
-	print(camera.position)
-	if current_mode == CameraMode.ORBIT:
-		# change physical distance from center
-		var dist: float = SDF.sdf(camera.global_position)
-		if direction > 0: 
-			orbit_radius = orbit_radius + direction * orbit_zoom_speed
-			# revert the /5
-			orbit_zoom_speed = min(orbit_zoom_speed * 1.5625, max_zoom_speed) 
-			orbit_radius = min(orbit_radius, max_orbit_radius)
-		else:
-			# block zoom-in when inside the sdf
-			if dist > 0.0: 
-				orbit_zoom_speed = (dist / 5)
-				orbit_radius = orbit_radius + direction * orbit_zoom_speed
-			else:
-				orbit_zoom_speed *= 4.0 # quick escape from inside the fractal
-		
-	else:
-		# adjust camera FOV (optical zoom)
-		camera.fov = clamp(camera.fov + direction, 10.0, 120.0)
+# --- SDF helpers ---
 
+func _update_sdf_metrics() -> void:
+	# expensive → keep centralized
+	dist_to_sdf = SDF.sdf(anchor.global_position)
+	orbit_sensitivity = (dist_to_sdf / 5.0) * mouse_sensitivity
+
+
+# --- Zoom ---
+
+func _zoom(direction: int) -> void:
+	is_moving = true
+
+	if current_mode != CameraMode.ORBIT:
+		camera.fov = clamp(camera.fov + direction, 10.0, 120.0)
+		return
+
+	_update_sdf_metrics()
+
+	if direction > 0:
+		# zoom out (accelerates)
+		orbit_radius += orbit_zoom_speed
+		orbit_zoom_speed = min(orbit_zoom_speed * 1.5625, max_zoom_speed)
+		orbit_radius = min(orbit_radius, max_orbit_radius)
+
+	else:
+		# zoom in (adaptive)
+		if dist_to_sdf > 0.0:
+			orbit_zoom_speed = dist_to_sdf / 5.0
+			orbit_radius -= orbit_zoom_speed
+		else:
+			# escape if inside sdf
+			orbit_zoom_speed *= 4.0
+
+	# refresh after movement
+	_update_sdf_metrics()
+
+
+# --- Rotation ---
 
 func _handle_rotation(event: InputEventMouseMotion) -> void:
-	# rotate only while correct mouse button is held
 	var rotating := (
 		(current_mode == CameraMode.FPS and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)) or
 		(current_mode == CameraMode.ORBIT and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT))
@@ -122,44 +139,40 @@ func _handle_rotation(event: InputEventMouseMotion) -> void:
 	if not rotating:
 		return
 
-	# update angles from mouse movement
-	var sens = min(mouse_sensitivity * orbit_zoom_speed, mouse_sensitivity * 0.1)
+	is_moving = true
+
+	var sens = orbit_sensitivity if current_mode == CameraMode.ORBIT else mouse_sensitivity
+
 	yaw -= event.relative.x * sens
 	pitch -= event.relative.y * sens
-	
-	# limit vertical rotation to avoid flipping
 	pitch = clamp(pitch, -PI / 2.1, PI / 2.1)
 
-	# apply rotation to rig
 	rotation = Vector3(pitch, yaw, 0)
 
 
 # --- FPS mode ---
 
 func _process_fps(delta: float) -> void:
-	# move only while RMB is held (intentional control)
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-		
-		# convert input into world direction
-		var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 
-		# vertical movement (up/down)
+		var dir = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+
 		var vertical := 0.0
 		if Input.is_action_pressed("move_up"): vertical += 1.0
 		if Input.is_action_pressed("move_down"): vertical -= 1.0
 
-		# apply movement
-		position += (direction + Vector3.UP * vertical) * move_speed * delta
+		position += (dir + Vector3.UP * vertical) * move_speed * delta
 
-	# smoothly center camera on rig (removes drift)
+	# keep camera centered
 	camera.position = camera.position.lerp(Vector3.ZERO, delta * 10.0)
 
 
 # --- Orbit mode ---
 
 func _process_orbit(delta: float) -> void:
-	# keep camera at orbit radius behind rig
+	# target offset from pivot
 	var target := Vector3(0, 0, orbit_radius)
-	camera.position = camera.position.lerp(target, delta * test)
-	#camera.position = target
+
+	anchor.position = target
+	camera.position = camera.position.lerp(target, delta * 15.0)

@@ -33,6 +33,8 @@ script = ExtResource("3_dws3f")
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
 near = 0.066
 
+[node name="Anchor" type="Node3D" parent="CameraRig"]
+
 [node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("texture_rect", "target_camera", "VRSTimer")]
 script = ExtResource("2_dws3f")
 texture_rect = NodePath("../FractalScreen/TextureRect")

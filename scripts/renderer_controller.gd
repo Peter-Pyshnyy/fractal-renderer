@@ -95,10 +95,11 @@ func _create_pipeline() -> void:
 # --- Per-frame update ---
 
 func _process(_delta: float) -> void:
-	var is_moving = not target_camera.global_transform.is_equal_approx(last_cam_transform)
+	var is_moving = target_camera.get_parent().is_moving
 	last_cam_transform = target_camera.global_transform
 	
 	if is_moving:
+		target_camera.get_parent().is_moving = false
 		current_res_scale = 2
 		VRSTimer.start()
 	
