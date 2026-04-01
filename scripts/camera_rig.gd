@@ -113,11 +113,16 @@ func _zoom(direction: int) -> void:
 	if current_mode != CameraMode.ORBIT:
 		#camera.fov = clamp(camera.fov + direction, 10.0, 120.0)
 		if dist_to_sdf < 0.0: return
-		if direction > 0:
-			fps_zoom_speed = dist_to_sdf * fps_zoom_factor
-			position += camera.global_basis.z * fps_zoom_speed
-		else:
+		if direction < 0.0:
+			print("here")
+			fps_zoom_speed = min(dist_to_sdf * fps_zoom_factor, max_zoom_speed)
 			position -= camera.global_basis.z * fps_zoom_speed
+		else:
+			var reverse_speed = _get_reverse_scalar(fps_zoom_factor)
+			fps_zoom_speed = min(fps_zoom_speed * reverse_speed, max_zoom_speed)
+			position += camera.global_basis.z * fps_zoom_speed
+		
+		_update_sdf_metrics()
 		return
 
 	if direction > 0:
