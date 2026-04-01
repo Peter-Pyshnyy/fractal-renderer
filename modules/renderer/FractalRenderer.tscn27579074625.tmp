@@ -1,0 +1,52 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcgcssobxgh5o"]
+
+[ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
+[ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
+[ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
+[ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
+
+[node name="FractalRenderer" type="Node"]
+
+[node name="FractalScreen" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="FractalScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_c2qj7")
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("3_dws3f")
+
+[node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
+transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
+near = 0.066
+
+[node name="Anchor" type="Node3D" parent="CameraRig"]
+
+[node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("texture_rect", "target_camera", "VRSTimer")]
+script = ExtResource("2_dws3f")
+texture_rect = NodePath("../FractalScreen/TextureRect")
+target_camera = NodePath("../CameraRig/VirtualCamera")
+render_resolution = Vector2(960, 540)
+VRSTimer = NodePath("VRSTimer")
+
+[node name="VRSTimer" type="Timer" parent="RendererController"]
+one_shot = true
+
+[node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
+script = ExtResource("4_mq4g3")
+camera_rig = NodePath("../CameraRig")
+
+[connection signal="timeout" from="RendererController/VRSTimer" to="RendererController" method="_on_vrs_timer_timeout"]

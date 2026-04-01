@@ -4,7 +4,6 @@ enum CameraMode { FPS, ORBIT }
 
 @export var current_mode: CameraMode = CameraMode.ORBIT
 @export var mouse_sensitivity := 0.03
-@export var move_speed := 0.05
 @export var orbit_radius := 1.5
 
 @export var zoom_speed := 0.1
@@ -25,6 +24,7 @@ var max_zoom_speed := 0.1
 
 var fps_zoom_speed := 0.1
 var fps_zoom_factor := 0.333
+var fps_move_speed := 0.05
 
 var dist_to_sdf := 1.0
 var is_moving := false
@@ -102,6 +102,7 @@ func _update_sdf_metrics() -> void:
 	# expensive → keep centralized
 	dist_to_sdf = SDF.sdf(anchor.global_position)
 	orbit_sensitivity = (dist_to_sdf * orbit_zoom_factor) * mouse_sensitivity
+	fps_move_speed = (dist_to_sdf * fps_zoom_factor) * 10.0
 
 
 # --- Zoom ---
@@ -111,38 +112,54 @@ func _zoom(direction: int) -> void:
 	_update_sdf_metrics()
 
 	if current_mode != CameraMode.ORBIT:
-		#camera.fov = clamp(camera.fov + direction, 10.0, 120.0)
-		if dist_to_sdf < 0.0: return
-		if direction < 0.0:
-			print("here")
-			fps_zoom_speed = min(dist_to_sdf * fps_zoom_factor, max_zoom_speed)
-			position -= camera.global_basis.z * fps_zoom_speed
-		else:
-			var reverse_speed = _get_reverse_scalar(fps_zoom_factor)
-			fps_zoom_speed = min(fps_zoom_speed * reverse_speed, max_zoom_speed)
-			position += camera.global_basis.z * fps_zoom_speed
-		
-		_update_sdf_metrics()
+		_zoom_fps(direction)
+	else:
+		_zoom_orbit(direction)
+
+	# update once after movement
+	_update_sdf_metrics()
+
+
+# --- FPS zoom ---
+
+func _zoom_fps(direction: int) -> void:
+	if dist_to_sdf < 0.0:
 		return
 
+	var forward := -camera.global_basis.z
+
+	if direction < 0:
+		# move forward (toward surface)
+		fps_zoom_speed = min(dist_to_sdf * fps_zoom_factor, max_zoom_speed)
+		position += forward * fps_zoom_speed
+	else:
+		# move backward (accelerated)
+		var reverse_speed := _get_reverse_scalar(fps_zoom_factor)
+		fps_zoom_speed = min(fps_zoom_speed * reverse_speed, max_zoom_speed)
+		position -= forward * fps_zoom_speed
+
+
+# --- Orbit zoom ---
+
+func _zoom_orbit(direction: int) -> void:
 	if direction > 0:
-		# zoom out (accelerates)
+		# zoom out
 		orbit_radius += orbit_zoom_speed
-		var reverse_speed = _get_reverse_scalar(orbit_zoom_factor)
+
+		var reverse_speed := _get_reverse_scalar(orbit_zoom_factor)
 		orbit_zoom_speed = min(orbit_zoom_speed * reverse_speed, max_zoom_speed)
+
 		orbit_radius = min(orbit_radius, max_orbit_radius)
 
 	else:
-		# zoom in (adaptive)
+		# zoom in
 		if dist_to_sdf > 0.0:
 			orbit_zoom_speed = dist_to_sdf * orbit_zoom_factor
 			orbit_radius -= orbit_zoom_speed
+			orbit_radius = max(orbit_radius, min_orbit_radius)
 		else:
 			# escape if inside sdf
 			orbit_zoom_speed *= 4.0
-
-	# refresh after movement
-	_update_sdf_metrics()
 
 
 # --- Rotation ---
@@ -172,14 +189,16 @@ func _handle_rotation(event: InputEventMouseMotion) -> void:
 func _process_fps(delta: float) -> void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-
 		var dir = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 
 		var vertical := 0.0
 		if Input.is_action_pressed("move_up"): vertical += 1.0
 		if Input.is_action_pressed("move_down"): vertical -= 1.0
-
-		position += (dir + Vector3.UP * vertical) * move_speed * delta
+		dir += Vector3.UP * vertical
+		dir = dir.normalized()
+		if not dir.is_equal_approx(Vector3.ZERO):
+			position += (dir) * fps_move_speed * delta
+			is_moving = true
 
 	# keep camera centered
 	camera.position = camera.position.lerp(Vector3.ZERO, delta * 10.0)
