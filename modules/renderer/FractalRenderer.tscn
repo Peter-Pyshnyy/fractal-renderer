@@ -1,9 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://dcgcssobxgh5o"]
+[gd_scene load_steps=7 format=3 uid="uid://dcgcssobxgh5o"]
 
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
+[ext_resource type="Script" uid="uid://bbsh05bh0sled" path="res://scripts/sdfs/mandelbulb.gd" id="4_fyoh6"]
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
+
+[sub_resource type="Resource" id="Resource_c2qj7"]
+script = ExtResource("4_fyoh6")
+power = 8.0
+iterations = 10
+metadata/_custom_type_script = "uid://bbsh05bh0sled"
 
 [node name="FractalRenderer" type="Node"]
 
@@ -41,6 +48,7 @@ texture_rect = NodePath("../FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 render_resolution = Vector2(960, 540)
 VRSTimer = NodePath("VRSTimer")
+fractal_data = SubResource("Resource_c2qj7")
 
 [node name="VRSTimer" type="Timer" parent="RendererController"]
 one_shot = true

@@ -2,6 +2,7 @@ extends Node
 
 @export var texture_rect: TextureRect
 @export var target_camera: Camera3D
+var camera_rig: Node3D
 @export var render_resolution := Vector2(1920, 1080)
 @export var VRSTimer : Timer
 
@@ -13,6 +14,7 @@ extends Node
 
 @export_category("Raymarching Tuning")
 @export var step_scale: float = 0.4
+@export var fractal_data: FractalData
 
 var rd: RenderingDevice
 var shader_rid: RID
@@ -32,12 +34,14 @@ func _ready() -> void:
 	if not target_camera: 
 		push_error("Camera3D not assigned") 
 		return 
-		
+	
+	Global.g_fractal = fractal_data
+	camera_rig = target_camera.get_parent()
 	rd = RenderingServer.get_rendering_device() 
 	_create_shader() 
 	_create_texture() 
 	_create_camera_buffer() 
-	_create_pipeline()
+	_create_pipeline() 
 
 
 # --- Setup ---
@@ -95,11 +99,11 @@ func _create_pipeline() -> void:
 # --- Per-frame update ---
 
 func _process(_delta: float) -> void:
-	var is_moving = target_camera.get_parent().is_moving
+	var is_moving = camera_rig.is_moving
 	last_cam_transform = target_camera.global_transform
 	
 	if is_moving:
-		target_camera.get_parent().is_moving = false
+		camera_rig.is_moving = false
 		current_res_scale = 2
 		VRSTimer.start()
 	
@@ -169,12 +173,13 @@ func _dispatch() -> void:
 
 	# --- НОВИЙ БЛОК: ВІДПРАВКА PUSH CONSTANTS ---
 	# Порядок має строго відповідати layout в shared_data.gdshaderinc
+	var params = Global.g_fractal.get_shader_params()
 	var pc_bytes := PackedByteArray()
 	pc_bytes.append_array(PackedFloat32Array([
-		test,
-		fractal_power,
-		float(fractal_iterations),
-		step_scale,
+		params[0], 
+		params[1],
+		params[2],
+		params[3], 
 		0.0, #paddings
 		0.0,
 		0.0

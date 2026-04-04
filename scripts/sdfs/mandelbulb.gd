@@ -1,6 +1,13 @@
-class_name SDF
+class_name Mandelbulb 
+extends FractalData
 
-static func sdf(pos: Vector3, power: float = 8.0, iterations: int = 10.0) -> float:
+@export var power: float = 8.0
+
+func get_shader_params() -> Array[float]:
+	# На перше місце ставимо power, далі базові параметри
+	return [float(iterations), power, 0.0, 0.0]
+	
+func sdf(pos: Vector3) -> float:
 	var z: Vector3 = pos
 	var r: float = 0.0
 	var dr: float = 1.0

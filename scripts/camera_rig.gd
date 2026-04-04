@@ -35,7 +35,6 @@ var precise_x: float = 0.0
 var precise_y: float = 0.0
 var precise_z: float = 0.0
 
-
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
@@ -109,7 +108,7 @@ func _set_mouse_capture(active: bool) -> void:
 # --- SDF helpers ---
 
 func _update_sdf_metrics() -> void:
-	dist_to_sdf = SDF.sdf(anchor.global_position)
+	dist_to_sdf = Global.g_fractal.sdf(anchor.global_position)
 	orbit_sensitivity = (dist_to_sdf * orbit_zoom_factor) * mouse_sensitivity
 	fps_move_speed = dist_to_sdf * fps_zoom_factor * 10.0
 

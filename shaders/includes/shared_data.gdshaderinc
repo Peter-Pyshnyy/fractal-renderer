@@ -11,10 +11,10 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
 
 // Push Constants однакові для всіх
 layout(push_constant, std430) uniform FractalParams {
-    float TEST;
-    float power;
-    float iterations;
-    float step_scale;
+    float param0;
+    float param1;
+    float param2;
+    float param3;
     float padding0;
     float padding1;
 	float padding2;
