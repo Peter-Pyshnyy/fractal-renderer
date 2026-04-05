@@ -28,7 +28,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 
     // Line 4: t := 0, r := f(s(t)), i := 1, z := r, m := −1
     float t = 0.0;
-    float r = sdf(cam.position.xyz) * (sdfScaler / params.resolution_scale);
+    float r = sdf(cam.position.xyz) * (sdfScaler / resolution_scale);
     float z = r;
     float m = -1.0;
 
@@ -45,7 +45,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         // LOD-aware error: ratio of SDF radius to projected pixel size.
         // < 1.0 means the sphere is smaller than one pixel — converged.
         // Replaces the paper's fixed  r ≤ ε  stopping condition.
-        float pixelError = r / max(t * pixelRadius * 0.25 * params.resolution_scale, 1e-6);
+        float pixelError = r / max(t * pixelRadius * 0.25 * resolution_scale, 1e-6);
 
         if (pixelError < bestError) {
             bestError = pixelError;
@@ -58,7 +58,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         // Line 6: T := t + z,  R := f(s(T))
         float T = t + z;
         vec3  pos = cam.position.xyz + rayDir * T;
-        float R = sdf(pos) * (sdfScaler / params.resolution_scale);
+        float R = sdf(pos) * (sdfScaler / resolution_scale);
 
         // Line 7: if z ≤ r + |R|  (unbounding spheres overlap)
         if (z <= r + abs(R)) {
@@ -78,5 +78,6 @@ vec3 raymarch_AR(vec3 rayDir) {
 
     bool  isHit = (bestError < 1.0);
     float shade = isHit ? (1.0 - float(stepsTaken) / float(MAX_STEPS)) : 0.0;
-    return vec3(shade);
+	vec4 color = mix(material.color_a, material.color_b, shade);
+    return color.rgb;
 }

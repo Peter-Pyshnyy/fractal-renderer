@@ -1,4 +1,15 @@
-// Камера абсолютно однакова для всіх
+struct FractalData { // float = 4*7 = 28b
+	float param0;
+    float param1;
+    float param2;
+    float param3;
+};
+
+struct MaterialData { // vec4 = 4*4 = 16b, 16*2 = 32b
+	vec4 color_a;
+	vec4 color_b;
+};
+
 layout(set = 0, binding = 1, std430) buffer CameraData {
     vec4 position;
     vec4 forward;
@@ -9,17 +20,11 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
     float padding;
 } cam;
 
-// Push Constants однакові для всіх
-layout(push_constant, std430) uniform FractalParams {
-    float param0;
-    float param1;
-    float param2;
-    float param3;
-    float padding0;
-    float padding1;
-	float padding2;
+layout(push_constant, std430) uniform PushConstants {
+    FractalData params;
+	MaterialData material;
 	int resolution_scale;
-} params;
+};
 
 const int MAX_STEPS = 250;
 const float EPSILON = 0.00001;

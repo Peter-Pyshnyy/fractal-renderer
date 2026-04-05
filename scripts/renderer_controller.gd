@@ -15,6 +15,7 @@ var camera_rig: Node3D
 @export_category("Raymarching Tuning")
 @export var step_scale: float = 0.4
 @export var fractal_data: FractalData
+@export var material: FractalMaterial
 
 var rd: RenderingDevice
 var shader_rid: RID
@@ -36,6 +37,7 @@ func _ready() -> void:
 		return 
 	
 	Global.g_fractal = fractal_data
+	Global.g_active_material = material
 	camera_rig = target_camera.get_parent()
 	rd = RenderingServer.get_rendering_device() 
 	_create_shader() 
@@ -171,20 +173,30 @@ func _dispatch() -> void:
 	rd.compute_list_bind_compute_pipeline(list, pipeline_rid)
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
 
-	# --- НОВИЙ БЛОК: ВІДПРАВКА PUSH CONSTANTS ---
-	# Порядок має строго відповідати layout в shared_data.gdshaderinc
 	var params = Global.g_fractal.get_shader_params()
+	var col0 = Global.g_active_material.color0
+	var col1 = Global.g_active_material.color1
 	var pc_bytes := PackedByteArray()
+
 	pc_bytes.append_array(PackedFloat32Array([
 		params[0], 
 		params[1],
 		params[2],
-		params[3], 
-		0.0, #paddings
-		0.0,
-		0.0
-		]).to_byte_array())
-	pc_bytes.append_array(PackedInt32Array([current_res_scale]).to_byte_array())
+		params[3],
+
+		col0.r, col0.g, col0.b, 1.0,
+		col1.r, col1.g, col1.b, 1.0
+	]).to_byte_array())
+
+	pc_bytes.append_array(PackedInt32Array([
+		current_res_scale
+	]).to_byte_array())
+
+	# PADDING
+	pc_bytes.append_array(PackedFloat32Array([
+		0.0, 0.0, 0.0
+	]).to_byte_array())
+
 	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
 	# --------------------------------------------
 

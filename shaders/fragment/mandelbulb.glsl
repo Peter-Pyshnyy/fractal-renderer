@@ -13,13 +13,13 @@ layout(set = 0, binding = 0) uniform writeonly image2D output_image;
   
 void main() {
     // Дізнаємося базову координату для нашого "товстого" пікселя
-    ivec2 base_coord = ivec2(gl_GlobalInvocationID.xy) * params.resolution_scale;
+    ivec2 base_coord = ivec2(gl_GlobalInvocationID.xy) * resolution_scale;
     ivec2 image_size = imageSize(output_image);
 
     if (base_coord.x >= image_size.x || base_coord.y >= image_size.y) return;
 
     // Рахуємо UV по ЦЕНТРУ нашого блоку
-    vec2 offset = vec2(float(params.resolution_scale) * 0.5);
+    vec2 offset = vec2(float(resolution_scale) * 0.5);
     vec2 uv = (vec2(base_coord) + offset) / vec2(image_size);
     uv.y = 1.0 - uv.y;
     
@@ -27,8 +27,8 @@ void main() {
     vec3 color = raymarch_AR(rayDir);
      
     // Записуємо один і той самий колір у всі пікселі квадрата (наприклад, 2x2)
-    for (int y = 0; y < params.resolution_scale; y++) {
-        for (int x = 0; x < params.resolution_scale; x++) {
+    for (int y = 0; y < resolution_scale; y++) {
+        for (int x = 0; x < resolution_scale; x++) {
             ivec2 write_coord = base_coord + ivec2(x, y);
             if (write_coord.x < image_size.x && write_coord.y < image_size.y) {
                 imageStore(output_image, write_coord, vec4(color, 1.0));
