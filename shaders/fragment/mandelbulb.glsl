@@ -24,7 +24,7 @@ void main() {
     
     vec3 rayDir = getRayDirection(cam.resolution, uv);
     vec3 color = raymarch(rayDir);
-     
+      
     for (int y = 0; y < resolution_scale; y++) {
         for (int x = 0; x < resolution_scale; x++) {
             ivec2 write_coord = base_coord + ivec2(x, y);
