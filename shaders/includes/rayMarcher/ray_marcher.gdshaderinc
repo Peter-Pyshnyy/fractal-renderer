@@ -9,8 +9,6 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 
 
 vec3 raymarch(vec3 rayDir) {
-	float trap = 1e6;
-	
     float t     = 0.0;
     float t_max = MAX_DIST;
     float steps = 0.0;
@@ -28,7 +26,8 @@ vec3 raymarch(vec3 rayDir) {
         steps += 1.0;
 
         vec3  pos    = cam.position.xyz + rayDir * t;
-        float radius = sdf(pos, trap);
+        float march_trap = 1e6;
+        float radius = sdf(pos, march_trap);
 
         // Angular size of the unbounding sphere at this distance (§3.2).
         // This is the screen-space error: how large the "miss" looks on screen.
@@ -53,6 +52,14 @@ vec3 raymarch(vec3 rayDir) {
     if (candidate_error > pixelRadius || candidate_t > t_max)
         return vec3(0.0);
 
-    float trap_normalized = exp(-trap * 0.1);
+     // Evaluate orbit trap once at the selected hit candidate to keep color stable
+    // while zooming (instead of inheriting a trap value from intermediate march samples).
+    float hit_trap = 1e6;
+    vec3 hit_pos = cam.position.xyz + rayDir * candidate_t;
+    sdf(hit_pos, hit_trap);
+	
+	//return vec3(exp(-hit_trap * 50.0)); 
+	hit_trap = log(hit_trap + 1.0);
+    float trap_normalized = exp(-hit_trap * 15.0);
     return get_trap_color(trap_normalized);
 }

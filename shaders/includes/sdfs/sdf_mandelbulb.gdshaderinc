@@ -1,4 +1,4 @@
-float sdf(vec3 pos, out float trap) {
+float sdf(vec3 pos, inout float trap) {
     // early bounding sphere (cheap rejection)
     //float safeDist = length(pos) - 1.2;
     //if (safeDist > 0.1) {
@@ -22,7 +22,7 @@ float sdf(vec3 pos, out float trap) {
         float invR = 1.0 / max(r, 1e-6);
 
         // spherical coordinates
-        float theta = acos(z.z * invR);
+        float theta = acos(clamp(z.z * invR, -1.0, 1.0));
         float phi = atan(z.y, z.x);
 
         // derivative update (distance estimation)
@@ -42,7 +42,7 @@ float sdf(vec3 pos, out float trap) {
             cos(theta)
         ) + pos;
 		
-		trap = get_trap_distance(z);
+		trap = min(get_trap_distance(z), trap);
     }
 
     // distance estimation
