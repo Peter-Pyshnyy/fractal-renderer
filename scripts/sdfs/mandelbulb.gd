@@ -2,10 +2,12 @@ class_name Mandelbulb
 extends FractalData
 
 @export var power: float = 8.0
+@export var test1: float = 1.0
+@export var test2: float = 1.0
 
 func get_shader_params() -> Array[float]:
 	# На перше місце ставимо power, далі базові параметри
-	return [float(iterations), power, 0.0, 0.0]
+	return [float(iterations), power, test1, test2]
 	
 func sdf(pos: Vector3) -> float:
 	var z: Vector3 = pos
