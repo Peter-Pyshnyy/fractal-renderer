@@ -19,6 +19,7 @@ vec3 raymarch_AR(vec3 rayDir) {
     // Algorithm 4 — Bán & Valasek (2023)
     // with screen-size-dependent LOD convergence
 	
+	float trap = 1e6;
 	float sdfScaler = 1.0;
     float beta = 0.3;
 
@@ -28,7 +29,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 
     // Line 4: t := 0, r := f(s(t)), i := 1, z := r, m := −1
     float t = 0.0;
-    float r = sdf(cam.position.xyz) * (sdfScaler / resolution_scale);
+    float r = sdf(cam.position.xyz, trap) * (sdfScaler / resolution_scale);
     float z = r;
     float m = -1.0;
 
@@ -58,7 +59,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         // Line 6: T := t + z,  R := f(s(T))
         float T = t + z;
         vec3  pos = cam.position.xyz + rayDir * T;
-        float R = sdf(pos) * (sdfScaler / resolution_scale);
+        float R = sdf(pos, trap) * (sdfScaler / resolution_scale);
 
         // Line 7: if z ≤ r + |R|  (unbounding spheres overlap)
         if (z <= r + abs(R)) {
@@ -76,8 +77,9 @@ vec3 raymarch_AR(vec3 rayDir) {
         z = 2.0 * r / (1.0 - m);
     }
 
-    bool  isHit = (bestError < 1.0);
-    float shade = isHit ? (1.0 - float(stepsTaken) / float(MAX_STEPS)) : 0.0;
-	vec4 color = mix(material.color_a, material.color_b, shade);
-    return color.rgb;
+    //bool  isHit = (bestError < 1.0);
+    //float shade = isHit ? (1.0 - float(stepsTaken) / float(MAX_STEPS)) : 0.0;
+	//vec4 color = mix(material.color_a, material.color_b, shade);
+	float trap_normalized = exp(-trap * 0.1);
+    return get_trap_color(trap_normalized);
 }

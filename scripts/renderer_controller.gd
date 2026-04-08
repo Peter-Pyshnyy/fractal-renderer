@@ -7,6 +7,7 @@ var camera_rig: Node3D
 @export var VRSTimer : Timer
 
 @export var test: float = 0.1
+@export var VRS: bool = true
 
 @export_category("Fractal Settings")
 @export_range(1.0, 20.0, 0.1) var fractal_power: float = 8.0
@@ -106,7 +107,7 @@ func _process(_delta: float) -> void:
 	
 	if is_moving:
 		camera_rig.is_moving = false
-		current_res_scale = 2
+		current_res_scale = 2 if VRS else 1
 		VRSTimer.start()
 	
 	_update_camera_buffer()

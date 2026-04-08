@@ -1,8 +1,4 @@
-//uniform float power = 8.0;     // mandelbulb power (8 = classic)
-//uniform int iterations = 10;   // iteration count
-
-
-float sdf(vec3 pos) {
+float sdf(vec3 pos, out float trap) {
     // early bounding sphere (cheap rejection)
     //float safeDist = length(pos) - 1.2;
     //if (safeDist > 0.1) {
@@ -45,6 +41,8 @@ float sdf(vec3 pos) {
             sinTheta * sin(phi),
             cos(theta)
         ) + pos;
+		
+		trap = get_trap_distance(z);
     }
 
     // distance estimation
