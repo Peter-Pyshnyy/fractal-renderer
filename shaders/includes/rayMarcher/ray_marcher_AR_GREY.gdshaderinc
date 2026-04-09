@@ -15,7 +15,8 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 
 
 vec3 raymarch_AR(vec3 rayDir) {
-    float sdfScaler = 0.75;
+	float steps = 0.0;
+    float sdfScaler = params.param2;
     float beta = 0.3;
     float pixelRadius = cam.fovScale / cam.resolution.y;
 
@@ -29,7 +30,8 @@ vec3 raymarch_AR(vec3 rayDir) {
     float bestError = 1e9;
 
     for (int i = 1; i < MAX_STEPS; i++) {
-        float pixelError = r / max(t * pixelRadius * 0.75 * float(resolution_scale), 1e-7);
+		steps++;
+        float pixelError = r / max(t * pixelRadius * params.param3 * float(resolution_scale), 1e-9);
 
         if (pixelError < bestError) {
             bestError = pixelError;
@@ -60,11 +62,8 @@ vec3 raymarch_AR(vec3 rayDir) {
         return vec3(0.0);
     }
 
-    float hit_trap;
-    vec3 hit_pos = cam.position.xyz + rayDir * bestT;
-    sdf_with_trap(hit_pos, hit_trap);
-
-    hit_trap = log(hit_trap + 1.0);
-    float trap_normalized = exp(-hit_trap * 15.0);
-    return get_trap_color(trap_normalized);
+    float s0    = 1.0 - steps / float(MAX_STEPS);
+    float s1    = 1.0 - (0.5 + 0.5 * sin(steps * 0.01));
+    float shade = mix(s0, s1, 0.5);
+    return vec3(shade);
 }
