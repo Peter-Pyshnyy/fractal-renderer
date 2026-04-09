@@ -18,7 +18,7 @@ metadata/_custom_type_script = "uid://bbsh05bh0sled"
 [sub_resource type="Resource" id="Resource_4ov7m"]
 script = ExtResource("5_c2qj7")
 color0 = Color(1, 0.894118, 0.768627, 1)
-color1 = Color(0.647059, 0.164706, 0.164706, 1)
+color1 = Color(0.387404, 0.293899, 0.26004, 1)
 metadata/_custom_type_script = "uid://cq0tbtlqqmyh0"
 
 [node name="FractalRenderer" type="Node"]
