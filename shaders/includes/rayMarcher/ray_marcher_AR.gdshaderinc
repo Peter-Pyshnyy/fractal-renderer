@@ -65,5 +65,5 @@ vec3 raymarch_AR(vec3 rayDir) {
 
     hit_trap = log(hit_trap + 1.0);
     float trap_normalized = exp(-hit_trap * 15.0);
-    return get_trap_color(trap_normalized);
+    return get_trap_color_hsv(trap_normalized);
 }

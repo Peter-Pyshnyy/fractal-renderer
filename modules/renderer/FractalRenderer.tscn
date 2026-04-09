@@ -11,7 +11,7 @@
 script = ExtResource("4_fyoh6")
 power = 8.0
 test1 = 100.0
-test2 = 0.705
+test2 = 0.5
 iterations = 10
 metadata/_custom_type_script = "uid://bbsh05bh0sled"
 
