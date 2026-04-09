@@ -4,6 +4,7 @@ enum BenchmarkMode { SHORT_10S, LONG_60S }
 
 @export var camera_rig: Node3D
 @export var benchmark_mode: BenchmarkMode = BenchmarkMode.SHORT_10S
+@onready var vrs_timer: Timer = $"../RendererController/VRSTimer"
 
 var is_profiling := false
 var time_accum := 0.0
@@ -34,7 +35,9 @@ func start_profiling() -> void:
 	# ensure orbit mode
 	if camera_rig.current_mode != camera_rig.CameraMode.ORBIT:
 		camera_rig._switch_mode()
-
+	
+	vrs_timer.paused = true
+	camera_rig.is_moving = true
 	_save_user_state()
 	_set_benchmark_state()
 
@@ -78,6 +81,8 @@ func _restore_user_state() -> void:
 	camera_rig.yaw = user_yaw
 	camera_rig.pitch = user_pitch
 	camera_rig.orbit_radius = user_radius
+	camera_rig.is_moving = false
+	vrs_timer.paused = false
 	_apply_rotation(user_pitch, user_yaw)
 
 

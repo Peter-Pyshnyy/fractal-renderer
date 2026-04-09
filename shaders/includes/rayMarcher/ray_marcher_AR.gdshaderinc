@@ -20,16 +20,15 @@ vec3 raymarch_AR(vec3 rayDir) {
     float pixelRadius = cam.fovScale / cam.resolution.y;
 
     float t = 0.0;
-    // Використовуємо ШВИДКУ sdf (без пастки!)
-    float r = sdf(cam.position.xyz) * (sdfScaler / float(resolution_scale));
+    float r = sdf(cam.position.xyz);
     float z = r;
     float m = -1.0;
 
     float bestT    = t;
     float bestError = 1e9;
 
-    for (int i = 1; i < MAX_STEPS; i++) {
-        float pixelError = r / max(t * pixelRadius * 0.75 * float(resolution_scale), 1e-7);
+    for (int i = 0; i < MAX_STEPS; i++) {
+        float pixelError = r / max(t * pixelRadius * 0.75, 1e-7);
 
         if (pixelError < bestError) {
             bestError = pixelError;
@@ -42,7 +41,7 @@ vec3 raymarch_AR(vec3 rayDir) {
         vec3  pos = cam.position.xyz + rayDir * T;
         
         // Знову використовуємо ШВИДКУ sdf
-        float R = sdf(pos) * (sdfScaler / float(resolution_scale));
+        float R = sdf(pos) * (sdfScaler);
 
         if (z <= r + abs(R)) {
             float M = (R - r) / (T - t);
