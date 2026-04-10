@@ -24,6 +24,9 @@ layout(push_constant, std430) uniform PushConstants {
     FractalData params;
 	MaterialData material;
 	int resolution_scale;
+	float jitter_x;
+	float jitter_y;
+	float history_blend;
 };
 
 const int MAX_STEPS = 250;

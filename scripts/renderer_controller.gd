@@ -27,10 +27,13 @@ var texture_rids: Array[RID]
 var tex_rd_resources: Array[Texture2DRD]
 var uniform_sets: Array[RID]
 var frame_index := 0
+var accumulation_samples := 0
 
 var cam_data := PackedFloat32Array()
 var last_cam_transform: Transform3D
 var current_res_scale: int = 1
+var taa_jitter := Vector2.ZERO
+var taa_history_weight := 0.0
 
 func _ready() -> void: 
 	if not target_camera: 
@@ -83,17 +86,24 @@ func _create_camera_buffer() -> void:
 
 func _create_pipeline() -> void:
 	for i in 2:
+		var read_i := 1 - i
+
 		var img_uniform := RDUniform.new()
 		img_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
 		img_uniform.binding = 0
 		img_uniform.add_id(texture_rids[i])
+
+		var history_uniform := RDUniform.new()
+		history_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
+		history_uniform.binding = 2
+		history_uniform.add_id(texture_rids[read_i])
 
 		var cam_uniform := RDUniform.new()
 		cam_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
 		cam_uniform.binding = 1
 		cam_uniform.add_id(camera_buffer_rid)
 
-		var set = rd.uniform_set_create([img_uniform, cam_uniform], shader_rid, 0)
+		var set = rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], shader_rid, 0)
 		uniform_sets.append(set)
 
 	pipeline_rid = rd.compute_pipeline_create(shader_rid)
@@ -107,8 +117,23 @@ func _process(_delta: float) -> void:
 	
 	if is_moving:
 		camera_rig.is_moving = false
+		accumulation_samples = 0
+		taa_jitter = Vector2.ZERO
+		taa_history_weight = 0.0
 		current_res_scale = 2 if VRS else 1
 		VRSTimer.start()
+	else:
+		accumulation_samples += 1
+		if accumulation_samples <= 1:
+			taa_jitter = Vector2.ZERO
+			taa_history_weight = 0.0
+		else:
+			var sample_index := accumulation_samples - 1
+			taa_jitter = Vector2(
+				_halton(sample_index, 2) - 0.5,
+				_halton(sample_index, 3) - 0.5
+			)
+			taa_history_weight = float(accumulation_samples - 1) / float(accumulation_samples)
 	
 	_update_camera_buffer()
 	_dispatch()
@@ -160,10 +185,9 @@ func _update_camera_buffer() -> void:
 
 func _dispatch() -> void:
 	var write_i := frame_index & 1
-	var read_i := 1 - write_i
 
-	# display previous frame
-	texture_rect.texture = tex_rd_resources[read_i]
+	# display current output texture
+	texture_rect.texture = tex_rd_resources[write_i]
 
 	var scaled_width := int(ceil(render_resolution.x / float(current_res_scale)))
 	var scaled_height := int(ceil(render_resolution.y / float(current_res_scale)))
@@ -193,9 +217,10 @@ func _dispatch() -> void:
 		current_res_scale
 	]).to_byte_array())
 
-	# PADDING
 	pc_bytes.append_array(PackedFloat32Array([
-		0.0, 0.0, 0.0
+		taa_jitter.x,
+		taa_jitter.y,
+		taa_history_weight
 	]).to_byte_array())
 
 	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
@@ -205,6 +230,19 @@ func _dispatch() -> void:
 	rd.compute_list_end()
 
 	frame_index += 1
+
+
+func _halton(index: int, base: int) -> float:
+	var f := 1.0
+	var r := 0.0
+	var i := index
+
+	while i > 0:
+		f /= float(base)
+		r += f * float(i % base)
+		i = int(i / base)
+
+	return r
 
 
 # --- Cleanup ---
