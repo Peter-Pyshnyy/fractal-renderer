@@ -1,14 +1,13 @@
 const float PI = 3.14159265359;
 
 // from https://iquilezles.org/articles/normalsSDF/
-vec3 calcNormal( in vec3 p) // for function f(p)
+vec3 calcNormal(in vec3 p, in float h) // for function f(p)
 {
-    const float h = 0.0000001; // replace by an appropriate value
-    const vec2 k = vec2(1,-1);
-    return normalize( k.xyy*sdf( p + k.xyy*h ) + 
-                      k.yyx*sdf( p + k.yyx*h ) + 
-                      k.yxy*sdf( p + k.yxy*h ) + 
-                      k.xxx*sdf( p + k.xxx*h ) );
+    const vec2 k = vec2(1, -1);
+    return normalize(k.xyy * sdf(p + k.xyy * h) +
+                     k.yyx * sdf(p + k.yyx * h) +
+                     k.yxy * sdf(p + k.yxy * h) +
+                     k.xxx * sdf(p + k.xxx * h));
 }
 
 float calcAO(vec3 pos, vec3 norm) {
