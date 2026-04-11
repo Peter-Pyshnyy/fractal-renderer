@@ -38,6 +38,7 @@ var precise_z: float = 0.0
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	is_moving = true
 
 
 func _input(event: InputEvent) -> void:
