@@ -25,7 +25,7 @@ layout(push_constant, std430) uniform PushConstants {
 	MaterialData material;
 	float u_metallic;
 	float u_roughness;
-	vec4 u_lightPos;
+	vec4 u_lightDir;
 	int resolution_scale;
 	float jitter_x;
 	float jitter_y;

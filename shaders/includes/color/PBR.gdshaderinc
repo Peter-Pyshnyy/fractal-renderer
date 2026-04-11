@@ -44,7 +44,7 @@ float G_Smith(float NdotV, float NdotL, float roughness) {
 }
 
 vec3 PBR(vec3 N, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
-    vec3 L = normalize(u_lightPos.xyz - fragPos);
+    vec3 L = normalize(u_lightDir.xyz);
     vec3 H = normalize(V + L);
 
     float NdotL = max(dot(N, L), 0.0);
@@ -62,12 +62,12 @@ vec3 PBR(vec3 N, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
     vec3  F = F_Schlick(HdotV, F0);
     float G = G_Smith(NdotV, NdotL, conv_roughness);
 
-    vec3 specular = (D * F * G) / max(4.0 * NdotV * NdotL, 0.001);
+    vec3 specular = (D * F * G) / max(4.0 * NdotV * NdotL, 0.0001);
 
     vec3 kD = (1.0 - F) * (1.0 - u_metallic);
     vec3 diffuse = kD * albedo / PI;
 
     vec3 ambient = vec3(0.03) * albedo * ao;
-	vec3 lightColor = vec3(3.0);
+	vec3 lightColor = vec3(2.0);
     return (diffuse + specular) * lightColor * NdotL + ambient;
 }

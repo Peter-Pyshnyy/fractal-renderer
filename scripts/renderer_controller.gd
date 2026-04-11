@@ -21,7 +21,7 @@ var camera_rig: Node3D
 @export_category("PBR Settings")
 @export_range(0.0, 1.0, 0.01) var u_metallic: float = 0.75
 @export_range(0.0, 1.0, 0.01) var u_roughness: float = 0.5
-@export var u_lightPos: Vector3 = Vector3(1.0, 1.0, 1.0)
+@export var u_lightDir: Vector3 = Vector3(1.0, 1.0, 1.0)
 
 var rd: RenderingDevice
 var shader_rid: RID
@@ -220,7 +220,7 @@ func _dispatch() -> void:
 		col1.r, col1.g, col1.b, 1.0,
 		u_metallic,
 		u_roughness,
-		u_lightPos.x, u_lightPos.y, u_lightPos.z, 0.0, 0.0, 0.0
+		u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0,
 	]).to_byte_array())
 
 	pc_bytes.append_array(PackedInt32Array([
@@ -230,7 +230,7 @@ func _dispatch() -> void:
 	pc_bytes.append_array(PackedFloat32Array([
 		taa_jitter.x,
 		taa_jitter.y,
-		taa_history_weight
+		taa_history_weight,
 	]).to_byte_array())
 
 	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
