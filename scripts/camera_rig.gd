@@ -63,6 +63,7 @@ func _process(delta: float) -> void:
 # --- Mode switching ---
 
 func _switch_mode() -> void:
+	is_moving = true
 	if current_mode == CameraMode.ORBIT:
 		current_mode = CameraMode.FPS
 		global_position = camera.global_position

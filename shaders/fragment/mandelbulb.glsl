@@ -9,6 +9,7 @@ layout(set = 0, binding = 2, rgba32f) uniform readonly image2D history_image;
 #include "res://shaders/includes/shared_data.gdshaderinc"
 #include "res://shaders/includes/color/orbit_trap.gdshaderinc"
 #include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
+#include "res://shaders/includes/color/PBR.gdshaderinc"
 //#include "res://shaders/includes/rayMarcher/ray_marcher.gdshaderinc"
 //#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
 #include "res://shaders/includes/rayMarcher/ray_marcher_AR.gdshaderinc"  
