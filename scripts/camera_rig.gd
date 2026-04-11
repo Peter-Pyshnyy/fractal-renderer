@@ -29,6 +29,7 @@ var fps_zoom_lock := false
 
 var dist_to_sdf := 1.0
 var is_moving := false
+var motion_version := 0
 
 # float64 position accumulators
 var precise_x: float = 0.0
@@ -122,7 +123,7 @@ func _update_sdf_metrics() -> void:
 # --- Zoom ---
 
 func _zoom(direction: int) -> void:
-	is_moving = true
+	_mark_motion()
 	_update_sdf_metrics()
 
 	if current_mode != CameraMode.ORBIT:
@@ -187,7 +188,7 @@ func _handle_rotation(event: InputEventMouseMotion) -> void:
 	if not rotating:
 		return
 
-	is_moving = true
+	_mark_motion()
 
 	var sens = orbit_sensitivity if current_mode == CameraMode.ORBIT else mouse_sensitivity * 0.05
 
@@ -218,7 +219,7 @@ func _process_fps(delta: float) -> void:
 			precise_x += dir.x * step
 			precise_y += dir.y * step
 			precise_z += dir.z * step
-			is_moving = true
+			_mark_motion()
 
 	# single float32 write per frame
 	position = Vector3(precise_x, precise_y, precise_z)
@@ -237,3 +238,8 @@ func _process_orbit(delta: float) -> void:
 func _get_reverse_scalar(x: float) -> float:
 	if x == 1.0: return 1.0
 	return 1.0 / (1.0 - x)
+
+
+func _mark_motion() -> void:
+	is_moving = true
+	motion_version += 1

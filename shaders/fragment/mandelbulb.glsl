@@ -3,7 +3,8 @@
 layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 
 
-layout(set = 0, binding = 0) uniform writeonly image2D output_image;
+layout(set = 0, binding = 0, rgba32f) uniform writeonly image2D output_image;
+layout(set = 0, binding = 2, rgba32f) uniform readonly image2D history_image;
 
 #include "res://shaders/includes/shared_data.gdshaderinc"
 #include "res://shaders/includes/color/orbit_trap.gdshaderinc"
@@ -19,7 +20,8 @@ void main() {
     if (base_coord.x >= image_size.x || base_coord.y >= image_size.y) return;
 
     vec2 offset = vec2(float(resolution_scale) * 0.5);
-    vec2 uv = (vec2(base_coord) + offset) / vec2(image_size);
+    vec2 jitter = vec2(jitter_x, jitter_y);
+    vec2 uv = (vec2(base_coord) + offset + jitter) / vec2(image_size);
     uv.y = 1.0 - uv.y;
     
     vec3 rayDir = getRayDirection(cam.resolution, uv);
@@ -30,7 +32,9 @@ void main() {
         for (int x = 0; x < resolution_scale; x++) {
             ivec2 write_coord = base_coord + ivec2(x, y);
             if (write_coord.x < image_size.x && write_coord.y < image_size.y) {
-                imageStore(output_image, write_coord, vec4(color, 1.0));
+                vec3 history_color = imageLoad(history_image, write_coord).rgb;
+                vec3 final_color = mix(color, history_color, history_blend);
+                imageStore(output_image, write_coord, vec4(final_color, 1.0));
             }
         } 
     } 
