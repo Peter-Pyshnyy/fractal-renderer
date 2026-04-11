@@ -8,6 +8,7 @@ var camera_rig: Node3D
 
 @export var test: float = 0.1
 @export var VRS: bool = true
+@export var VRSScale: int = 2
 
 @export_category("Fractal Settings")
 @export_range(1.0, 20.0, 0.1) var fractal_power: float = 8.0
@@ -125,7 +126,7 @@ func _process(_delta: float) -> void:
 		accumulation_samples = 0
 		taa_jitter = Vector2.ZERO
 		taa_history_weight = 0.0
-		current_res_scale = 2 if VRS else 1
+		current_res_scale = VRSScale if VRS else 1
 		if camera_rig.motion_version != last_motion_version:
 			last_motion_version = camera_rig.motion_version
 			VRSTimer.start()
