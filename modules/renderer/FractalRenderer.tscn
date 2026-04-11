@@ -56,6 +56,7 @@ script = ExtResource("2_dws3f")
 texture_rect = NodePath("../FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
+VRS = false
 fractal_data = SubResource("Resource_c2qj7")
 material = SubResource("Resource_4ov7m")
 
