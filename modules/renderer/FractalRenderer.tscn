@@ -59,6 +59,8 @@ VRSTimer = NodePath("VRSTimer")
 VRS = false
 fractal_data = SubResource("Resource_c2qj7")
 material = SubResource("Resource_4ov7m")
+u_metallic = 1.0
+u_roughness = 0.04
 
 [node name="VRSTimer" type="Timer" parent="RendererController"]
 one_shot = true

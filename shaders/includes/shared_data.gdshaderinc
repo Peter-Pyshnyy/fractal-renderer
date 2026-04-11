@@ -23,6 +23,9 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
 layout(push_constant, std430) uniform PushConstants {
     FractalData params;
 	MaterialData material;
+	float u_metallic;
+	float u_roughness;
+	vec4 u_lightPos;
 	int resolution_scale;
 	float jitter_x;
 	float jitter_y;

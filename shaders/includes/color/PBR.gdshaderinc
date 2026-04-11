@@ -1,12 +1,9 @@
 const float PI = 3.14159265359;
-const float u_metallic = 0.75;
-const float u_roughness = 0.5;
-const vec3 u_lightPos = vec3(1.0, 1.0, 1.0);
 
 // from https://iquilezles.org/articles/normalsSDF/
 vec3 calcNormal( in vec3 p) // for function f(p)
 {
-    const float h = 0.000001; // replace by an appropriate value
+    const float h = 0.0000001; // replace by an appropriate value
     const vec2 k = vec2(1,-1);
     return normalize( k.xyy*sdf( p + k.xyy*h ) + 
                       k.yyx*sdf( p + k.yyx*h ) + 
@@ -48,7 +45,7 @@ float G_Smith(float NdotV, float NdotL, float roughness) {
 }
 
 vec3 PBR(vec3 N, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
-    vec3 L = normalize(u_lightPos - fragPos);
+    vec3 L = normalize(u_lightPos.xyz - fragPos);
     vec3 H = normalize(V + L);
 
     float NdotL = max(dot(N, L), 0.0);

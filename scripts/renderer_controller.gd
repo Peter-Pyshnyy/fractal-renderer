@@ -18,6 +18,11 @@ var camera_rig: Node3D
 @export var fractal_data: FractalData
 @export var material: FractalMaterial
 
+@export_category("PBR Settings")
+@export_range(0.0, 1.0, 0.01) var u_metallic: float = 0.75
+@export_range(0.0, 1.0, 0.01) var u_roughness: float = 0.5
+@export var u_lightPos: Vector3 = Vector3(1.0, 1.0, 1.0)
+
 var rd: RenderingDevice
 var shader_rid: RID
 var pipeline_rid: RID
@@ -212,7 +217,10 @@ func _dispatch() -> void:
 		params[3],
 
 		col0.r, col0.g, col0.b, 1.0,
-		col1.r, col1.g, col1.b, 1.0
+		col1.r, col1.g, col1.b, 1.0,
+		u_metallic,
+		u_roughness,
+		u_lightPos.x, u_lightPos.y, u_lightPos.z, 0.0, 0.0, 0.0
 	]).to_byte_array())
 
 	pc_bytes.append_array(PackedInt32Array([
