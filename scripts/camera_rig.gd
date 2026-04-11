@@ -57,8 +57,6 @@ func _process(delta: float) -> void:
 		CameraMode.ORBIT:
 			_process_orbit(delta)
 
-	_mark_camera_settling_motion()
-
 
 # --- Mode switching ---
 
@@ -234,18 +232,6 @@ func _process_orbit(delta: float) -> void:
 
 	anchor.position = target
 	camera.position = camera.position.lerp(target, delta * 15.0)
-
-
-func _mark_camera_settling_motion() -> void:
-	if current_mode == CameraMode.ORBIT:
-		var orbit_target := Vector3(0, 0, orbit_radius)
-		if camera.position.distance_to(orbit_target) > 0.00001:
-			is_moving = true
-		return
-
-	if current_mode == CameraMode.FPS:
-		if camera.position.length_squared() > 0.00000001:
-			is_moving = true
 
 
 func _get_reverse_scalar(x: float) -> float:

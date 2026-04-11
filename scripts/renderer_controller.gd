@@ -116,7 +116,6 @@ func _process(_delta: float) -> void:
 	last_cam_transform = target_camera.global_transform
 	
 	if is_moving:
-		camera_rig.is_moving = false
 		accumulation_samples = 0
 		taa_jitter = Vector2.ZERO
 		taa_history_weight = 0.0
@@ -272,3 +271,4 @@ func _exit_tree() -> void:
 
 func _on_vrs_timer_timeout() -> void:
 	current_res_scale = 1
+	camera_rig.is_moving = false
