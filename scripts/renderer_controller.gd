@@ -120,7 +120,8 @@ func _process(_delta: float) -> void:
 		taa_jitter = Vector2.ZERO
 		taa_history_weight = 0.0
 		current_res_scale = 2 if VRS else 1
-		VRSTimer.start()
+		if VRSTimer.is_stopped():
+			VRSTimer.start()
 	else:
 		accumulation_samples += 1
 		if accumulation_samples <= 1:
