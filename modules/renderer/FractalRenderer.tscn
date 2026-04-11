@@ -61,7 +61,7 @@ fractal_data = SubResource("Resource_c2qj7")
 material = SubResource("Resource_4ov7m")
 u_metallic = 0.23
 u_roughness = 0.42
-u_lightDir = Vector3(1, 1, 0)
+u_lightDir = Vector3(0.495, 1.58, 1)
 
 [node name="VRSTimer" type="Timer" parent="RendererController"]
 one_shot = true

@@ -22,6 +22,26 @@ float calcAO(vec3 pos, vec3 norm) {
     return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
 }
 
+// from https://iquilezles.org/articles/rmshadows/ and GDC 2018 (see Zotero)
+float softshadow( in vec3 ro, in vec3 rd, float mint, float maxt, float w )
+{
+    float res = 1.0;
+    float ph = 1e20;
+    float t = mint;
+    for( int i=0; i<256 && t<maxt; i++ )
+    {
+        float h = sdf(ro + rd*t);
+        if( h<mint * 0.5)
+            return 0.0;
+        float y = h*h/(2.0*ph);
+        float d = sqrt(h*h-y*y);
+        res = min( res, d/(w*max(0.0,t-y)) );
+        ph = h;
+        t += h;
+    }
+    return res;
+}
+
 float D_GGX(float NdotH, float roughness) {
     float a  = roughness * roughness;
     float a2 = a * a;
@@ -43,7 +63,7 @@ float G_Smith(float NdotV, float NdotL, float roughness) {
     return G_SchlickGGX(NdotV, roughness) * G_SchlickGGX(NdotL, roughness);
 }
 
-vec3 PBR(vec3 N, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
+vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
     vec3 L = normalize(u_lightDir.xyz);
     vec3 H = normalize(V + L);
 
@@ -56,6 +76,11 @@ vec3 PBR(vec3 N, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
 	
 	// convert perceptual roughness
 	float conv_roughness = max(1e-3, u_roughness * u_roughness);
+	
+	vec3 bias = N * N_h * 1.5;
+	float adaptiveMint = N_h * 3.0;
+	float s = softshadow(fragPos, u_lightDir.xyz, adaptiveMint, 5.0, 2.5);
+	NdotL *= s; // look-up
 
     // Cook-Torrance specular
     float D = D_GGX(NdotH, conv_roughness);

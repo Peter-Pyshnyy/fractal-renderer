@@ -220,6 +220,7 @@ func _dispatch() -> void:
 		col1.r, col1.g, col1.b, 1.0,
 		u_metallic,
 		u_roughness,
+		0.0, 0.0,
 		u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0,
 	]).to_byte_array())
 

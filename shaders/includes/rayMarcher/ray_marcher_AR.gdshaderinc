@@ -67,9 +67,10 @@ vec3 raymarch_AR(vec3 rayDir) {
 
 	float normal_h = clamp(bestT * pixelRadius * 0.75, 1e-7, 0.01);
 	vec3 norm = calcNormal(hit_pos, normal_h);
+	
 	float ao = calcAO(hit_pos, norm);
 	vec3 albedo = get_trap_color_hsv(trap_normalized);
-	vec3 color = PBR(norm, -rayDir, hit_pos, albedo,  ao);
+	vec3 color = PBR(norm, normal_h, -rayDir, hit_pos, albedo,  ao);
 	float exposure = 3.0;
 	color *= exposure;
 	color = color / (color + 1.0);          // tonemapping
