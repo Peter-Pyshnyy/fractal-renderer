@@ -34,6 +34,7 @@ var last_cam_transform: Transform3D
 var current_res_scale: int = 1
 var taa_jitter := Vector2.ZERO
 var taa_history_weight := 0.0
+var last_motion_version := -1
 
 func _ready() -> void: 
 	if not target_camera: 
@@ -120,7 +121,8 @@ func _process(_delta: float) -> void:
 		taa_jitter = Vector2.ZERO
 		taa_history_weight = 0.0
 		current_res_scale = 2 if VRS else 1
-		if VRSTimer.is_stopped():
+		if camera_rig.motion_version != last_motion_version:
+			last_motion_version = camera_rig.motion_version
 			VRSTimer.start()
 	else:
 		accumulation_samples += 1
