@@ -53,11 +53,14 @@ vec3 PBR(vec3 N, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
     float HdotV = max(dot(H, V), 0.0);
 
     vec3 F0 = mix(vec3(0.04), albedo, u_metallic);
+	
+	// convert perceptual roughness
+	float conv_roughness = max(1e-3, u_roughness * u_roughness);
 
     // Cook-Torrance specular
-    float D = D_GGX(NdotH, u_roughness);
+    float D = D_GGX(NdotH, conv_roughness);
     vec3  F = F_Schlick(HdotV, F0);
-    float G = G_Smith(NdotV, NdotL, u_roughness);
+    float G = G_Smith(NdotV, NdotL, conv_roughness);
 
     vec3 specular = (D * F * G) / max(4.0 * NdotV * NdotL, 0.001);
 
@@ -65,6 +68,6 @@ vec3 PBR(vec3 N, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
     vec3 diffuse = kD * albedo / PI;
 
     vec3 ambient = vec3(0.03) * albedo * ao;
-
-    return (diffuse + specular) * NdotL + ambient;
+	vec3 lightColor = vec3(3.0);
+    return (diffuse + specular) * lightColor * NdotL + ambient;
 }
