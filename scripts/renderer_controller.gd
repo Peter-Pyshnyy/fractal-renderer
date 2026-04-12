@@ -49,6 +49,7 @@ var taa_jitter := Vector2.ZERO
 var taa_history_weight := 0.0
 var last_motion_version := -1
 var is_photo_mode := false
+var photo_mode_available := false
 
 func _ready() -> void: 
 	if not target_camera: 
@@ -147,6 +148,7 @@ func _create_pipeline() -> void:
 
 	pipeline_32_rid = rd.compute_pipeline_create(shader_rid_32)
 	pipeline_64_rid = rd.compute_pipeline_create(shader_rid_64)
+	photo_mode_available = pipeline_64_rid.is_valid()
 
 
 # --- Per-frame update ---
@@ -182,6 +184,9 @@ func _process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_P:
+		if not photo_mode_available:
+			push_warning("Photo mode is unavailable: 64-bit compute pipeline could not be created.")
+			return
 		is_photo_mode = not is_photo_mode
 		accumulation_samples = 0
 		taa_jitter = Vector2.ZERO
@@ -231,10 +236,12 @@ func _update_camera_buffer() -> void:
 
 	# fill mixed precision photo mode camera data (std430 aligned)
 	var rig := camera_rig as Node
+	var cam_offset := t.origin - camera_rig.global_transform.origin
 	if rig:
-		cam_data_64_origin[0] = float(rig.get("precise_x"))
-		cam_data_64_origin[1] = float(rig.get("precise_y"))
-		cam_data_64_origin[2] = float(rig.get("precise_z"))
+		# Preserve high precision rig position while adding the camera local offset.
+		cam_data_64_origin[0] = float(rig.get("precise_x")) + float(cam_offset.x)
+		cam_data_64_origin[1] = float(rig.get("precise_y")) + float(cam_offset.y)
+		cam_data_64_origin[2] = float(rig.get("precise_z")) + float(cam_offset.z)
 	else:
 		cam_data_64_origin[0] = float(t.origin.x)
 		cam_data_64_origin[1] = float(t.origin.y)
@@ -276,8 +283,9 @@ func _dispatch() -> void:
 	var y_groups := int(ceil(scaled_height / 16.0))
 
 	var list := rd.compute_list_begin()
-	var active_pipeline := pipeline_64_rid if is_photo_mode else pipeline_32_rid
-	var active_uniform_sets := uniform_sets_64 if is_photo_mode else uniform_sets_32
+	var use_photo_pipeline := is_photo_mode and photo_mode_available
+	var active_pipeline := pipeline_64_rid if use_photo_pipeline else pipeline_32_rid
+	var active_uniform_sets := uniform_sets_64 if use_photo_pipeline else uniform_sets_32
 	rd.compute_list_bind_compute_pipeline(list, active_pipeline)
 	rd.compute_list_bind_uniform_set(list, active_uniform_sets[write_i], 0)
 

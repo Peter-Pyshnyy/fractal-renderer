@@ -1,6 +1,5 @@
 #[compute]
 #version 450
-#extension GL_ARB_gpu_shader_fp64 : require
 layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 
 layout(set = 0, binding = 0, rgba32f) uniform writeonly image2D output_image;
@@ -39,19 +38,80 @@ layout(push_constant, std430) uniform PushConstants {
 };
 
 #include "res://shaders/includes/color/orbit_trap.gdshaderinc"
-#include "res://shaders/includes/sdfs/sdf_mandelbulb.gdshaderinc"
 #include "res://shaders/includes/color/PBR.gdshaderinc"
 
 const int MAX_STEPS_64 = 250;
-const double EPSILON_64 = 1e-8;
+const double EPSILON_64 = 1e-10;
 const double MAX_DIST_64 = 20.0;
+const int AO_STEPS_64 = 5;
+const double AO_BASE_H_64 = 0.01;
 
+double dsdf_mandelbulb(dvec3 pos) {
+	dvec3 z = pos;
+	double r = 0.0;
+	double dr = 1.0;
+	double power = double(params.param1);
+	int iterations = int(params.param0);
+	double power_minus_1 = power - 1.0;
 
-double dsdf(dvec3 p) {
-	// Reuses existing float SDF while keeping world-space traversal in float64.
-	return double(sdf(vec3(p)));
+	for (int i = 0; i < iterations; i++) {
+		r = length(z);
+		if (r > 2.0) {
+			break;
+		}
+
+		double inv_r = 1.0 / max(r, 1e-18);
+		double theta = acos(clamp(z.z * inv_r, -1.0, 1.0));
+		double phi = atan(z.y, z.x);
+		double r_pow = pow(r, power_minus_1);
+		dr = r_pow * power * dr + 1.0;
+		double zr = r_pow * r;
+		theta *= power;
+		phi *= power;
+		double sin_theta = sin(theta);
+		z = zr * dvec3(sin_theta * cos(phi), sin_theta * sin(phi), cos(theta)) + pos;
+	}
+
+	r = max(r, 1e-18);
+	return 0.5 * log(r) * r / max(dr, 1e-18);
 }
 
+double dsdf_with_trap(dvec3 pos, out double trap) {
+	dvec3 z = pos;
+	double r = 0.0;
+	double dr = 1.0;
+	double power = double(params.param1);
+	int iterations = int(params.param0);
+	double power_minus_1 = power - 1.0;
+	trap = 1e12;
+
+	for (int i = 0; i < iterations; i++) {
+		r = length(z);
+		if (r > 2.0) {
+			break;
+		}
+
+		double inv_r = 1.0 / max(r, 1e-18);
+		double theta = acos(clamp(z.z * inv_r, -1.0, 1.0));
+		double phi = atan(z.y, z.x);
+		double r_pow = pow(r, power_minus_1);
+		dr = r_pow * power * dr + 1.0;
+		double zr = r_pow * r;
+		theta *= power;
+		phi *= power;
+		double sin_theta = sin(theta);
+		z = zr * dvec3(sin_theta * cos(phi), sin_theta * sin(phi), cos(theta)) + pos;
+
+		trap = min(trap, abs(length(z) - 1.0));
+	}
+
+	r = max(r, 1e-18);
+	return 0.5 * log(r) * r / max(dr, 1e-18);
+}
+
+float sdf(vec3 pos) {
+	return float(dsdf_mandelbulb(dvec3(pos)));
+}
 
 dvec3 get_ray_direction_64(vec2 uv) {
 	double aspect = double(cam64.resolution_fov.x) / double(cam64.resolution_fov.y);
@@ -65,6 +125,32 @@ dvec3 get_ray_direction_64(vec2 uv) {
 	return normalize(f + r * screen.x + u * screen.y);
 }
 
+double dsdf_scene(dvec3 p_world, dvec3 cam_origin_world) {
+	// Hook for camera-relative remapping strategies; currently full FP64 world-space SDF.
+	return dsdf_mandelbulb(p_world);
+}
+
+dvec3 calc_normal_64(dvec3 p_world, dvec3 cam_origin_world, double h) {
+	const dvec2 k = dvec2(1.0, -1.0);
+	return normalize(
+		k.xyy * dsdf_scene(p_world + k.xyy * h, cam_origin_world) +
+		k.yyx * dsdf_scene(p_world + k.yyx * h, cam_origin_world) +
+		k.yxy * dsdf_scene(p_world + k.yxy * h, cam_origin_world) +
+		k.xxx * dsdf_scene(p_world + k.xxx * h, cam_origin_world)
+	);
+}
+
+double calc_ao_64(dvec3 pos_world, dvec3 norm_world, dvec3 cam_origin_world) {
+	double occ = 0.0;
+	double sca = 1.0;
+	for (int i = 0; i < AO_STEPS_64; i++) {
+		double h = AO_BASE_H_64 + 0.12 * double(i) / 4.0;
+		double d = dsdf_scene(pos_world + h * norm_world, cam_origin_world);
+		occ += (h - d) * sca;
+		sca *= 0.95;
+	}
+	return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
+}
 
 vec3 raymarch_64(dvec3 ray_dir) {
 	dvec3 origin = cam64.position64.xyz;
@@ -73,7 +159,7 @@ vec3 raymarch_64(dvec3 ray_dir) {
 
 	for (int i = 0; i < MAX_STEPS_64; i++) {
 		dvec3 p = origin + ray_dir * t;
-		double d = dsdf(p);
+		double d = dsdf_scene(p, origin);
 		if (d < EPSILON_64) {
 			hit = true;
 			break;
@@ -88,15 +174,20 @@ vec3 raymarch_64(dvec3 ray_dir) {
 		return vec3(0.0);
 	}
 
-	vec3 hit_pos = vec3(origin + ray_dir * t);
-	float trap;
-	sdf_with_trap(hit_pos, trap);
-	trap = log(trap + 1.0);
-	float trap_normalized = exp(-trap * 15.0);
+	dvec3 hit_pos_world = origin + ray_dir * t;
+	dvec3 hit_pos_relative = hit_pos_world - origin;
+	double trap;
+	dsdf_with_trap(hit_pos_relative + origin, trap);
+	float trap_f = log(float(trap) + 1.0);
+	float trap_normalized = exp(-trap_f * 15.0);
 
 	float normal_h = clamp(float(t) * (cam64.resolution_fov.z / cam64.resolution_fov.y), 1e-7, 0.01);
-	vec3 norm = calcNormal(hit_pos, normal_h);
-	float ao = calcAO(hit_pos, norm);
+	dvec3 norm64 = calc_normal_64(hit_pos_world, origin, double(normal_h));
+	double ao64 = calc_ao_64(hit_pos_world, norm64, origin);
+
+	vec3 hit_pos = vec3(hit_pos_relative);
+	vec3 norm = normalize(vec3(norm64));
+	float ao = float(ao64);
 	vec3 albedo = get_trap_color_hsv(trap_normalized);
 	return PBR(norm, normal_h, -vec3(ray_dir), hit_pos, albedo, ao);
 }
