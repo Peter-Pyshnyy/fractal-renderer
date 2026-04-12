@@ -16,19 +16,24 @@ double sdf64(dvec3 pos) {
         }
 
         double invR = 1.0 / max(r, 1e-12);
-        double theta = acos(clamp(z.z * invR, -1.0, 1.0));
-        double phi = atan(z.y, z.x);
+        float theta_f = acos(clamp(float(z.z * invR), -1.0, 1.0));
+        float phi_f = atan(float(z.y), float(z.x));
+        double theta = double(theta_f);
+        double phi = double(phi_f);
         double rPow = pow(r, powerMinus1);
         dr = rPow * power * dr + 1.0;
         double zr = rPow * r;
         theta *= power;
         phi *= power;
-        double sinTheta = sin(theta);
+        float sinTheta_f = sin(float(theta));
+        float cosTheta_f = cos(float(theta));
+        float cosPhi_f = cos(float(phi));
+        float sinPhi_f = sin(float(phi));
 
         z = zr * dvec3(
-            sinTheta * cos(phi),
-            sinTheta * sin(phi),
-            cos(theta)
+            double(sinTheta_f * cosPhi_f),
+            double(sinTheta_f * sinPhi_f),
+            double(cosTheta_f)
         ) + pos;
     }
 
@@ -52,19 +57,24 @@ double sdf_with_trap64(dvec3 pos, out double trap) {
         }
 
         double invR = 1.0 / max(r, 1e-12);
-        double theta = acos(clamp(z.z * invR, -1.0, 1.0));
-        double phi = atan(z.y, z.x);
+        float theta_f = acos(clamp(float(z.z * invR), -1.0, 1.0));
+        float phi_f = atan(float(z.y), float(z.x));
+        double theta = double(theta_f);
+        double phi = double(phi_f);
         double rPow = pow(r, powerMinus1);
         dr = rPow * power * dr + 1.0;
         double zr = rPow * r;
         theta *= power;
         phi *= power;
-        double sinTheta = sin(theta);
+        float sinTheta_f = sin(float(theta));
+        float cosTheta_f = cos(float(theta));
+        float cosPhi_f = cos(float(phi));
+        float sinPhi_f = sin(float(phi));
 
         z = zr * dvec3(
-            sinTheta * cos(phi),
-            sinTheta * sin(phi),
-            cos(theta)
+            double(sinTheta_f * cosPhi_f),
+            double(sinTheta_f * sinPhi_f),
+            double(cosTheta_f)
         ) + pos;
 
         trap = min(double(get_trap_distance(vec3(z))), trap);
