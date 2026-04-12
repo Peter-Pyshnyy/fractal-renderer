@@ -1,7 +1,3 @@
-const int MAX_STEPS = 250;
-const float EPSILON = 0.00001;
-const float MAX_DIST = 20.0;
-
 float sdf(vec3 pos);
 float sdf_with_trap(vec3 pos, out float trap);
 

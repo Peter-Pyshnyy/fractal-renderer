@@ -1,3 +1,6 @@
+const int RM64_MAX_STEPS = 250;
+const double RM64_MAX_DIST = 20.0;
+
 dvec3 getRayDirection64(vec2 resolution, vec2 uv) {
     double aspect = double(resolution.x) / double(resolution.y);
 
@@ -25,7 +28,7 @@ vec3 raymarch_AR64(dvec3 rayDir) {
     double bestT = t;
     double bestError = 1e18;
 
-    for (int i = 0; i < MAX_STEPS; i++) {
+    for (int i = 0; i < RM64_MAX_STEPS; i++) {
         double pixelError = r / max(t * pixelRadius * 0.75, 1e-12);
 
         if (pixelError < bestError) {
@@ -33,7 +36,7 @@ vec3 raymarch_AR64(dvec3 rayDir) {
             bestT = t;
         }
 
-        if (pixelError < 1.0 || t + r >= double(MAX_DIST)) {
+        if (pixelError < 1.0 || t + r >= RM64_MAX_DIST) {
             break;
         }
 
@@ -53,7 +56,7 @@ vec3 raymarch_AR64(dvec3 rayDir) {
         z = 2.0 * r / max(1.0 - m, 1e-12);
     }
 
-    if (bestError >= 1.0 || bestT >= double(MAX_DIST)) {
+    if (bestError >= 1.0 || bestT >= RM64_MAX_DIST) {
         return vec3(0.0);
     }
 

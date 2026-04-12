@@ -56,7 +56,11 @@ func _ready() -> void:
 	if not target_camera: 
 		push_error("Camera3D not assigned") 
 		return 
-	
+
+	if not fractal_data or not material:
+		push_error("Fractal data or material is not assigned")
+		return
+
 	Global.g_fractal = fractal_data
 	Global.g_active_material = material
 	camera_rig = target_camera.get_parent()
@@ -69,13 +73,22 @@ func _ready() -> void:
 
 # --- Setup ---
 
-func _create_shader() -> void:
-	var shader_path := PHOTO_SHADER_PATH if photo_mode_enabled else STANDARD_SHADER_PATH
+func _load_shader_rid(shader_path: String) -> RID:
 	var shader_file := load(shader_path) as RDShaderFile
 	if not shader_file:
 		push_error("Failed to load shader: %s" % shader_path)
-		return
-	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
+		return RID()
+
+	var rid := rd.shader_create_from_spirv(shader_file.get_spirv())
+	if not rid.is_valid():
+		push_error("Failed to compile shader: %s" % shader_path)
+
+	return rid
+
+
+func _create_shader() -> void:
+	var shader_path := PHOTO_SHADER_PATH if photo_mode_enabled else STANDARD_SHADER_PATH
+	shader_rid = _load_shader_rid(shader_path)
 
 
 func _create_texture() -> void:
@@ -206,6 +219,11 @@ func _update_camera_buffer() -> void:
 
 
 func _dispatch() -> void:
+	if not pipeline_rid.is_valid() or uniform_sets.size() < 2:
+		return
+	if Global.g_fractal == null or Global.g_active_material == null:
+		return
+
 	var write_i := frame_index & 1
 
 	# display current output texture
@@ -272,6 +290,14 @@ func set_photo_mode(enabled: bool) -> void:
 
 
 func _recreate_shader_pipeline() -> void:
+	var shader_path := PHOTO_SHADER_PATH if photo_mode_enabled else STANDARD_SHADER_PATH
+	var new_shader := _load_shader_rid(shader_path)
+	if not new_shader.is_valid():
+		if photo_mode_enabled:
+			photo_mode_enabled = false
+			push_warning("Photo mode shader failed, keeping standard pipeline")
+		return
+
 	for set in uniform_sets:
 		if set.is_valid():
 			rd.free_rid(set)
@@ -282,9 +308,7 @@ func _recreate_shader_pipeline() -> void:
 	if shader_rid.is_valid():
 		rd.free_rid(shader_rid)
 
-	_create_shader()
-	if not shader_rid.is_valid():
-		return
+	shader_rid = new_shader
 	_create_pipeline()
 
 
