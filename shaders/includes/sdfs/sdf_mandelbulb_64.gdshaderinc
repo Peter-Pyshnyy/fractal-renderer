@@ -61,6 +61,73 @@ double _atan_kernel(double x) {
         ))))))))))))))))))));
 }
 
+// ── Additional constants ─────────────────────────────────────────────────────
+const double DP_LN2   = 0.69314718055994530941723212145817657lf;
+const double DP_LOG2E = 1.44269504088896340735992468100189214lf; // 1/ln2
+const double DP_SQRT2_2 = 0.70710678118654752440084436210484904lf; // 1/√2
+
+// ── d_log ───────────────────────────────────────────────────────────────────
+// Uses frexp to decompose x = 2^n * m, m ∈ [0.5, 1.0),
+// then shifts m into [1/√2, √2) for better series convergence,
+// then computes log(m) = 2·atanh((m−1)/(m+1)) via Taylor series.
+// For m in that range, y = (m−1)/(m+1) ∈ (−0.172, 0.172) → fast convergence.
+double d_log(double x) {
+    int n;
+    double m = frexp(x, n);       // m ∈ [0.5, 1.0), x = m * 2^n
+
+    // Shift mantissa into [1/√2, √2) to keep |y| small
+    if (m < DP_SQRT2_2) {
+        m *= 2.0lf;
+        n -= 1;
+    }
+    // log(m) via 2·atanh(y), y = (m−1)/(m+1)
+    double y  = (m - 1.0lf) / (m + 1.0lf);
+    double y2 = y * y;
+    // 9-term atanh series (through y^17) — max error < 1e-19 for |y| < 0.172
+    double r = y * (1.0lf
+        + y2 * (3.33333333333333333333e-1lf   // y^3  / 3
+        + y2 * (2.00000000000000000000e-1lf   // y^5  / 5
+        + y2 * (1.42857142857142857143e-1lf   // y^7  / 7
+        + y2 * (1.11111111111111111111e-1lf   // y^9  / 9
+        + y2 * (9.09090909090909090909e-2lf   // y^11 / 11
+        + y2 * (7.69230769230769230769e-2lf   // y^13 / 13
+        + y2 * (6.66666666666666666667e-2lf   // y^15 / 15
+        + y2 *  5.88235294117647058824e-2lf   // y^17 / 17
+        ))))))));
+    return double(n) * DP_LN2 + 2.0lf * r;
+}
+
+// ── d_exp ───────────────────────────────────────────────────────────────────
+// Range-reduces x = n·ln2 + r, |r| ≤ ln2/2 ≈ 0.347,
+// computes exp(r) via 11-term Taylor, then scales by 2^n via ldexp.
+double d_exp(double x) {
+    double nd = round(x * DP_LOG2E);
+    int    n  = int(nd);
+    double r  = x - nd * DP_LN2;   // |r| ≤ ln2/2
+
+    // Taylor exp(r), 11 terms — next omitted term ≈ r^11/11! < 2e-20
+    double e = 1.0lf + r * (1.0lf
+        + r * (5.00000000000000000000e-1lf   // r^2  / 2!
+        + r * (1.66666666666666666667e-1lf   // r^3  / 3!
+        + r * (4.16666666666666666667e-2lf   // r^4  / 4!
+        + r * (8.33333333333333333333e-3lf   // r^5  / 5!
+        + r * (1.38888888888888888889e-3lf   // r^6  / 6!
+        + r * (1.98412698412698412698e-4lf   // r^7  / 7!
+        + r * (2.48015873015873015873e-5lf   // r^8  / 8!
+        + r * (2.75573192239858906526e-6lf   // r^9  / 9!
+        + r *  2.75573192239858906526e-7lf   // r^10 / 10!
+        )))))))));
+    return ldexp(e, n);   // e * 2^n — exact, no rounding
+}
+
+// ── d_pow / d_log_positive ──────────────────────────────────────────────────
+// pow(base, exp) = exp(exp · log(base))
+// d_log_positive: same as d_log but asserts base > 0 (no guard needed in SDF
+// since r = length(z) ≥ 0 and we already check r > 1e-15).
+double d_pow(double base, double exponent) {
+    return d_exp(exponent * d_log(base));
+}
+
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
@@ -154,7 +221,7 @@ float sdf(vec3 pos) {
         if (r > 2.0lf) break;
 
         double invR  = 1.0lf / max(r, 1e-15lf);
-        double rPow  = pow(r, powerMinus1);
+        double rPow  = d_pow(r, powerMinus1);
 
         // acos and atan2 now fully double-precision
         double theta = d_acos(clamp(z.z * invR, -1.0lf, 1.0lf));
@@ -177,7 +244,7 @@ float sdf(vec3 pos) {
                        cosTheta) + dpos;
     }
 
-    return float(0.5lf * log(r) * r / dr);
+    return float(0.5lf * d_log(r) * r / dr);
 }
 
 float sdf_with_trap(vec3 pos, out float trap) {
@@ -197,7 +264,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
         if (r > 2.0lf) break;
 
         double invR  = 1.0lf / max(r, 1e-15lf);
-        double rPow  = pow(r, powerMinus1);
+        double rPow  = d_pow(r, powerMinus1);
 
         double theta = d_acos(clamp(z.z * invR, -1.0lf, 1.0lf));
         double phi   = d_atan2(z.y, z.x);
@@ -220,5 +287,5 @@ float sdf_with_trap(vec3 pos, out float trap) {
         trap = min(get_trap_distance(vec3(z)), trap);
     }
 
-    return float(0.5lf * log(r) * r / dr);
+    return float(0.5lf * d_log(r) * r / dr);
 }
