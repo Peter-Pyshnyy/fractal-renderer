@@ -25,22 +25,30 @@ var camera_rig: Node3D
 @export var u_lightDir: Vector3 = Vector3(1.0, 1.0, 1.0)
 
 var rd: RenderingDevice
-var shader_rid: RID
-var pipeline_rid: RID
-var camera_buffer_rid: RID
+var shader_rid_32: RID
+var shader_rid_64: RID
+var pipeline_32_rid: RID
+var pipeline_64_rid: RID
+var camera_buffer_32_rid: RID
+var camera_buffer_64_rid: RID
 
 var texture_rids: Array[RID]
 var tex_rd_resources: Array[Texture2DRD]
-var uniform_sets: Array[RID]
+var uniform_sets_32: Array[RID]
+var uniform_sets_64: Array[RID]
 var frame_index := 0
 var accumulation_samples := 0
 
-var cam_data := PackedFloat32Array()
+var cam_data_32 := PackedFloat32Array()
+var cam_data_64_origin := PackedFloat64Array()
+var cam_data_64_vectors := PackedFloat32Array()
+var cam_data_64_bytes := PackedByteArray()
 var last_cam_transform: Transform3D
 var current_res_scale: int = 1
 var taa_jitter := Vector2.ZERO
 var taa_history_weight := 0.0
 var last_motion_version := -1
+var is_photo_mode := false
 
 func _ready() -> void: 
 	if not target_camera: 
@@ -60,8 +68,11 @@ func _ready() -> void:
 # --- Setup ---
 
 func _create_shader() -> void:
-	var shader_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
-	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
+	var shader_32_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
+	shader_rid_32 = rd.shader_create_from_spirv(shader_32_file.get_spirv())
+
+	var shader_64_file := load("res://shaders/fragment/mandelbulb_64.glsl") as RDShaderFile
+	shader_rid_64 = rd.shader_create_from_spirv(shader_64_file.get_spirv())
 
 
 func _create_texture() -> void:
@@ -84,11 +95,24 @@ func _create_texture() -> void:
 
 func _create_camera_buffer() -> void:
 	# 5 vec4 = 20 floats
-	cam_data.resize(20)
-	cam_data.fill(0.0)
+	cam_data_32.resize(20)
+	cam_data_32.fill(0.0)
 
-	var bytes := cam_data.to_byte_array()
-	camera_buffer_rid = rd.storage_buffer_create(bytes.size(), bytes)
+	var bytes_32 := cam_data_32.to_byte_array()
+	camera_buffer_32_rid = rd.storage_buffer_create(bytes_32.size(), bytes_32)
+
+	# std430 layout for mixed precision camera buffer (96 bytes):
+	# dvec4 position64 @ 0
+	# vec4  forward    @ 32
+	# vec4  right      @ 48
+	# vec4  up         @ 64
+	# vec4  res/fov    @ 80
+	cam_data_64_origin.resize(4)
+	cam_data_64_origin.fill(0.0)
+	cam_data_64_vectors.resize(16)
+	cam_data_64_vectors.fill(0.0)
+	cam_data_64_bytes.resize(96)
+	camera_buffer_64_rid = rd.storage_buffer_create(cam_data_64_bytes.size(), cam_data_64_bytes)
 
 
 func _create_pipeline() -> void:
@@ -108,12 +132,21 @@ func _create_pipeline() -> void:
 		var cam_uniform := RDUniform.new()
 		cam_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
 		cam_uniform.binding = 1
-		cam_uniform.add_id(camera_buffer_rid)
+		cam_uniform.add_id(camera_buffer_32_rid)
 
-		var set = rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], shader_rid, 0)
-		uniform_sets.append(set)
+		var set_32 = rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], shader_rid_32, 0)
+		uniform_sets_32.append(set_32)
 
-	pipeline_rid = rd.compute_pipeline_create(shader_rid)
+		var cam_uniform_64 := RDUniform.new()
+		cam_uniform_64.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+		cam_uniform_64.binding = 1
+		cam_uniform_64.add_id(camera_buffer_64_rid)
+
+		var set_64 = rd.uniform_set_create([img_uniform, cam_uniform_64, history_uniform], shader_rid_64, 0)
+		uniform_sets_64.append(set_64)
+
+	pipeline_32_rid = rd.compute_pipeline_create(shader_rid_32)
+	pipeline_64_rid = rd.compute_pipeline_create(shader_rid_64)
 
 
 # --- Per-frame update ---
@@ -147,6 +180,14 @@ func _process(_delta: float) -> void:
 	_dispatch()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_P:
+		is_photo_mode = not is_photo_mode
+		accumulation_samples = 0
+		taa_jitter = Vector2.ZERO
+		taa_history_weight = 0.0
+
+
 func _update_camera_buffer() -> void:
 	var t := target_camera.global_transform
 	var basis := t.basis
@@ -154,41 +195,73 @@ func _update_camera_buffer() -> void:
 	# precompute once
 	var fov_scale := tan(deg_to_rad(target_camera.fov * 0.5))
 
-	# fill buffer directly (no push_back, no resize)
-	# cameraPos
-	cam_data[0] = t.origin.x
-	cam_data[1] = t.origin.y
-	cam_data[2] = t.origin.z
-	cam_data[3] = 0.0
+	# fill float32 pipeline camera data
+	cam_data_32[0] = t.origin.x
+	cam_data_32[1] = t.origin.y
+	cam_data_32[2] = t.origin.z
+	cam_data_32[3] = 0.0
 
 	# forward (-Z)
 	var f := -basis.z
-	cam_data[4] = f.x
-	cam_data[5] = f.y
-	cam_data[6] = f.z
-	cam_data[7] = 0.0
+	cam_data_32[4] = f.x
+	cam_data_32[5] = f.y
+	cam_data_32[6] = f.z
+	cam_data_32[7] = 0.0
 
 	# right (X)
 	var r := basis.x
-	cam_data[8] = r.x
-	cam_data[9] = r.y
-	cam_data[10] = r.z
-	cam_data[11] = 0.0
+	cam_data_32[8] = r.x
+	cam_data_32[9] = r.y
+	cam_data_32[10] = r.z
+	cam_data_32[11] = 0.0
 
 	# up (Y)
 	var u := basis.y
-	cam_data[12] = u.x
-	cam_data[13] = u.y
-	cam_data[14] = u.z
-	cam_data[15] = 0.0
+	cam_data_32[12] = u.x
+	cam_data_32[13] = u.y
+	cam_data_32[14] = u.z
+	cam_data_32[15] = 0.0
 
 	# resolution + fovScale
-	cam_data[16] = render_resolution.x
-	cam_data[17] = render_resolution.y
-	cam_data[18] = fov_scale
-	cam_data[19] = 0.0 # padding
+	cam_data_32[16] = render_resolution.x
+	cam_data_32[17] = render_resolution.y
+	cam_data_32[18] = fov_scale
+	cam_data_32[19] = 0.0 # padding
+	rd.buffer_update(camera_buffer_32_rid, 0, cam_data_32.size() * 4, cam_data_32.to_byte_array())
 
-	rd.buffer_update(camera_buffer_rid, 0, cam_data.size() * 4, cam_data.to_byte_array())
+	# fill mixed precision photo mode camera data (std430 aligned)
+	var rig := camera_rig as Node
+	if rig:
+		cam_data_64_origin[0] = float(rig.get("precise_x"))
+		cam_data_64_origin[1] = float(rig.get("precise_y"))
+		cam_data_64_origin[2] = float(rig.get("precise_z"))
+	else:
+		cam_data_64_origin[0] = float(t.origin.x)
+		cam_data_64_origin[1] = float(t.origin.y)
+		cam_data_64_origin[2] = float(t.origin.z)
+	cam_data_64_origin[3] = 0.0
+
+	cam_data_64_vectors[0] = f.x
+	cam_data_64_vectors[1] = f.y
+	cam_data_64_vectors[2] = f.z
+	cam_data_64_vectors[3] = 0.0
+	cam_data_64_vectors[4] = r.x
+	cam_data_64_vectors[5] = r.y
+	cam_data_64_vectors[6] = r.z
+	cam_data_64_vectors[7] = 0.0
+	cam_data_64_vectors[8] = u.x
+	cam_data_64_vectors[9] = u.y
+	cam_data_64_vectors[10] = u.z
+	cam_data_64_vectors[11] = 0.0
+	cam_data_64_vectors[12] = render_resolution.x
+	cam_data_64_vectors[13] = render_resolution.y
+	cam_data_64_vectors[14] = fov_scale
+	cam_data_64_vectors[15] = 0.0
+
+	cam_data_64_bytes = PackedByteArray()
+	cam_data_64_bytes.append_array(cam_data_64_origin.to_byte_array())
+	cam_data_64_bytes.append_array(cam_data_64_vectors.to_byte_array())
+	rd.buffer_update(camera_buffer_64_rid, 0, cam_data_64_bytes.size(), cam_data_64_bytes)
 
 
 func _dispatch() -> void:
@@ -203,8 +276,10 @@ func _dispatch() -> void:
 	var y_groups := int(ceil(scaled_height / 16.0))
 
 	var list := rd.compute_list_begin()
-	rd.compute_list_bind_compute_pipeline(list, pipeline_rid)
-	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
+	var active_pipeline := pipeline_64_rid if is_photo_mode else pipeline_32_rid
+	var active_uniform_sets := uniform_sets_64 if is_photo_mode else uniform_sets_32
+	rd.compute_list_bind_compute_pipeline(list, active_pipeline)
+	rd.compute_list_bind_uniform_set(list, active_uniform_sets[write_i], 0)
 
 	var params = Global.g_fractal.get_shader_params()
 	var col0 = Global.g_active_material.color0
@@ -258,28 +333,33 @@ func _halton(index: int, base: int) -> float:
 
 
 # --- Cleanup ---
-
 func _exit_tree() -> void:
 	if not rd:
 		return
 
-	# Release texture from UI
 	texture_rect.texture = null
-
-	# Clear resource references
 	tex_rd_resources.clear()
-	texture_rids.clear()
-	uniform_sets.clear()
 
-	for u in uniform_sets:
-		if u.is_valid(): rd.free_rid(u)
+	for rid in uniform_sets_32:
+		rd.free_rid(rid)
+	for rid in uniform_sets_64:
+		rd.free_rid(rid)
 
-	for t in texture_rids:
-		if t.is_valid(): rd.free_rid(t)
+	for rid in texture_rids:
+		rd.free_rid(rid)
 
-	if pipeline_rid.is_valid(): rd.free_rid(pipeline_rid)
-	if shader_rid.is_valid(): rd.free_rid(shader_rid)
-	if camera_buffer_rid.is_valid(): rd.free_rid(camera_buffer_rid)
+	if camera_buffer_32_rid.is_valid():
+		rd.free_rid(camera_buffer_32_rid)
+	if camera_buffer_64_rid.is_valid():
+		rd.free_rid(camera_buffer_64_rid)
+	if pipeline_32_rid.is_valid():
+		rd.free_rid(pipeline_32_rid)
+	if pipeline_64_rid.is_valid():
+		rd.free_rid(pipeline_64_rid)
+	if shader_rid_32.is_valid():
+		rd.free_rid(shader_rid_32)
+	if shader_rid_64.is_valid():
+		rd.free_rid(shader_rid_64)
 
 
 func _on_vrs_timer_timeout() -> void:
