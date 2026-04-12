@@ -42,6 +42,16 @@ var taa_jitter := Vector2.ZERO
 var taa_history_weight := 0.0
 var last_motion_version := -1
 
+const STANDARD_SHADER_PATH := "res://shaders/fragment/mandelbulb.glsl"
+const PHOTO_SHADER_PATH := "res://shaders/fragment/mandelbulb_64.glsl"
+
+var photo_mode_enabled := false
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_photo_mode"):
+		set_photo_mode(not photo_mode_enabled)
+
+
 func _ready() -> void: 
 	if not target_camera: 
 		push_error("Camera3D not assigned") 
@@ -60,7 +70,11 @@ func _ready() -> void:
 # --- Setup ---
 
 func _create_shader() -> void:
-	var shader_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
+	var shader_path := PHOTO_SHADER_PATH if photo_mode_enabled else STANDARD_SHADER_PATH
+	var shader_file := load(shader_path) as RDShaderFile
+	if not shader_file:
+		push_error("Failed to load shader: %s" % shader_path)
+		return
 	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
 
 
@@ -244,6 +258,36 @@ func _dispatch() -> void:
 	frame_index += 1
 
 
+func set_photo_mode(enabled: bool) -> void:
+	if photo_mode_enabled == enabled:
+		return
+
+	photo_mode_enabled = enabled
+	accumulation_samples = 0
+	frame_index = 0
+	taa_jitter = Vector2.ZERO
+	taa_history_weight = 0.0
+
+	_recreate_shader_pipeline()
+
+
+func _recreate_shader_pipeline() -> void:
+	for set in uniform_sets:
+		if set.is_valid():
+			rd.free_rid(set)
+	uniform_sets.clear()
+
+	if pipeline_rid.is_valid():
+		rd.free_rid(pipeline_rid)
+	if shader_rid.is_valid():
+		rd.free_rid(shader_rid)
+
+	_create_shader()
+	if not shader_rid.is_valid():
+		return
+	_create_pipeline()
+
+
 func _halton(index: int, base: int) -> float:
 	var f := 1.0
 	var r := 0.0
@@ -266,13 +310,9 @@ func _exit_tree() -> void:
 	# Release texture from UI
 	texture_rect.texture = null
 
-	# Clear resource references
-	tex_rd_resources.clear()
-	texture_rids.clear()
-	uniform_sets.clear()
-
 	for u in uniform_sets:
 		if u.is_valid(): rd.free_rid(u)
+
 
 	for t in texture_rids:
 		if t.is_valid(): rd.free_rid(t)
@@ -280,6 +320,11 @@ func _exit_tree() -> void:
 	if pipeline_rid.is_valid(): rd.free_rid(pipeline_rid)
 	if shader_rid.is_valid(): rd.free_rid(shader_rid)
 	if camera_buffer_rid.is_valid(): rd.free_rid(camera_buffer_rid)
+
+	# Clear resource references
+	tex_rd_resources.clear()
+	texture_rids.clear()
+	uniform_sets.clear()
 
 
 func _on_vrs_timer_timeout() -> void:
