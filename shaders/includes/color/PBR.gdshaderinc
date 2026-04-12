@@ -79,7 +79,7 @@ vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
 	
 	vec3 bias = N * N_h * 1.5;
 	float adaptiveMint = N_h * 3.0;
-	float s = softshadow(fragPos, u_lightDir.xyz, adaptiveMint, 5.0, 2.5);
+	float s = softshadow(fragPos + bias, u_lightDir.xyz, adaptiveMint, 5.0, 2.5);
 	NdotL *= s; // look-up
 
     // Cook-Torrance specular

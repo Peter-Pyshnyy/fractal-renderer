@@ -33,8 +33,19 @@ void main() {
         for (int x = 0; x < resolution_scale; x++) {
             ivec2 write_coord = base_coord + ivec2(x, y);
             if (write_coord.x < image_size.x && write_coord.y < image_size.y) {
-                vec3 history_color = imageLoad(history_image, write_coord).rgb;
-                vec3 final_color = mix(color, history_color, history_blend);
+                
+                // HDR -> Linear LDR
+                float exposure = 3.0;
+                vec3 current_ldr = color * exposure;
+                current_ldr = current_ldr / (current_ldr + 1.0); // Tonemapping
+                
+                // 2. Gamma LDR -> Linear LDR
+                vec3 history_gamma = imageLoad(history_image, write_coord).rgb;
+                vec3 history_linear = pow(history_gamma, vec3(2.2));
+                
+                vec3 blended_linear = mix(current_ldr, history_linear, history_blend);
+                
+                vec3 final_color = pow(blended_linear, vec3(1.0 / 2.2));
                 imageStore(output_image, write_coord, vec4(final_color, 1.0));
             }
         } 
