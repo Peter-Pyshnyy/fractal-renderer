@@ -41,6 +41,7 @@ var current_res_scale: int = 1
 var taa_jitter := Vector2.ZERO
 var taa_history_weight := 0.0
 var last_motion_version := -1
+var use_64bit_sdf := false
 
 func _ready() -> void: 
 	if not target_camera: 
@@ -60,7 +61,8 @@ func _ready() -> void:
 # --- Setup ---
 
 func _create_shader() -> void:
-	var shader_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
+	var shader_path := "res://shaders/fragment/mandelbulb_64.glsl" if use_64bit_sdf else "res://shaders/fragment/mandelbulb.glsl"
+	var shader_file := load(shader_path) as RDShaderFile
 	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
 
 
@@ -92,6 +94,7 @@ func _create_camera_buffer() -> void:
 
 
 func _create_pipeline() -> void:
+	uniform_sets.clear()
 	for i in 2:
 		var read_i := 1 - i
 
@@ -114,6 +117,11 @@ func _create_pipeline() -> void:
 		uniform_sets.append(set)
 
 	pipeline_rid = rd.compute_pipeline_create(shader_rid)
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("switch_sdf_precision"):
+		_toggle_sdf_precision()
 
 
 # --- Per-frame update ---
@@ -255,6 +263,36 @@ func _halton(index: int, base: int) -> float:
 		i = int(i / base)
 
 	return r
+
+
+func _toggle_sdf_precision() -> void:
+	use_64bit_sdf = not use_64bit_sdf
+	accumulation_samples = 0
+	frame_index = 0
+	taa_jitter = Vector2.ZERO
+	taa_history_weight = 0.0
+	current_res_scale = 1
+
+	_recreate_shader_pipeline()
+
+	var precision_label := "64-bit" if use_64bit_sdf else "32-bit"
+	print("Mandelbulb SDF precision: ", precision_label)
+
+
+func _recreate_shader_pipeline() -> void:
+	for set_rid in uniform_sets:
+		if set_rid.is_valid():
+			rd.free_rid(set_rid)
+	uniform_sets.clear()
+
+	if pipeline_rid.is_valid():
+		rd.free_rid(pipeline_rid)
+
+	if shader_rid.is_valid():
+		rd.free_rid(shader_rid)
+
+	_create_shader()
+	_create_pipeline()
 
 
 # --- Cleanup ---
