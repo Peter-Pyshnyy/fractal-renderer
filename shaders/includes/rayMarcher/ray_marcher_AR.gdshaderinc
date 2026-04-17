@@ -9,11 +9,11 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     screen.x *= aspect;
     screen *= cam.fovScale;
 
-    vec3 center_ray = get_center_ray();
-    vec3 right = normalize(cam.right.xyz);
-    vec3 up = normalize(cam.up.xyz);
-    vec3 perturbation = right * screen.x + up * screen.y;
-    return normalize(center_ray + perturbation);
+    return normalize(
+        cam.forward.xyz +
+        cam.right.xyz * screen.x +
+        cam.up.xyz * screen.y
+    );
 }
 
 vec3 raymarch_AR(vec3 rayDir) {
