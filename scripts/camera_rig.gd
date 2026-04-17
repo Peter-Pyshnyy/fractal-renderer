@@ -194,8 +194,8 @@ func _handle_rotation(event: InputEventMouseMotion) -> void:
 
 	var sens = orbit_sensitivity if current_mode == CameraMode.ORBIT else mouse_sensitivity * 0.05
 
-	yaw -= event.relative.x * sens
-	pitch -= event.relative.y * sens
+	yaw += event.relative.x * sens
+	pitch += event.relative.y * sens
 	pitch = clamp(pitch, -PI / 2.1, PI / 2.1)
 
 	rotation = Vector3(pitch, yaw, 0)
