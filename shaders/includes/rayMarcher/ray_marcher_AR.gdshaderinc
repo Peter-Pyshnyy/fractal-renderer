@@ -1,3 +1,7 @@
+vec3 get_center_ray() {
+    return normalize(cam.center_ray_hi.xyz + cam.center_ray_lo.xyz);
+}
+
 vec3 getRayDirection(vec2 resolution, vec2 uv) {
     float aspect = resolution.x / resolution.y;
 
@@ -5,19 +9,39 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     screen.x *= aspect;
     screen *= cam.fovScale;
 
-    // combine basis vectors
-    return normalize(
-        cam.forward.xyz +
-        cam.right.xyz * screen.x +
-        cam.up.xyz * screen.y
-    );
+    vec3 center_ray = get_center_ray();
+    vec3 perturbation = cam.right.xyz * screen.x + cam.up.xyz * screen.y;
+    return normalize(center_ray + perturbation);
 }
 
+vec3 sdf_gradient(vec3 p, float h) {
+    vec2 e = vec2(h, 0.0);
+    return vec3(
+        sdf(p + vec3(e.x, e.y, e.y)) - sdf(p - vec3(e.x, e.y, e.y)),
+        sdf(p + vec3(e.y, e.x, e.y)) - sdf(p - vec3(e.y, e.x, e.y)),
+        sdf(p + vec3(e.y, e.y, e.x)) - sdf(p - vec3(e.y, e.y, e.x))
+    ) / (2.0 * h);
+}
+
+float sdf_perturbation(vec3 reference_pos, vec3 delta_pos) {
+    float base = sdf(reference_pos);
+    float h = max(1e-6, min(1e-3, length(delta_pos) * 0.5 + 1e-6));
+    vec3 grad = sdf_gradient(reference_pos, h);
+    float linearized = base + dot(grad, delta_pos);
+
+    float delta_len = length(delta_pos);
+    float exact_blend = smoothstep(1e-5, 2e-3, delta_len);
+    float exact = sdf(reference_pos + delta_pos);
+    return mix(linearized, exact, exact_blend);
+}
 
 vec3 raymarch_AR(vec3 rayDir) {
     float sdfScaler = 0.75;
     float beta = 0.3;
     float pixelRadius = cam.fovScale / cam.resolution.y;
+
+    vec3 center_ray = get_center_ray();
+    vec3 ray_delta = rayDir - center_ray;
 
     float t = 0.0;
     float r = sdf(cam.position.xyz);
@@ -38,10 +62,10 @@ vec3 raymarch_AR(vec3 rayDir) {
         if (pixelError < 1.0 || t + r >= MAX_DIST) break;
 
         float T = t + z;
-        vec3  pos = cam.position.xyz + rayDir * T;
-        
-        // Знову використовуємо ШВИДКУ sdf
-        float R = sdf(pos) * (sdfScaler);
+        vec3 reference_pos = cam.position.xyz + center_ray * T;
+        vec3 delta_pos = ray_delta * T;
+
+        float R = sdf_perturbation(reference_pos, delta_pos) * sdfScaler;
 
         if (z <= r + abs(R)) {
             float M = (R - r) / (T - t);
@@ -59,17 +83,19 @@ vec3 raymarch_AR(vec3 rayDir) {
         return vec3(0.0);
     }
 
+    vec3 hit_ref_pos = cam.position.xyz + center_ray * bestT;
+    vec3 hit_pos = hit_ref_pos + ray_delta * bestT;
+
     float hit_trap;
-    vec3 hit_pos = cam.position.xyz + rayDir * bestT;
     sdf_with_trap(hit_pos, hit_trap);
     hit_trap = log(hit_trap + 1.0);
     float trap_normalized = exp(-hit_trap * 15.0);
 
-	float normal_h = clamp(bestT * pixelRadius * 0.75, 1e-7, 0.01);
-	vec3 norm = calcNormal(hit_pos, normal_h);
-	
-	float ao = calcAO(hit_pos, norm);
-	vec3 albedo = get_trap_color_hsv(trap_normalized);
-	vec3 color = PBR(norm, normal_h, -rayDir, hit_pos, albedo,  ao);
+    float normal_h = clamp(bestT * pixelRadius * 0.75, 1e-7, 0.01);
+    vec3 norm = calcNormal(hit_pos, normal_h);
+
+    float ao = calcAO(hit_pos, norm);
+    vec3 albedo = get_trap_color_hsv(trap_normalized);
+    vec3 color = PBR(norm, normal_h, -rayDir, hit_pos, albedo,  ao);
     return color;
 }

@@ -15,6 +15,8 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
     vec4 forward;
     vec4 right;
     vec4 up;
+    vec4 center_ray_hi;
+    vec4 center_ray_lo;
     vec2 resolution;
     float fovScale;
     float padding;

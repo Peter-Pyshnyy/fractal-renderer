@@ -83,8 +83,8 @@ func _create_texture() -> void:
 	texture_rect.texture = tex_rd_resources[0]
 
 func _create_camera_buffer() -> void:
-	# 5 vec4 = 20 floats
-	cam_data.resize(20)
+	# 7 vec4 = 28 floats
+	cam_data.resize(28)
 	cam_data.fill(0.0)
 
 	var bytes := cam_data.to_byte_array()
@@ -183,13 +183,33 @@ func _update_camera_buffer() -> void:
 	cam_data[15] = 0.0
 
 	# resolution + fovScale
-	cam_data[16] = render_resolution.x
-	cam_data[17] = render_resolution.y
-	cam_data[18] = fov_scale
-	cam_data[19] = 0.0 # padding
+	var center_ray := f.normalized()
+	var center_x := _split_double(center_ray.x)
+	var center_y := _split_double(center_ray.y)
+	var center_z := _split_double(center_ray.z)
+
+	cam_data[16] = center_x.x
+	cam_data[17] = center_y.x
+	cam_data[18] = center_z.x
+	cam_data[19] = 0.0
+
+	cam_data[20] = center_x.y
+	cam_data[21] = center_y.y
+	cam_data[22] = center_z.y
+	cam_data[23] = 0.0
+
+	cam_data[24] = render_resolution.x
+	cam_data[25] = render_resolution.y
+	cam_data[26] = fov_scale
+	cam_data[27] = 0.0 # padding
 
 	rd.buffer_update(camera_buffer_rid, 0, cam_data.size() * 4, cam_data.to_byte_array())
 
+
+func _split_double(value: float) -> Vector2:
+	var hi := PackedFloat32Array([value])[0]
+	var lo := value - hi
+	return Vector2(hi, lo)
 
 func _dispatch() -> void:
 	var write_i := frame_index & 1
