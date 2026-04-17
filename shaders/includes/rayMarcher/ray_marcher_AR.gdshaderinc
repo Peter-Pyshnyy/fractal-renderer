@@ -10,29 +10,10 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     screen *= cam.fovScale;
 
     vec3 center_ray = get_center_ray();
-    vec3 perturbation = cam.right.xyz * screen.x + cam.up.xyz * screen.y;
+    vec3 right = normalize(cam.right.xyz);
+    vec3 up = normalize(cam.up.xyz);
+    vec3 perturbation = right * screen.x + up * screen.y;
     return normalize(center_ray + perturbation);
-}
-
-vec3 sdf_gradient(vec3 p, float h) {
-    vec2 e = vec2(h, 0.0);
-    return vec3(
-        sdf(p + vec3(e.x, e.y, e.y)) - sdf(p - vec3(e.x, e.y, e.y)),
-        sdf(p + vec3(e.y, e.x, e.y)) - sdf(p - vec3(e.y, e.x, e.y)),
-        sdf(p + vec3(e.y, e.y, e.x)) - sdf(p - vec3(e.y, e.y, e.x))
-    ) / (2.0 * h);
-}
-
-float sdf_perturbation(vec3 reference_pos, vec3 delta_pos) {
-    float base = sdf(reference_pos);
-    float h = max(1e-6, min(1e-3, length(delta_pos) * 0.5 + 1e-6));
-    vec3 grad = sdf_gradient(reference_pos, h);
-    float linearized = base + dot(grad, delta_pos);
-
-    float delta_len = length(delta_pos);
-    float exact_blend = smoothstep(1e-5, 2e-3, delta_len);
-    float exact = sdf(reference_pos + delta_pos);
-    return mix(linearized, exact, exact_blend);
 }
 
 vec3 raymarch_AR(vec3 rayDir) {
@@ -65,7 +46,8 @@ vec3 raymarch_AR(vec3 rayDir) {
         vec3 reference_pos = cam.position.xyz + center_ray * T;
         vec3 delta_pos = ray_delta * T;
 
-        float R = sdf_perturbation(reference_pos, delta_pos) * sdfScaler;
+        vec3 perturbed_pos = reference_pos + delta_pos;
+        float R = sdf(perturbed_pos) * sdfScaler;
 
         if (z <= r + abs(R)) {
             float M = (R - r) / (T - t);
