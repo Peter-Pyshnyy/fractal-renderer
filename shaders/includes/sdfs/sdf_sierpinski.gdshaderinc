@@ -1,59 +1,54 @@
 float sdf(vec3 pos) {
     vec3 z = pos;
-    float iterations = params.param0;
-    float scale   = params.param1;
-    float offset  = params.param2;
-    float angleX  = params.param2;
-	float angleY = 0.0;
+    int   iters  = int(params.param0);
+    float scale  = params.param1;
+    float offset = 1.0;
+    float alpha  = params.param2;
+    float beta   = params.param3;
 
-    float cx = cos(angleX), sx = sin(angleX);
-    float cy = cos(angleY), sy = sin(angleY);
+    float ca = cos(alpha), sa = sin(alpha);
+    float cb = cos(beta),  sb = sin(beta);
 
-    for (int i = 0; i < iterations; i++) {
-        // Rotation around X
-        z.yz = vec2(cx * z.y - sx * z.z, sx * z.y + cx * z.z);
-
-        // Sierpinski tetrahedral folds
+    int n = 0;
+    for (int i = 0; i < iters; i++) {
         if (z.x + z.y < 0.0) z.xy = -z.yx;
         if (z.x + z.z < 0.0) z.xz = -z.zx;
-        if (z.y + z.z < 0.0) z.yz = -z.zy;
+        if (z.y + z.z < 0.0) z.zy = -z.yz;
 
-        // Rotation around Y
-        z.xz = vec2(cy * z.x + sy * z.z, -sy * z.x + cy * z.z);
-
-        // Scale and translate toward vertex (1,1,1)
         z = z * scale - offset * (scale - 1.0);
-    }
 
-    return length(z) * pow(scale, -iterations);
+        z.xz = vec2(ca * z.x - sa * z.z, sa * z.x + ca * z.z);
+        z.yz = vec2(cb * z.y - sb * z.z, sb * z.y + cb * z.z);
+        n++;
+    }
+    return length(z) * pow(scale, -float(n));
 }
 
 float sdf_with_trap(vec3 pos, out float trap) {
     vec3 z = pos;
-    float iterations = params.param0;
-    float scale   = params.param1;
-    float offset  = params.param2;
-    float angleX  = params.param2;
-	float angleY = 0.0;
+    int   iters  = int(params.param0);
+    float scale  = params.param1;
+    float offset = 1.0;
+    float alpha  = params.param2;
+    float beta   = params.param3;
 
-    float cx = cos(angleX), sx = sin(angleX);
-    float cy = cos(angleY), sy = sin(angleY);
+    float ca = cos(alpha), sa = sin(alpha);
+    float cb = cos(beta),  sb = sin(beta);
 
     trap = 1e6;
-
-    for (int i = 0; i < iterations; i++) {
-        z.yz = vec2(cx * z.y - sx * z.z, sx * z.y + cx * z.z);
-
+    int n = 0;
+    for (int i = 0; i < iters; i++) {
         if (z.x + z.y < 0.0) z.xy = -z.yx;
         if (z.x + z.z < 0.0) z.xz = -z.zx;
-        if (z.y + z.z < 0.0) z.yz = -z.zy;
-
-        z.xz = vec2(cy * z.x + sy * z.z, -sy * z.x + cy * z.z);
+        if (z.y + z.z < 0.0) z.zy = -z.yz;
 
         z = z * scale - offset * (scale - 1.0);
 
-        trap = min(get_trap_distance(z), trap);
-    }
+        z.xz = vec2(ca * z.x - sa * z.z, sa * z.x + ca * z.z);
+        z.yz = vec2(cb * z.y - sb * z.z, sb * z.y + cb * z.z);
 
-    return length(z) * pow(scale, -iterations);
+        trap = min(get_trap_distance(z), trap);
+        n++;
+    }
+    return length(z) * pow(scale, -float(n));
 }

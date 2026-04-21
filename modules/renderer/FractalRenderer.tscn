@@ -10,9 +10,8 @@
 [sub_resource type="Resource" id="Resource_kciyt"]
 script = ExtResource("4_c2qj7")
 scale = 2.245
-offset = -0.39
-angle_x = 0.0
-angle_y = 0.0
+alpha = 0.0
+beta = 0.0
 iterations = 50
 metadata/_custom_type_script = "uid://ci55k5xoh3lam"
 
