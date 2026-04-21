@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dm5njkcml606e"
+path="res://.godot/imported/sierpinski.glsl-d94fc9b1c1a44f281fc0f17856764193.res"
+
+[deps]
+
+source_file="res://shaders/fragment/sierpinski.glsl"
+dest_files=["res://.godot/imported/sierpinski.glsl-d94fc9b1c1a44f281fc0f17856764193.res"]
+
+[params]
+
