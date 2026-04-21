@@ -9,6 +9,7 @@ enum CameraMode { FPS, ORBIT }
 @export var zoom_speed := 0.1
 @export var min_orbit_radius := 0.8
 @export var max_orbit_radius := 4.0
+@export var smooth_orbit := true
 
 @onready var camera: Camera3D = $VirtualCamera
 @onready var anchor: Node3D = $Anchor
@@ -234,7 +235,11 @@ func _process_orbit(delta: float) -> void:
 	var target := Vector3(0, 0, orbit_radius)
 
 	anchor.position = target
-	camera.position = camera.position.lerp(target, delta * 15.0)
+	
+	if smooth_orbit:
+		camera.position = camera.position.lerp(target, delta * 15.0)
+	else:
+		camera.position = target
 
 
 func _get_reverse_scalar(x: float) -> float:

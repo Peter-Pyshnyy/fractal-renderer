@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
 [ext_resource type="Script" uid="uid://bbsh05bh0sled" path="res://scripts/sdfs/mandelbulb.gd" id="4_fyoh6"]
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
-[ext_resource type="Script" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
+[ext_resource type="Script" uid="uid://cq0tbtlqqmyh0" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
 
 [sub_resource type="Resource" id="Resource_c2qj7"]
 script = ExtResource("4_fyoh6")
@@ -44,6 +44,7 @@ texture = ExtResource("2_c2qj7")
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("3_dws3f")
+smooth_orbit = false
 
 [node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
@@ -56,8 +57,7 @@ script = ExtResource("2_dws3f")
 texture_rect = NodePath("../FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
-VRS = false
-VRSScale = 3
+VRSScale = 4
 fractal_data = SubResource("Resource_c2qj7")
 material = SubResource("Resource_4ov7m")
 u_metallic = 0.23
