@@ -127,6 +127,11 @@ func _update_sdf_metrics() -> void:
 
 func _zoom(direction: int) -> void:
 	_mark_motion()
+	
+	if Input.is_action_pressed("fov_zoom"):
+		camera.fov += direction * 2
+		return
+	
 	_update_sdf_metrics()
 
 	if current_mode != CameraMode.ORBIT:
@@ -193,7 +198,7 @@ func _handle_rotation(event: InputEventMouseMotion) -> void:
 
 	_mark_motion()
 
-	var sens = orbit_sensitivity if current_mode == CameraMode.ORBIT else mouse_sensitivity * 0.05
+	var sens = orbit_sensitivity if current_mode == CameraMode.ORBIT else mouse_sensitivity * 0.075
 
 	yaw -= event.relative.x * sens
 	pitch -= event.relative.y * sens

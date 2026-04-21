@@ -70,6 +70,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	
 	float ao = calcAO(hit_pos, norm);
 	vec3 albedo = get_trap_color_hsv(trap_normalized);
+	albedo = mix(vec3(1.0), albedo, 0.85);
 	vec3 color = PBR(norm, normal_h, -rayDir, hit_pos, albedo,  ao);
     return color;
 }
