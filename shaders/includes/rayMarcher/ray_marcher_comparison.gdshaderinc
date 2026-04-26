@@ -13,15 +13,17 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     );
 }
 
-vec3 turbo(float x) {
-    x = clamp(x, 0.0, 1.0);
-    vec3 c0 = vec3(0.18995, 0.07176, 0.23217);
-    vec3 c1 = vec3(0.86343, 0.96138, 0.30498);
-    vec3 c2 = vec3(0.70470, 0.01497, 0.15050);
-    return c0
-         + x * (4.61539 * c1 - 4.22054 * c0 - 0.39487 * c2)
-         + x * x * (4.84844 * c0 - 9.23078 * c1 + 4.38234 * c2)
-         + x * x * x * (4.61539 * c1 - 0.61539 * c0 - 4.0 * c2);
+vec3 magma(float t) {
+    t = clamp(t, 0.0, 1.0);
+    const vec3 c0 = vec3(-0.002136485053939582, -0.000749655052795221, -0.005386127855323933);
+    const vec3 c1 = vec3( 0.2516605407371642,    0.6775232436837668,    2.494026599312351);
+    const vec3 c2 = vec3( 8.353717279216625,    -3.577719514958484,     0.3144679030132573);
+    const vec3 c3 = vec3(-27.66873308576866,    14.26473078096533,    -13.64921318813922);
+    const vec3 c4 = vec3( 52.17613981234068,   -27.94360607168351,    12.94416944238394);
+    const vec3 c5 = vec3(-50.76852536473588,    29.04658282127291,     4.23415299384598);
+    const vec3 c6 = vec3( 18.65570506591883,   -11.48977351997711,    -5.601961508734096);
+    vec3 col = c0 + t*(c1 + t*(c2 + t*(c3 + t*(c4 + t*(c5 + t*c6)))));
+	return pow(col, vec3(2.2));
 }
 
 vec3 raymarch(vec3 rayDir) {
@@ -42,7 +44,7 @@ vec3 raymarch(vec3 rayDir) {
         r = R;
     }
 
-    return turbo(float(steps) / 60.0);
+    return magma(float(steps) / 85.0);
 }
 
 vec3 raymarch_relaxed(vec3 rayDir) {
@@ -71,7 +73,7 @@ vec3 raymarch_relaxed(vec3 rayDir) {
         }
     }
 
-    return turbo(float(steps) / 60.0);
+    return magma(float(steps) / 85.0);
 }
 
 vec3 raymarch_enhanced(vec3 rayDir) {
@@ -107,7 +109,7 @@ vec3 raymarch_enhanced(vec3 rayDir) {
         }
     }
 
-    return turbo(float(steps) / 60.0);
+    return magma(float(steps) / 85.0);
 }
 
 vec3 raymarch_AR(vec3 rayDir) {
@@ -138,5 +140,5 @@ vec3 raymarch_AR(vec3 rayDir) {
         z = 2.0 * r / (1.0 - m);
     }
 
-    return turbo(float(steps) / 60.0);
+    return magma(float(steps) / 85.0);
 }

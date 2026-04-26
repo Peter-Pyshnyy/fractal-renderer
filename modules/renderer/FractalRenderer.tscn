@@ -45,7 +45,7 @@ texture = ExtResource("2_c2qj7")
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("3_dws3f")
 mouse_sensitivity = 0.017
-max_orbit_radius = 2.25
+max_orbit_radius = 2.0
 
 [node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
