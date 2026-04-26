@@ -20,7 +20,7 @@ vec3 raymarch_AR(vec3 rayDir) {
     float pixelRadius = cam.fovScale / cam.resolution.y;
 
     float t = 0.0;
-    float r = sdf(cam.position.xyz);
+    float r = sdf(cam.position.xyz) * sdfScaler;
     float z = r;
     float m = -1.0;
 
@@ -35,13 +35,13 @@ vec3 raymarch_AR(vec3 rayDir) {
             bestT     = t;
         }
 
-        if (pixelError < 1.0 || t + r >= MAX_DIST) break;
+        if (pixelError < 1.0 || t >= MAX_DIST) break;
 
         float T = t + z;
         vec3  pos = cam.position.xyz + rayDir * T;
         
         // Знову використовуємо ШВИДКУ sdf
-        float R = sdf(pos) * (sdfScaler);
+        float R = sdf(pos) * sdfScaler;
 
         if (z <= r + abs(R)) {
             float M = (R - r) / (T - t);
@@ -56,7 +56,7 @@ vec3 raymarch_AR(vec3 rayDir) {
     }
 
     if (bestError >= 1.0 || bestT >= MAX_DIST) {
-        return vec3(0.0);
+        return vec3(0.75);
     }
 
     float hit_trap;
@@ -69,6 +69,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	vec3 norm = calcNormal(hit_pos, normal_h);
 	
 	float ao = calcAO(hit_pos, norm);
+	return vec3(ao / 3.0);
 	vec3 albedo = get_trap_color_hsv(trap_normalized);
 	albedo = mix(vec3(1.0), albedo, 0.85);
 	vec3 color = PBR(norm, normal_h, -rayDir, hit_pos, albedo,  ao);

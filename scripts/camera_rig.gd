@@ -7,7 +7,6 @@ enum CameraMode { FPS, ORBIT }
 @export var orbit_radius := 1.5
 
 @export var zoom_speed := 0.1
-@export var min_orbit_radius := 0.8
 @export var max_orbit_radius := 4.0
 @export var smooth_orbit := true
 
@@ -45,7 +44,11 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("switch_camera"):
 		_switch_mode()
-
+	
+	if event.is_action_pressed("Screenshot"):
+		var img = get_viewport().get_texture().get_image()
+		img.save_png("user://screenshot.png")
+	
 	if event is InputEventMouseButton:
 		_handle_mouse_buttons(event)
 
@@ -180,7 +183,6 @@ func _zoom_orbit(direction: int) -> void:
 		if dist_to_sdf > 0.0:
 			orbit_zoom_speed = dist_to_sdf * orbit_zoom_factor
 			orbit_radius -= orbit_zoom_speed
-			orbit_radius = max(orbit_radius, min_orbit_radius)
 		else:
 			orbit_zoom_speed *= 4.0
 

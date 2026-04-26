@@ -21,7 +21,7 @@ vec3 raymarch(vec3 rayDir) {
 
     for (int i = 0; i < MAX_STEPS; i++) {
         vec3 pos = cam.position.xyz + rayDir * t;
-        
+
         // Fast SDF evaluation during the march (no trap calculation)
         // Scaled to match AR parameters
         float radius = sdf(pos) * (sdfScaler / float(resolution_scale));
@@ -51,7 +51,7 @@ vec3 raymarch(vec3 rayDir) {
     float hit_trap;
     vec3 hit_pos = cam.position.xyz + rayDir * candidate_t;
     sdf_with_trap(hit_pos, hit_trap);
-    
+
     hit_trap = log(hit_trap + 1.0);
     float trap_normalized = exp(-hit_trap * 15.0);
     return get_trap_color(trap_normalized);

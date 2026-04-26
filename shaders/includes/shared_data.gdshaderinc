@@ -33,5 +33,5 @@ layout(push_constant, std430) uniform PushConstants {
 };
 
 const int MAX_STEPS = 250;
-const float EPSILON = 0.00001;
+const float EPSILON = 0.001;
 const float MAX_DIST = 20.0;
