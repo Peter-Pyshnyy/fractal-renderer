@@ -7,17 +7,17 @@
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
 [ext_resource type="Script" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
 
-[sub_resource type="Resource" id="Resource_kciyt"]
+[sub_resource type="Resource" id="Resource_c2qj7"]
 script = ExtResource("4_c2qj7")
 power = 8.0
 test1 = 1.0
 test2 = 1.0
-iterations = 15
+iterations = 10
 metadata/_custom_type_script = "uid://bbsh05bh0sled"
 
 [sub_resource type="Resource" id="Resource_4ov7m"]
 script = ExtResource("5_c2qj7")
-color0 = Color(1, 1, 1, 1)
+color0 = Color(0, 0.780723, 0.476857, 1)
 color1 = Color(0.387404, 0.293899, 0.26004, 1)
 metadata/_custom_type_script = "uid://cq0tbtlqqmyh0"
 
@@ -61,7 +61,7 @@ VRSTimer = NodePath("VRSTimer")
 VRS = false
 VRSScale = 4
 fractal_iterations = 100
-fractal_data = SubResource("Resource_kciyt")
+fractal_data = SubResource("Resource_c2qj7")
 material = SubResource("Resource_4ov7m")
 u_metallic = 0.23
 u_roughness = 0.42

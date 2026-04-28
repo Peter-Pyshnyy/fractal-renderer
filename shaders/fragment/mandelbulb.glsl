@@ -12,7 +12,7 @@ layout(set = 0, binding = 2, rgba32f) uniform readonly image2D history_image;
 #include "res://shaders/includes/color/PBR.gdshaderinc"
 //#include "res://shaders/includes/rayMarcher/ray_marcher.gdshaderinc"
 //#include "res://shaders/includes/rayMarcher/ray_marcher_enhanced.gdshaderinc"
-#include "res://shaders/includes/rayMarcher/ray_marcher_comparison.gdshaderinc"  
+#include "res://shaders/includes/rayMarcher/ray_marcher_AR.gdshaderinc"  
   
 void main() {
     ivec2 base_coord = ivec2(gl_GlobalInvocationID.xy) * resolution_scale; 
@@ -26,7 +26,7 @@ void main() {
     uv.y = 1.0 - uv.y;
     
     vec3 rayDir = getRayDirection(cam.resolution, uv);
-    vec3 color = raymarch(rayDir); 
+    vec3 color = raymarch_AR(rayDir); 
 //    vec3 color = raymarch(rayDir); 
         
     for (int y = 0; y < resolution_scale; y++) {

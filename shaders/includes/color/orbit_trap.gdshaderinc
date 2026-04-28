@@ -16,13 +16,19 @@ vec3 get_trap_color_sinmask(float x) {
 }
 
 vec3 get_trap_color_hsv(float x) {
-	vec3 orbit_color = hsv2rgb(
-		// exp(sin(x + a) ..., b) -> a sets the size of the "rapture", b fills the positive space with set hue
-		vec3(pow(sin(x + params.param3) * 2.0 - 1.0, params.param2),
-		 1.0,
-		 1.0));
+	//vec3 orbit_color = hsv2rgb(
+		//// exp(sin(x + a) ..., b) -> a sets the size of the "rapture", b fills the positive space with set hue
+		//vec3(pow(sin(x + params.param3) * 2.0 - 1.0, params.param2),
+		 //1.0,
+		 //1.0));
+	vec3 orbit_color = hsv2rgb(vec3(x, 1.0, 1.0));
 	return mix(material.color_a.rgb, orbit_color, 0.5);
 	//return mix(material.color_a.rgb, orbit_color, 0.5);
+}
+
+float get_normalized_trap(float d, float ref) {
+	float k = 1.4;
+	return d / (d + ref * k);
 }
 
 float get_trap_distance(vec3 p) {

@@ -24,7 +24,7 @@ float sdf(vec3 pos) {
     return length(z) * pow(scale, -float(n));
 }
 
-float sdf_with_trap(vec3 pos, out float trap) {
+float sdf_with_trap(vec3 pos, out float trap, out float trap_ref) {
     vec3 z = pos;
     int   iters  = int(params.param0);
     float scale  = params.param1;
@@ -36,6 +36,8 @@ float sdf_with_trap(vec3 pos, out float trap) {
     float cb = cos(beta),  sb = sin(beta);
 
     trap = 1e6;
+	trap_ref = 0;
+	
     int n = 0;
     for (int i = 0; i < iters; i++) {
         if (z.x + z.y < 0.0) z.xy = -z.yx;
@@ -48,6 +50,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
         z.yz = vec2(cb * z.y - sb * z.z, sb * z.y + cb * z.z);
 
         trap = min(get_trap_distance(z), trap);
+		trap_ref = max(length(z), trap_ref);
         n++;
     }
     return length(z) * pow(scale, -float(n));

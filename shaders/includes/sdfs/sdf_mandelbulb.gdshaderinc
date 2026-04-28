@@ -24,7 +24,7 @@ float sdf(vec3 pos) {
     return 0.5 * log(r) * r / dr;
 }
 
-float sdf_with_trap(vec3 pos, out float trap) {
+float sdf_with_trap(vec3 pos, out float trap, out float trap_ref) {
     vec3 z = pos;
     float r = 0.0;
     float dr = 1.0;
@@ -33,6 +33,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
     float powerMinus1 = power - 1.0;
 
     trap = 1e6;
+	trap_ref = 0;
 
     for (int i = 0; i < iterations; i++) {
         r = length(z);
@@ -50,6 +51,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
         z = zr * vec3(sinTheta * cos(phi), sinTheta * sin(phi), cos(theta)) + pos;
 
         trap = min(get_trap_distance(z), trap);
+		trap_ref = max(r, trap_ref);
     }
     return 0.5 * log(r) * r / dr;
 }

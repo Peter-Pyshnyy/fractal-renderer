@@ -59,17 +59,16 @@ vec3 raymarch_AR(vec3 rayDir) {
         return vec3(0.75);
     }
 
-    float hit_trap;
+    float trap;
+	float trap_ref;
     vec3 hit_pos = cam.position.xyz + rayDir * bestT;
-    sdf_with_trap(hit_pos, hit_trap);
-    hit_trap = log(hit_trap + 1.0);
-    float trap_normalized = exp(-hit_trap * 15.0);
+    sdf_with_trap(hit_pos, trap, trap_ref);
+    float trap_normalized = get_normalized_trap(trap, trap_ref);
 
 	float normal_h = clamp(bestT * pixelRadius * 0.75, 1e-7, 0.01);
 	vec3 norm = calcNormal(hit_pos, normal_h);
 	
 	float ao = calcAO(hit_pos, norm);
-	return vec3(ao / 3.0);
 	vec3 albedo = get_trap_color_hsv(trap_normalized);
 	albedo = mix(vec3(1.0), albedo, 0.85);
 	vec3 color = PBR(norm, normal_h, -rayDir, hit_pos, albedo,  ao);
