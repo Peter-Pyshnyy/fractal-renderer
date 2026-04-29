@@ -4,7 +4,7 @@ float sdf(vec3 pos) {
     float scale  = params.param1;
     float offset = 1.0;
     float alpha  = params.param2;
-    float beta   = 0.0;
+    float beta   = params.param3;
 
     float ca = cos(alpha), sa = sin(alpha);
     float cb = cos(beta),  sb = sin(beta);
@@ -30,7 +30,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
     float scale  = params.param1;
     float offset = 1.0;
     float alpha  = params.param2;
-    float beta   = 0.0;
+    float beta   = params.param3;
 
     float ca = cos(alpha), sa = sin(alpha);
     float cb = cos(beta),  sb = sin(beta);

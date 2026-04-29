@@ -13,8 +13,8 @@ func sdf(pos: Vector3) -> float:
 	var offset: float = 1.0
 	var ca: float = cos(alpha)
 	var sa: float = sin(alpha)
-	var cb: float = cos(0.0)
-	var sb: float = sin(0.0)
+	var cb: float = cos(beta)
+	var sb: float = sin(beta)
 
 	for i in range(iterations):
 		if z.x + z.y < 0.0:

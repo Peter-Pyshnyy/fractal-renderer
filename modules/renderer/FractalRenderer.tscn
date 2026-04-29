@@ -11,13 +11,13 @@
 script = ExtResource("4_c2qj7")
 scale = 2.0
 alpha = 0.0
-beta = 1.33
+beta = 0.0
 iterations = 50
 metadata/_custom_type_script = "uid://ci55k5xoh3lam"
 
 [sub_resource type="Resource" id="Resource_4ov7m"]
 script = ExtResource("5_c2qj7")
-color0 = Color(0, 0.780723, 0.476857, 1)
+color0 = Color(0.53864, 0.431368, 1, 1)
 color1 = Color(0.387404, 0.293899, 0.26004, 1)
 metadata/_custom_type_script = "uid://cq0tbtlqqmyh0"
 
@@ -46,6 +46,7 @@ texture = ExtResource("2_c2qj7")
 script = ExtResource("3_dws3f")
 mouse_sensitivity = 0.017
 max_orbit_radius = 2.0
+smooth_orbit = false
 
 [node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
