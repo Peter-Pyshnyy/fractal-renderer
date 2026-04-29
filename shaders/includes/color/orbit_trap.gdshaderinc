@@ -16,19 +16,15 @@ vec3 get_trap_color_sinmask(float x) {
 }
 
 vec3 get_trap_color_hsv(float x) {
-	vec3 orbit_color = hsv2rgb(
-		// exp(sin(x + a) ..., b) -> a sets the size of the "rapture", b fills the positive space with set hue
-		vec3(pow(sin(x + 8.15) * 2.0 - 1.0, -3.6),
-		 1.0,
-		 1.0));
-	//vec3 orbit_color = hsv2rgb(vec3(x, 1.0, 1.0));
-	return mix(material.color_a.rgb, orbit_color, 0.5);
-	//return mix(material.color_a.rgb, orbit_color, 0.5);
+    float hue = fract(x * 3.0 + 8.5); // x * spread + offset
+    vec3 orbit_color = hsv2rgb(vec3(hue, 1.0, 1.0));
+    return mix(material.color_a.rgb, orbit_color, 0.5);
 }
 
 float get_normalized_trap(float d) {
 	float k = 0.22;
 	float res = d / (d + k);
+	return res;
 	//return pow(res, 2.718281828459045); // x^e
 	return 1.0 - exp(6.0 * res);
 }
