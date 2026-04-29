@@ -60,11 +60,9 @@ vec3 raymarch_AR(vec3 rayDir) {
     }
 
     float trap;
-	float trap_ref;
     vec3 hit_pos = cam.position.xyz + rayDir * bestT;
-    sdf_with_trap(hit_pos, trap, trap_ref);
-    float trap_normalized = get_normalized_trap(trap, trap_ref);
-
+    sdf_with_trap(hit_pos, trap);
+    float trap_normalized = get_normalized_trap(trap);
 	float normal_h = clamp(bestT * pixelRadius * 0.75, 1e-7, 0.01);
 	vec3 norm = calcNormal(hit_pos, normal_h);
 	

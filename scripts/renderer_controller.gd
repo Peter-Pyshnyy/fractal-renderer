@@ -60,7 +60,7 @@ func _ready() -> void:
 # --- Setup ---
 
 func _create_shader() -> void:
-	var shader_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
+	var shader_file := load("res://shaders/fragment/sierpinski.glsl") as RDShaderFile
 	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
 
 

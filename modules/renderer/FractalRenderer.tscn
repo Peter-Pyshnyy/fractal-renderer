@@ -3,17 +3,17 @@
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
-[ext_resource type="Script" uid="uid://bbsh05bh0sled" path="res://scripts/sdfs/mandelbulb.gd" id="4_c2qj7"]
+[ext_resource type="Script" uid="uid://ci55k5xoh3lam" path="res://scripts/sdfs/sierpinski.gd" id="4_c2qj7"]
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
-[ext_resource type="Script" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
+[ext_resource type="Script" uid="uid://cq0tbtlqqmyh0" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
 
-[sub_resource type="Resource" id="Resource_c2qj7"]
+[sub_resource type="Resource" id="Resource_kciyt"]
 script = ExtResource("4_c2qj7")
-power = 8.0
-test1 = 1.0
-test2 = 1.0
-iterations = 10
-metadata/_custom_type_script = "uid://bbsh05bh0sled"
+scale = 2.0
+alpha = 0.0
+beta = 1.33
+iterations = 50
+metadata/_custom_type_script = "uid://ci55k5xoh3lam"
 
 [sub_resource type="Resource" id="Resource_4ov7m"]
 script = ExtResource("5_c2qj7")
@@ -57,11 +57,11 @@ near = 0.066
 script = ExtResource("2_dws3f")
 texture_rect = NodePath("../FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
+render_resolution = Vector2(960, 540)
 VRSTimer = NodePath("VRSTimer")
-VRS = false
 VRSScale = 4
 fractal_iterations = 100
-fractal_data = SubResource("Resource_c2qj7")
+fractal_data = SubResource("Resource_kciyt")
 material = SubResource("Resource_4ov7m")
 u_metallic = 0.23
 u_roughness = 0.42

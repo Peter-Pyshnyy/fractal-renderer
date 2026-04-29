@@ -26,9 +26,9 @@ vec3 get_trap_color_hsv(float x) {
 	//return mix(material.color_a.rgb, orbit_color, 0.5);
 }
 
-float get_normalized_trap(float d, float ref) {
-	float k = 1.4;
-	return d / (d + ref * k);
+float get_normalized_trap(float d) {
+	float k = params.param3;
+	return d / (d + k);
 }
 
 float get_trap_distance(vec3 p) {
