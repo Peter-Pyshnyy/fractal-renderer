@@ -82,6 +82,7 @@ func _setup_slider(slider: HSlider, min_v: float, max_v: float, step_v: float, c
 func _on_fractal_selected(index: int) -> void:
 	renderer.current_pipeline = renderer.pipelines[index]
 	Global.g_fractal = Global.g_data_arr[index]
+	_apply_fractal_defaults(Global.g_fractal)
 	renderer._mark_motion()
 	_sync_ui()
 
@@ -156,6 +157,7 @@ func _update_camera_mode_label() -> void:
 	camera_mode_switch.text = "Camera Mode: %s" % mode_name
 
 func _sync_ui() -> void:
+	_apply_fractal_defaults(Global.g_fractal)
 	iterations_slider.value = Global.g_fractal.iterations
 	iterations_lbl.text = "Iterations: %d" % Global.g_fractal.iterations
 
@@ -171,9 +173,6 @@ func _sync_ui() -> void:
 		slider.min_value = def.get("min", 0.0)
 		slider.max_value = def.get("max", 1.0)
 		slider.step = def.get("step", 0.01)
-		var default_value = def.get("default", 0.0)
-		if is_zero_approx(Global.g_fractal.get_param_value(i)) and not is_zero_approx(default_value):
-			Global.g_fractal.set_param_value(i, default_value)
 		slider.value = Global.g_fractal.get_param_value(i)
 		param_labels[i].text = "%s: %.2f" % [name, slider.value]
 
@@ -187,3 +186,10 @@ func _sync_ui() -> void:
 	mas_scale_slider.value = renderer.VRSScale
 	sensitivity_slider.value = renderer.camera_rig.mouse_sensitivity
 	_update_camera_mode_label()
+
+func _apply_fractal_defaults(fractal: FractalData) -> void:
+	if fractal == null:
+		return
+	var defs = fractal.get_param_definitions()
+	for i in defs.size():
+		fractal.set_param_value(i, defs[i].get("default", fractal.get_param_value(i)))
