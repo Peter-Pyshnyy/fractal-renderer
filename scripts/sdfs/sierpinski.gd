@@ -8,8 +8,28 @@ var beta: float = 0.0
 func _init():
 	iterations = 40
 
+func get_param_definitions() -> Array[Dictionary]:
+	return [
+		{"name": "Scale", "min": 1.0, "max": 4.0, "step": 0.01},
+		{"name": "Alpha", "min": -3.14, "max": 3.14, "step": 0.01},
+		{"name": "Beta", "min": -3.14, "max": 3.14, "step": 0.01},
+	]
+
+func get_param_value(index: int) -> float:
+	match index:
+		0: return scale
+		1: return alpha
+		2: return beta
+		_: return 0.0
+
+func set_param_value(index: int, value: float) -> void:
+	match index:
+		0: scale = value
+		1: alpha = value
+		2: beta = value
+
 func get_shader_params() -> PackedFloat32Array:
-	var arr = super.get_shader_params() 
+	var arr = super.get_shader_params()
 	arr[0] = iterations
 	arr[1] = scale
 	arr[2] = alpha

@@ -25,15 +25,17 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
 } cam;
 
 layout(push_constant, std430) uniform PushConstants {
-    FractalData params;
-	MaterialData material;
-	float u_metallic;
-	float u_roughness;
-	vec4 u_lightDir;
-	int resolution_scale;
-	float jitter_x;
-	float jitter_y;
-	float history_blend;
+    FractalData params;       // 32
+    MaterialData material;    // 32
+    vec4 u_lightDir;          // 16
+    float u_metallic;         // 4
+    float u_roughness;        // 4
+    int use_pbr;              // 4
+    int resolution_scale;     // 4
+    float jitter_x;           // 4
+    float jitter_y;           // 4
+    float history_blend;      // 4
+    float push_constant_padding; // 4
 };
 
 const int MAX_STEPS = 250;

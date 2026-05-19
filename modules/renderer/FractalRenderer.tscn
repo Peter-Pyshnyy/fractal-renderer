@@ -135,6 +135,127 @@ text = "Iterations: 15"
 layout_mode = 2
 value = 15.0
 
+[node name="FractalParamRow1" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
+layout_mode = 2
+
+[node name="FractalParamLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/FractalParamRow1"]
+layout_mode = 2
+text = "Param 1: 0.00"
+
+[node name="FractalParamSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/FractalParamRow1"]
+layout_mode = 2
+
+[node name="FractalParamRow2" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
+layout_mode = 2
+
+[node name="FractalParamLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/FractalParamRow2"]
+layout_mode = 2
+text = "Param 2: 0.00"
+
+[node name="FractalParamSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/FractalParamRow2"]
+layout_mode = 2
+
+[node name="FractalParamRow3" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
+layout_mode = 2
+
+[node name="FractalParamLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/FractalParamRow3"]
+layout_mode = 2
+text = "Param 3: 0.00"
+
+[node name="FractalParamSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/FractalParamRow3"]
+layout_mode = 2
+
+[node name="Section_PBR_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+toggle_mode = true
+text = "PBR Settings ▶"
+
+[node name="Section_PBR_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+
+[node name="PBRToggle" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Enable PBR"
+
+[node name="MetallicLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Metallic: 0.23"
+
+[node name="MetallicSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+
+[node name="RoughnessLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Roughness: 0.42"
+
+[node name="RoughnessSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+
+[node name="LightXLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Light X: 0.50"
+
+[node name="LightXSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+
+[node name="LightYLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Light Y: 1.58"
+
+[node name="LightYSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+value = 2.0
+
+[node name="LightZLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Light Z: 1.00"
+
+[node name="LightZSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+value = 1.0
+
+[node name="Section_MAS_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+toggle_mode = true
+text = "Motion Adaptive Shading ▶"
+
+[node name="Section_MAS_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+
+[node name="MASToggle" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Content"]
+layout_mode = 2
+text = "Enable MAS (VRS)"
+
+[node name="MASScaleLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Content"]
+layout_mode = 2
+text = "MAS Scale: 4"
+
+[node name="MASScaleSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Content"]
+layout_mode = 2
+value = 4.0
+
+[node name="Section_Camera_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+toggle_mode = true
+text = "Camera Settings ▶"
+
+[node name="Section_Camera_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+
+[node name="SensitivityLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+layout_mode = 2
+text = "Sensitivity: 0.017"
+
+[node name="SensitivitySlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+layout_mode = 2
+
+[node name="SmoothOrbitToggle" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+layout_mode = 2
+text = "Smooth Orbit"
+
+[node name="CameraModeDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+layout_mode = 2
+
 [node name="PhotoModeBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Photo Mode"
