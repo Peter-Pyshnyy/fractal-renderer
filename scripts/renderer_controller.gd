@@ -15,6 +15,7 @@ var camera_rig: Node3D
 @export var material: FractalMaterial
 
 @export_category("PBR Settings")
+@export var use_pbr: bool = true
 @export_range(0.0, 1.0, 0.01) var u_metallic: float = 0.75
 @export_range(0.0, 1.0, 0.01) var u_roughness: float = 0.5
 @export var u_lightDir: Vector3 = Vector3(1.0, 1.0, 1.0)
@@ -258,8 +259,12 @@ func _dispatch() -> void:
 		col1.r, col1.g, col1.b, 1.0,
 		u_metallic,
 		u_roughness,
-		0.0, 0.0, # Padding
-		u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0, # Padding
+		u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0,
+	]).to_byte_array())
+
+	pc_bytes.append_array(PackedInt32Array([
+		1 if use_pbr else 0,
+		0, 0, 0
 	]).to_byte_array())
 
 	pc_bytes.append_array(PackedInt32Array([
@@ -322,3 +327,10 @@ func _on_vrs_timer_timeout() -> void:
 
 func _mark_motion():
 	camera_rig._mark_motion()
+
+
+func _mark_motion() -> void:
+	accumulation_samples = 0
+	taa_history_weight = 0.0
+	if camera_rig and camera_rig.has_method("_mark_motion"):
+		camera_rig._mark_motion()

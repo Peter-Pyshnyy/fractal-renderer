@@ -1,4 +1,4 @@
-class_name Mandelbulb 
+class_name Mandelbulb
 extends FractalData
 
 var power: float = 8.0
@@ -8,14 +8,34 @@ var test2: float = 1.0
 func _init():
 	iterations = 15
 
+func get_param_definitions() -> Array[Dictionary]:
+	return [
+		{"name": "Power", "min": 1.0, "max": 16.0, "step": 0.1},
+		{"name": "Test1", "min": 0.0, "max": 5.0, "step": 0.01},
+		{"name": "Test2", "min": 0.0, "max": 5.0, "step": 0.01},
+	]
+
+func get_param_value(index: int) -> float:
+	match index:
+		0: return power
+		1: return test1
+		2: return test2
+		_: return 0.0
+
+func set_param_value(index: int, value: float) -> void:
+	match index:
+		0: power = value
+		1: test1 = value
+		2: test2 = value
+
 func get_shader_params() -> PackedFloat32Array:
-	var arr = super.get_shader_params() 
+	var arr = super.get_shader_params()
 	arr[0] = iterations
 	arr[1] = power
 	arr[2] = test1
 	arr[3] = test2
 	return arr
-	
+
 func sdf(pos: Vector3) -> float:
 	var z: Vector3 = pos
 	var r: float = 0.0
@@ -26,25 +46,19 @@ func sdf(pos: Vector3) -> float:
 	for i in range(iterations):
 		r = z.length()
 		if r > 2.0:
-			break  # escape radius
+			break
 
-		# avoid division instability near zero
 		var inv_r: float = 1.0 / max(r, 1e-6)
-
-		# spherical coordinates
 		var theta: float = acos(z.z * inv_r)
 		var phi: float = atan2(z.y, z.x)
 
-		# derivative update
 		var r_pow: float = pow(r, power_minus_1)
 		dr = r_pow * power * dr + 1.0
 
-		# scale + rotate
-		var zr: float = r_pow * r  # == pow(r, power)
+		var zr: float = r_pow * r
 		theta *= power
 		phi *= power
 
-		# back to cartesian
 		var sin_theta: float = sin(theta)
 		z = zr * Vector3(
 			sin_theta * cos(phi),
@@ -52,5 +66,4 @@ func sdf(pos: Vector3) -> float:
 			cos(theta)
 		) + pos
 
-	# distance estimation
 	return 0.5 * log(r) * r / dr

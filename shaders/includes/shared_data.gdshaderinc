@@ -30,6 +30,8 @@ layout(push_constant, std430) uniform PushConstants {
 	float u_metallic;
 	float u_roughness;
 	vec4 u_lightDir;
+	int use_pbr;
+	ivec3 pbr_padding;
 	int resolution_scale;
 	float jitter_x;
 	float jitter_y;
