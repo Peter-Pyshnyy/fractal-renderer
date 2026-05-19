@@ -114,6 +114,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("7_4ov7m")
+theme_override_constants/separation = 8
 
 [node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
@@ -248,8 +249,9 @@ text = "Sensitivity: 0.017"
 [node name="SensitivitySlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
 layout_mode = 2
 
-[node name="CameraModeDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+[node name="CameraModeSwitch" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
 layout_mode = 2
+text = "Camera Mode: Orbit"
 
 [node name="PhotoModeBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
 layout_mode = 2

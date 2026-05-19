@@ -38,7 +38,7 @@ extends Control
 
 @onready var sensitivity_slider: HSlider = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/SensitivitySlider
 @onready var sensitivity_lbl: Label = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/SensitivityLbl
-@onready var camera_mode_dropdown: OptionButton = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/CameraModeDropdown
+@onready var camera_mode_switch: Button = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/CameraModeSwitch
 
 @export var renderer: Node
 
@@ -70,9 +70,8 @@ func _setup_ui_elements() -> void:
 	_setup_slider(mas_scale_slider, 1.0, 8.0, 1.0, _on_mas_scale_changed)
 
 	_setup_slider(sensitivity_slider, 0.001, 0.1, 0.001, _on_sensitivity_changed)
-	camera_mode_dropdown.add_item("FPS")
-	camera_mode_dropdown.add_item("Orbit")
-	camera_mode_dropdown.item_selected.connect(_on_camera_mode_selected)
+	camera_mode_switch.pressed.connect(_on_camera_mode_switch_pressed)
+	renderer.camera_rig.camera_mode_changed.connect(_on_camera_mode_changed)
 
 func _setup_slider(slider: HSlider, min_v: float, max_v: float, step_v: float, callback: Callable) -> void:
 	slider.min_value = min_v
@@ -145,9 +144,16 @@ func _on_sensitivity_changed(value: float) -> void:
 	renderer.camera_rig.mouse_sensitivity = value
 	renderer._mark_motion()
 
-func _on_camera_mode_selected(index: int) -> void:
-	renderer.camera_rig._switch_mode(index + 1)
+func _on_camera_mode_switch_pressed() -> void:
+	renderer.camera_rig._switch_mode()
 	renderer._mark_motion()
+
+func _on_camera_mode_changed(_mode: int) -> void:
+	_update_camera_mode_label()
+
+func _update_camera_mode_label() -> void:
+	var mode_name := "FPS" if renderer.camera_rig.current_mode == renderer.camera_rig.CameraMode.FPS else "Orbit"
+	camera_mode_switch.text = "Camera Mode: %s" % mode_name
 
 func _sync_ui() -> void:
 	iterations_slider.value = Global.g_fractal.iterations
@@ -165,6 +171,9 @@ func _sync_ui() -> void:
 		slider.min_value = def.get("min", 0.0)
 		slider.max_value = def.get("max", 1.0)
 		slider.step = def.get("step", 0.01)
+		var default_value = def.get("default", 0.0)
+		if is_zero_approx(Global.g_fractal.get_param_value(i)) and not is_zero_approx(default_value):
+			Global.g_fractal.set_param_value(i, default_value)
 		slider.value = Global.g_fractal.get_param_value(i)
 		param_labels[i].text = "%s: %.2f" % [name, slider.value]
 
@@ -177,4 +186,4 @@ func _sync_ui() -> void:
 	mas_toggle.button_pressed = renderer.VRS
 	mas_scale_slider.value = renderer.VRSScale
 	sensitivity_slider.value = renderer.camera_rig.mouse_sensitivity
-	camera_mode_dropdown.select(renderer.camera_rig.current_mode)
+	_update_camera_mode_label()
