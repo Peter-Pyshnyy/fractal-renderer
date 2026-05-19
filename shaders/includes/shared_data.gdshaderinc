@@ -1,8 +1,12 @@
-struct FractalData { // float = 4*7 = 28b
+struct FractalData { // float = 8*7 = 56b
 	float param0;
     float param1;
     float param2;
     float param3;
+    float param4;
+    float param5;
+    float param6;
+    float param7;
 };
 
 struct MaterialData { // vec4 = 4*4 = 16b, 16*2 = 32b

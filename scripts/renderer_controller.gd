@@ -25,8 +25,6 @@ var camera_rig: Node3D
 @export var u_lightDir: Vector3 = Vector3(1.0, 1.0, 1.0)
 
 var rd: RenderingDevice
-var shader_rid: RID
-var pipeline_rid: RID
 var camera_buffer_rid: RID
 
 var texture_rids: Array[RID]
@@ -42,6 +40,9 @@ var taa_jitter := Vector2.ZERO
 var taa_history_weight := 0.0
 var last_motion_version := -1
 
+var pipelines: Dictionary = {}
+var current_pipeline: RID
+
 func _ready() -> void: 
 	if not target_camera: 
 		push_error("Camera3D not assigned") 
@@ -51,18 +52,12 @@ func _ready() -> void:
 	Global.g_active_material = material
 	camera_rig = target_camera.get_parent()
 	rd = RenderingServer.get_rendering_device() 
-	_create_shader() 
 	_create_texture() 
 	_create_camera_buffer() 
 	_create_pipeline() 
 
 
 # --- Setup ---
-
-func _create_shader() -> void:
-	var shader_file := load("res://shaders/fragment/sierpinski.glsl") as RDShaderFile
-	shader_rid = rd.shader_create_from_spirv(shader_file.get_spirv())
-
 
 func _create_texture() -> void:
 	var fmt := RDTextureFormat.new()
@@ -92,6 +87,16 @@ func _create_camera_buffer() -> void:
 
 
 func _create_pipeline() -> void:
+	var mandelbulb_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
+	var mandelbulb_rid = rd.shader_create_from_spirv(mandelbulb_file.get_spirv())
+	pipelines[0] = rd.compute_pipeline_create(mandelbulb_rid)
+	
+	var sierpinski_file := load("res://shaders/fragment/sierpinski.glsl") as RDShaderFile
+	var sierpinski_rid = rd.shader_create_from_spirv(sierpinski_file.get_spirv())
+	pipelines[1] = rd.compute_pipeline_create(sierpinski_rid)
+	
+	current_pipeline = pipelines[0]
+	
 	for i in 2:
 		var read_i := 1 - i
 
@@ -110,10 +115,10 @@ func _create_pipeline() -> void:
 		cam_uniform.binding = 1
 		cam_uniform.add_id(camera_buffer_rid)
 
-		var set = rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], shader_rid, 0)
+		# Використовуємо mandelbulb_rid як шаблон (layout template) для створення set-у
+		var set = rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], mandelbulb_rid, 0)
 		uniform_sets.append(set)
 
-	pipeline_rid = rd.compute_pipeline_create(shader_rid)
 
 
 # --- Per-frame update ---
@@ -203,26 +208,25 @@ func _dispatch() -> void:
 	var y_groups := int(ceil(scaled_height / 16.0))
 
 	var list := rd.compute_list_begin()
-	rd.compute_list_bind_compute_pipeline(list, pipeline_rid)
+	rd.compute_list_bind_compute_pipeline(list, current_pipeline)
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
 
 	var params = Global.g_fractal.get_shader_params()
+	params.resize(8)
 	var col0 = Global.g_active_material.color0
 	var col1 = Global.g_active_material.color1
 	var pc_bytes := PackedByteArray()
 
 	pc_bytes.append_array(PackedFloat32Array([
-		params[0], 
-		params[1],
-		params[2],
-		params[3],
+		params[0], params[1], params[2], params[3],
+		params[4], params[5], params[6], params[7],
 
 		col0.r, col0.g, col0.b, 1.0,
 		col1.r, col1.g, col1.b, 1.0,
 		u_metallic,
 		u_roughness,
-		0.0, 0.0,
-		u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0,
+		0.0, 0.0, # Padding
+		u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0, # Padding
 	]).to_byte_array())
 
 	pc_bytes.append_array(PackedInt32Array([
@@ -277,11 +281,14 @@ func _exit_tree() -> void:
 	for t in texture_rids:
 		if t.is_valid(): rd.free_rid(t)
 
-	if pipeline_rid.is_valid(): rd.free_rid(pipeline_rid)
-	if shader_rid.is_valid(): rd.free_rid(shader_rid)
 	if camera_buffer_rid.is_valid(): rd.free_rid(camera_buffer_rid)
+	
+	if current_pipeline.is_valid(): rd.free_rid(current_pipeline)
 
 
 func _on_vrs_timer_timeout() -> void:
 	current_res_scale = 1
 	camera_rig.is_moving = false
+
+func _mark_motion():
+	camera_rig._mark_motion()

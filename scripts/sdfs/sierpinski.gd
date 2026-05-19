@@ -1,12 +1,22 @@
 class_name SierpinskiTetrahedron
 extends FractalData
 
-@export var scale: float = 2.0
-@export var alpha: float = 0.0
-@export var beta: float = 0.0
+var scale: float
+var alpha: float
+var beta: float
 
-func get_shader_params() -> Array[float]:
-	return [float(iterations), scale, alpha, beta]
+func _ready():
+	iterations = 40
+	scale = 2.0
+	alpha = 0.0
+	beta = 0.0
+
+func get_shader_params() -> PackedFloat32Array:
+	var arr = super.get_shader_params() 
+	arr[0] = scale
+	arr[1] = alpha
+	arr[2] = beta
+	return arr
 
 func sdf(pos: Vector3) -> float:
 	var z: Vector3 = pos

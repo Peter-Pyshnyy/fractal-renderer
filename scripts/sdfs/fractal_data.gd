@@ -3,5 +3,8 @@ extends Resource
 
 @export var iterations: int = 10
 
-func get_shader_params() -> Array[float]:
-	return [float(iterations), 0.0, 0.0]
+func get_shader_params() -> PackedFloat32Array:
+	var arr := PackedFloat32Array()
+	arr.resize(8)
+	arr.fill(0.0)
+	return arr

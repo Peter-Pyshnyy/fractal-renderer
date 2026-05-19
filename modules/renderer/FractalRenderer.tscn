@@ -1,20 +1,18 @@
-[gd_scene load_steps=10 format=3 uid="uid://dcgcssobxgh5o"]
+[gd_scene load_steps=11 format=3 uid="uid://dcgcssobxgh5o"]
 
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
-[ext_resource type="Script" uid="uid://ci55k5xoh3lam" path="res://scripts/sdfs/sierpinski.gd" id="4_c2qj7"]
+[ext_resource type="Script" uid="uid://bbsh05bh0sled" path="res://scripts/sdfs/mandelbulb.gd" id="3_kciyt"]
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
 [ext_resource type="Script" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
+[ext_resource type="Script" uid="uid://dlwclhp11cutq" path="res://modules/renderer/ui_manager.gd" id="6_kciyt"]
 [ext_resource type="Script" uid="uid://cmmd8kh5ixv5a" path="res://modules/renderer/accordion_menu.gd" id="7_4ov7m"]
 
-[sub_resource type="Resource" id="Resource_c2qj7"]
-script = ExtResource("4_c2qj7")
-scale = 2.0
-alpha = 0.0
-beta = 0.0
-iterations = 50
-metadata/_custom_type_script = "uid://ci55k5xoh3lam"
+[sub_resource type="Resource" id="Resource_ksikl"]
+script = ExtResource("3_kciyt")
+iterations = 10
+metadata/_custom_type_script = "uid://bbsh05bh0sled"
 
 [sub_resource type="Resource" id="Resource_4ov7m"]
 script = ExtResource("5_c2qj7")
@@ -44,7 +42,7 @@ VRSTimer = NodePath("VRSTimer")
 VRS = false
 VRSScale = 4
 fractal_iterations = 100
-fractal_data = SubResource("Resource_c2qj7")
+fractal_data = SubResource("Resource_ksikl")
 material = SubResource("Resource_4ov7m")
 u_metallic = 0.23
 u_roughness = 0.42
@@ -58,13 +56,15 @@ script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
 benchmark_mode = 1
 
-[node name="UI_Root" type="Control" parent="."]
+[node name="UI_Root" type="Control" parent="." node_paths=PackedStringArray("renderer")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("6_kciyt")
+renderer = NodePath("../RendererController")
 
 [node name="MainSplit" type="HBoxContainer" parent="UI_Root"]
 layout_mode = 1
@@ -123,6 +123,7 @@ layout_mode = 2
 
 [node name="IterationsLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
 layout_mode = 2
+text = "Iterations: 15"
 
 [node name="IterationsSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
 layout_mode = 2
