@@ -1,7 +1,7 @@
 extends VBoxContainer
 
-const COLLAPSED_ARROW := "▶"
-const EXPANDED_ARROW := "▼"
+const COLLAPSED_ARROW := "▶  "
+const EXPANDED_ARROW := "▼  "
 
 func _ready() -> void:
 	for i in range(get_child_count()):

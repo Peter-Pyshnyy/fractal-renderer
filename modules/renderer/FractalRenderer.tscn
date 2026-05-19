@@ -113,14 +113,13 @@ size_flags_vertical = 3
 [node name="AccordionMenu" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-script = ExtResource("7_4ov7m")
 theme_override_constants/separation = 14
+script = ExtResource("7_4ov7m")
 
 [node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
-text = ""
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Btn"]
 layout_mode = 1
@@ -134,16 +133,14 @@ mouse_filter = 2
 [node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Btn/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Fractal Settings"
+text = "  Fractal Settings"
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Btn/HeaderRow"]
 layout_mode = 2
 text = "▶"
 horizontal_alignment = 2
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="Section_Fractal_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
@@ -193,7 +190,6 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
-text = ""
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Btn"]
 layout_mode = 1
@@ -207,16 +203,14 @@ mouse_filter = 2
 [node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Btn/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "PBR Settings"
+text = "  PBR Settings"
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Btn/HeaderRow"]
 layout_mode = 2
 text = "▶"
 horizontal_alignment = 2
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="Section_PBR_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
@@ -266,7 +260,6 @@ value = 1.0
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
-text = ""
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Btn"]
 layout_mode = 1
@@ -280,16 +273,14 @@ mouse_filter = 2
 [node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Btn/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Motion Adaptive Shading"
+text = "  Motion Adaptive Shading"
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Btn/HeaderRow"]
 layout_mode = 2
 text = "▶"
 horizontal_alignment = 2
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="Section_MAS_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
@@ -310,7 +301,6 @@ value = 4.0
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
-text = ""
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Btn"]
 layout_mode = 1
@@ -324,16 +314,14 @@ mouse_filter = 2
 [node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Btn/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Camera Settings"
+text = "  Camera Settings"
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Btn/HeaderRow"]
 layout_mode = 2
 text = "▶"
 horizontal_alignment = 2
 vertical_alignment = 1
-mouse_filter = 2
 
 [node name="Section_Camera_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
