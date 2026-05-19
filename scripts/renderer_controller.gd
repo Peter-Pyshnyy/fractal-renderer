@@ -37,6 +37,7 @@ var last_motion_version := -1
 
 var pipelines: Dictionary = {}
 var current_pipeline: RID
+var shader_layout_rid: RID
 
 func _ready() -> void: 
 	if not target_camera: 
@@ -47,9 +48,14 @@ func _ready() -> void:
 	Global.g_active_material = material
 	camera_rig = target_camera.get_parent()
 	rd = RenderingServer.get_rendering_device() 
+	
+	render_resolution = texture_rect.size.max(Vector2.ONE)
+	
 	_create_texture() 
 	_create_camera_buffer() 
 	_create_pipeline() 
+	
+	texture_rect.resized.connect(_on_texture_rect_resized)
 
 
 # --- Setup ---
@@ -72,6 +78,29 @@ func _create_texture() -> void:
 	# initialize display
 	texture_rect.texture = tex_rd_resources[0]
 
+func _on_texture_rect_resized() -> void:
+	var new_size := texture_rect.size.floor()
+	if new_size.x < 1 or new_size.y < 1: return
+	if new_size == render_resolution: return
+
+	render_resolution = new_size
+
+	for u in uniform_sets:
+		if u.is_valid(): rd.free_rid(u)
+	uniform_sets.clear()
+
+	for t in texture_rids:
+		if t.is_valid(): rd.free_rid(t)
+	texture_rids.clear()
+	tex_rd_resources.clear()
+
+	_create_texture()
+	_rebuild_uniform_sets()
+
+	accumulation_samples = 0
+	taa_history_weight = 0.0
+	_mark_motion()
+
 func _create_camera_buffer() -> void:
 	# 5 vec4 = 20 floats
 	cam_data.resize(20)
@@ -85,13 +114,22 @@ func _create_pipeline() -> void:
 	var mandelbulb_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
 	var mandelbulb_rid = rd.shader_create_from_spirv(mandelbulb_file.get_spirv())
 	pipelines[0] = rd.compute_pipeline_create(mandelbulb_rid)
-	
+
 	var sierpinski_file := load("res://shaders/fragment/sierpinski.glsl") as RDShaderFile
 	var sierpinski_rid = rd.shader_create_from_spirv(sierpinski_file.get_spirv())
 	pipelines[1] = rd.compute_pipeline_create(sierpinski_rid)
-	
+
 	current_pipeline = pipelines[0]
-	
+	shader_layout_rid = mandelbulb_rid
+
+	_rebuild_uniform_sets()
+
+
+func _rebuild_uniform_sets() -> void:
+	for u in uniform_sets:
+		if u.is_valid(): rd.free_rid(u)
+	uniform_sets.clear()
+
 	for i in 2:
 		var read_i := 1 - i
 
@@ -110,9 +148,9 @@ func _create_pipeline() -> void:
 		cam_uniform.binding = 1
 		cam_uniform.add_id(camera_buffer_rid)
 
-		# Використовуємо mandelbulb_rid як шаблон (layout template) для створення set-у
-		var set = rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], mandelbulb_rid, 0)
-		uniform_sets.append(set)
+		uniform_sets.append(
+			rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], shader_layout_rid, 0)
+		)
 
 
 

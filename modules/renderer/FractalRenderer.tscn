@@ -89,6 +89,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("2_c2qj7")
+expand_mode = 1
 
 [node name="Sidebar" type="PanelContainer" parent="UI_Root/MainSplit"]
 custom_minimum_size = Vector2(250, 0)
