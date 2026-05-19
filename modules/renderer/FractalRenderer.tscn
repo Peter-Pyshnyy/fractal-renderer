@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://dlwclhp11cutq" path="res://modules/renderer/ui_manager.gd" id="6_kciyt"]
 [ext_resource type="Script" uid="uid://cmmd8kh5ixv5a" path="res://modules/renderer/accordion_menu.gd" id="7_4ov7m"]
 
-[sub_resource type="Resource" id="Resource_ksikl"]
+[sub_resource type="Resource" id="Resource_kciyt"]
 script = ExtResource("3_kciyt")
 iterations = 10
 metadata/_custom_type_script = "uid://bbsh05bh0sled"
@@ -41,8 +41,7 @@ target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
 VRS = false
 VRSScale = 4
-fractal_iterations = 100
-fractal_data = SubResource("Resource_ksikl")
+fractal_data = SubResource("Resource_kciyt")
 material = SubResource("Resource_4ov7m")
 u_metallic = 0.23
 u_roughness = 0.42

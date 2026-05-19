@@ -10,12 +10,7 @@ var camera_rig: Node3D
 @export var VRS: bool = true
 @export var VRSScale: int = 2
 
-@export_category("Fractal Settings")
-@export_range(1.0, 20.0, 0.1) var fractal_power: float = 8.0
-@export_range(1, 100, 1) var fractal_iterations: int = 15
-
 @export_category("Raymarching Tuning")
-@export var step_scale: float = 0.4
 @export var fractal_data: FractalData
 @export var material: FractalMaterial
 
@@ -212,7 +207,6 @@ func _dispatch() -> void:
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
 
 	var params = Global.g_fractal.get_shader_params()
-	params.resize(8)
 	var col0 = Global.g_active_material.color0
 	var col1 = Global.g_active_material.color1
 	var pc_bytes := PackedByteArray()
@@ -267,23 +261,20 @@ func _exit_tree() -> void:
 	if not rd:
 		return
 
-	# Release texture from UI
 	texture_rect.texture = null
-
-	# Clear resource references
-	tex_rd_resources.clear()
-	texture_rids.clear()
-	uniform_sets.clear()
 
 	for u in uniform_sets:
 		if u.is_valid(): rd.free_rid(u)
-
 	for t in texture_rids:
 		if t.is_valid(): rd.free_rid(t)
-
+	for p in pipelines.values():
+		if p.is_valid(): rd.free_rid(p)
 	if camera_buffer_rid.is_valid(): rd.free_rid(camera_buffer_rid)
-	
-	if current_pipeline.is_valid(): rd.free_rid(current_pipeline)
+
+	uniform_sets.clear()
+	texture_rids.clear()
+	tex_rd_resources.clear()
+	pipelines.clear()
 
 
 func _on_vrs_timer_timeout() -> void:

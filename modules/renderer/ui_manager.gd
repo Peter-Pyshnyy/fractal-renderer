@@ -20,7 +20,7 @@ func _setup_ui_elements() -> void:
 	# 2. Налаштування Слайдера Ітерацій
 	iterations_slider.min_value = 1
 	iterations_slider.max_value = 100
-	iterations_slider.value = renderer.fractal_iterations # Беремо стартове значення з рендерера
+	iterations_slider.value = Global.g_fractal.iterations
 	iterations_lbl.text = "Iterations: " + str(iterations_slider.value)
 	iterations_slider.value_changed.connect(_on_iterations_changed)
 	
@@ -38,7 +38,7 @@ func _on_fractal_selected(index: int) -> void:
 
 func _on_iterations_changed(value: float) -> void:
 	iterations_lbl.text = "Iterations: " + str(int(value))
-	renderer.fractal_iterations = int(value)
+	Global.g_fractal.iterations = int(value)
 	renderer._mark_motion()
 
 #func _on_pbr_toggled(button_pressed: bool) -> void:
