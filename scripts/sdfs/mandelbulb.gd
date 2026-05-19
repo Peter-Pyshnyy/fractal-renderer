@@ -10,9 +10,9 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "Power", "min": 1.0, "max": 16.0, "step": 0.1},
-		{"name": "Test1", "min": 0.0, "max": 5.0, "step": 0.01},
-		{"name": "Test2", "min": 0.0, "max": 5.0, "step": 0.01},
+		{"name": "Power", "min": 1.0, "max": 16.0, "step": 0.1, "default": 8.0},
+		{"name": "Test1", "min": 0.0, "max": 5.0, "step": 0.01, "default": 1.0},
+		{"name": "Test2", "min": 0.0, "max": 5.0, "step": 0.01, "default": 1.0},
 	]
 
 func get_param_value(index: int) -> float:

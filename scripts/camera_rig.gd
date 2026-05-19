@@ -30,6 +30,7 @@ var fps_zoom_lock := false
 var dist_to_sdf := 1.0
 var is_moving := false
 var motion_version := 0
+signal camera_mode_changed(mode: int)
 
 # float64 position accumulators
 var precise_x: float = 0.0
@@ -66,10 +67,9 @@ func _process(delta: float) -> void:
 
 # --- Mode switching ---
 
-func _switch_mode(mode:int = 0) -> void:
+func _switch_mode() -> void:
 	is_moving = true
-	# I'm sorry for this code
-	if (mode == 1 or (current_mode == CameraMode.ORBIT and mode != 2)): 
+	if current_mode == CameraMode.ORBIT:
 		current_mode = CameraMode.FPS
 		global_position = camera.global_position
 		anchor.position = Vector3.ZERO
@@ -80,6 +80,7 @@ func _switch_mode(mode:int = 0) -> void:
 		camera.fov = 75.0
 		position = Vector3.ZERO
 		_sync_precise()
+	camera_mode_changed.emit(current_mode)
 
 
 # --- Precise position sync ---

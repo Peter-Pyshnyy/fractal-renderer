@@ -38,9 +38,10 @@ extends Control
 
 @onready var sensitivity_slider: HSlider = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/SensitivitySlider
 @onready var sensitivity_lbl: Label = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/SensitivityLbl
-@onready var camera_mode_dropdown: OptionButton = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/CameraModeDropdown
+@onready var camera_mode_switch: Button = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/CameraModeSwitch
 
 @export var renderer: Node
+var _is_syncing_ui := false
 
 func _ready() -> void:
 	_setup_ui_elements()
@@ -70,9 +71,8 @@ func _setup_ui_elements() -> void:
 	_setup_slider(mas_scale_slider, 1.0, 8.0, 1.0, _on_mas_scale_changed)
 
 	_setup_slider(sensitivity_slider, 0.001, 0.1, 0.001, _on_sensitivity_changed)
-	camera_mode_dropdown.add_item("FPS")
-	camera_mode_dropdown.add_item("Orbit")
-	camera_mode_dropdown.item_selected.connect(_on_camera_mode_selected)
+	camera_mode_switch.pressed.connect(_on_camera_mode_switch_pressed)
+	renderer.camera_rig.camera_mode_changed.connect(_on_camera_mode_changed)
 
 func _setup_slider(slider: HSlider, min_v: float, max_v: float, step_v: float, callback: Callable) -> void:
 	slider.min_value = min_v
@@ -83,6 +83,7 @@ func _setup_slider(slider: HSlider, min_v: float, max_v: float, step_v: float, c
 func _on_fractal_selected(index: int) -> void:
 	renderer.current_pipeline = renderer.pipelines[index]
 	Global.g_fractal = Global.g_data_arr[index]
+	_apply_fractal_defaults(Global.g_fractal)
 	renderer._mark_motion()
 	_sync_ui()
 
@@ -92,6 +93,8 @@ func _on_iterations_changed(value: float) -> void:
 	renderer._mark_motion()
 
 func _on_fractal_param_changed(value: float, index: int) -> void:
+	if _is_syncing_ui:
+		return
 	var defs = Global.g_fractal.get_param_definitions()
 	if index >= defs.size():
 		return
@@ -145,11 +148,20 @@ func _on_sensitivity_changed(value: float) -> void:
 	renderer.camera_rig.mouse_sensitivity = value
 	renderer._mark_motion()
 
-func _on_camera_mode_selected(index: int) -> void:
-	renderer.camera_rig._switch_mode(index + 1)
+func _on_camera_mode_switch_pressed() -> void:
+	renderer.camera_rig._switch_mode()
 	renderer._mark_motion()
 
+func _on_camera_mode_changed(_mode: int) -> void:
+	_update_camera_mode_label()
+
+func _update_camera_mode_label() -> void:
+	var mode_name := "FPS" if renderer.camera_rig.current_mode == renderer.camera_rig.CameraMode.FPS else "Orbit"
+	camera_mode_switch.text = "Camera Mode: %s" % mode_name
+
 func _sync_ui() -> void:
+	_is_syncing_ui = true
+	_apply_fractal_defaults(Global.g_fractal)
 	iterations_slider.value = Global.g_fractal.iterations
 	iterations_lbl.text = "Iterations: %d" % Global.g_fractal.iterations
 
@@ -177,4 +189,12 @@ func _sync_ui() -> void:
 	mas_toggle.button_pressed = renderer.VRS
 	mas_scale_slider.value = renderer.VRSScale
 	sensitivity_slider.value = renderer.camera_rig.mouse_sensitivity
-	camera_mode_dropdown.select(renderer.camera_rig.current_mode)
+	_update_camera_mode_label()
+	_is_syncing_ui = false
+
+func _apply_fractal_defaults(fractal: FractalData) -> void:
+	if fractal == null:
+		return
+	var defs = fractal.get_param_definitions()
+	for i in defs.size():
+		fractal.set_param_value(i, defs[i].get("default", fractal.get_param_value(i)))
