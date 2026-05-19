@@ -11,7 +11,7 @@
 
 [sub_resource type="Resource" id="Resource_kciyt"]
 script = ExtResource("3_kciyt")
-iterations = 30
+iterations = 15
 metadata/_custom_type_script = "uid://bbsh05bh0sled"
 
 [sub_resource type="Resource" id="Resource_4ov7m"]
@@ -111,6 +111,7 @@ size_flags_vertical = 3
 
 [node name="AccordionMenu" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("7_4ov7m")
 
 [node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
@@ -130,6 +131,7 @@ text = "Iterations: 15"
 
 [node name="IterationsSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
 layout_mode = 2
+value = 15.0
 
 [node name="PhotoModeBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
 layout_mode = 2

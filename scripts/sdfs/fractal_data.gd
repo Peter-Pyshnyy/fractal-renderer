@@ -1,7 +1,7 @@
 class_name FractalData
 extends Resource
 
-@export var iterations: int = 10
+@export var iterations: int = 15
 
 func get_shader_params() -> PackedFloat32Array:
 	var arr := PackedFloat32Array()

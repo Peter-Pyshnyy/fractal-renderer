@@ -94,6 +94,7 @@ func _on_texture_rect_resized() -> void:
 	texture_rids.clear()
 	tex_rd_resources.clear()
 
+
 	_create_texture()
 	_rebuild_uniform_sets()
 
