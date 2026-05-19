@@ -37,36 +37,9 @@ var precise_x: float = 0.0
 var precise_y: float = 0.0
 var precise_z: float = 0.0
 
-var _start_rig_position := Vector3.ZERO
-var _start_rig_rotation := Vector3.ZERO
-var _start_camera_position := Vector3.ZERO
-var _start_camera_rotation := Vector3.ZERO
-var _start_orbit_radius := 1.5
-var _start_mode: CameraMode = CameraMode.ORBIT
-
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_start_rig_position = global_position
-	_start_rig_rotation = rotation
-	_start_camera_position = camera.position
-	_start_camera_rotation = camera.rotation
-	_start_orbit_radius = orbit_radius
-	_start_mode = current_mode
-	_sync_precise()
 	is_moving = true
-
-func reset_to_start() -> void:
-	current_mode = _start_mode
-	global_position = _start_rig_position
-	rotation = _start_rig_rotation
-	camera.position = _start_camera_position
-	camera.rotation = _start_camera_rotation
-	anchor.position = Vector3.ZERO
-	orbit_radius = _start_orbit_radius
-	camera.fov = 75.0
-	_sync_precise()
-	camera_mode_changed.emit(current_mode)
-	_mark_motion()
 
 
 func _unhandled_input(event: InputEvent) -> void:
