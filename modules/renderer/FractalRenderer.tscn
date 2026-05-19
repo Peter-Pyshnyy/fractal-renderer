@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dcgcssobxgh5o"]
+[gd_scene load_steps=10 format=3 uid="uid://dcgcssobxgh5o"]
 
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://ci55k5xoh3lam" path="res://scripts/sdfs/sierpinski.gd" id="4_c2qj7"]
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
 [ext_resource type="Script" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
+[ext_resource type="Script" uid="uid://cmmd8kh5ixv5a" path="res://modules/renderer/accordion_menu.gd" id="7_4ov7m"]
 
 [sub_resource type="Resource" id="Resource_c2qj7"]
 script = ExtResource("4_c2qj7")
@@ -23,25 +24,6 @@ metadata/_custom_type_script = "uid://cq0tbtlqqmyh0"
 
 [node name="FractalRenderer" type="Node"]
 
-[node name="FractalScreen" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="TextureRect" type="TextureRect" parent="FractalScreen"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("2_c2qj7")
-
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("3_dws3f")
 mouse_sensitivity = 0.017
@@ -56,7 +38,7 @@ near = 0.066
 
 [node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("texture_rect", "target_camera", "VRSTimer")]
 script = ExtResource("2_dws3f")
-texture_rect = NodePath("../FractalScreen/TextureRect")
+texture_rect = NodePath("../UI_Root/MainSplit/FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
 VRS = false
@@ -75,5 +57,78 @@ one_shot = true
 script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
 benchmark_mode = 1
+
+[node name="UI_Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainSplit" type="HBoxContainer" parent="UI_Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FractalScreen" type="Control" parent="UI_Root/MainSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="UI_Root/MainSplit/FractalScreen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_c2qj7")
+
+[node name="Sidebar" type="PanelContainer" parent="UI_Root/MainSplit"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI_Root/MainSplit/Sidebar"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AccordionMenu" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+script = ExtResource("7_4ov7m")
+
+[node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+toggle_mode = true
+text = "Fractal Settings ▶"
+
+[node name="Section_Fractal_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+
+[node name="FractalDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
+layout_mode = 2
+
+[node name="IterationsLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
+layout_mode = 2
+
+[node name="IterationsSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
+layout_mode = 2
+
+[node name="PhotoModeBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Photo Mode"
 
 [connection signal="timeout" from="RendererController/VRSTimer" to="RendererController" method="_on_vrs_timer_timeout"]
