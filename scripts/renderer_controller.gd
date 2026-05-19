@@ -264,10 +264,6 @@ func _dispatch() -> void:
 
 	pc_bytes.append_array(PackedInt32Array([
 		1 if use_pbr else 0,
-		0, 0, 0
-	]).to_byte_array())
-
-	pc_bytes.append_array(PackedInt32Array([
 		current_res_scale
 	]).to_byte_array())
 
@@ -275,6 +271,7 @@ func _dispatch() -> void:
 		taa_jitter.x,
 		taa_jitter.y,
 		taa_history_weight,
+		0.0,
 	]).to_byte_array())
 
 	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
