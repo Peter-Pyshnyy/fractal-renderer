@@ -250,28 +250,24 @@ func _dispatch() -> void:
 	var col0 = Global.g_active_material.color0
 	var col1 = Global.g_active_material.color1
 	var pc_bytes := PackedByteArray()
-
 	pc_bytes.append_array(PackedFloat32Array([
-		params[0], params[1], params[2], params[3],
-		params[4], params[5], params[6], params[7],
-
-		col0.r, col0.g, col0.b, 1.0,
-		col1.r, col1.g, col1.b, 1.0,
-		u_metallic,
-		u_roughness,
-		u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0,
+	params[0], params[1], params[2], params[3],
+	params[4], params[5], params[6], params[7],
+	col0.r, col0.g, col0.b, 1.0,
+	col1.r, col1.g, col1.b, 1.0,
+	u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0,
+	u_metallic,
+	u_roughness,
 	]).to_byte_array())
-
 	pc_bytes.append_array(PackedInt32Array([
-		1 if use_pbr else 0,
-		current_res_scale
+	1 if use_pbr else 0,
+	current_res_scale,
 	]).to_byte_array())
-
 	pc_bytes.append_array(PackedFloat32Array([
-		taa_jitter.x,
-		taa_jitter.y,
-		taa_history_weight,
-		0.0,
+	taa_jitter.x,
+	taa_jitter.y,
+	taa_history_weight,
+	0.0,
 	]).to_byte_array())
 
 	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
@@ -321,10 +317,6 @@ func _exit_tree() -> void:
 func _on_vrs_timer_timeout() -> void:
 	current_res_scale = 1
 	camera_rig.is_moving = false
-
-func _mark_motion():
-	camera_rig._mark_motion()
-
 
 func _mark_motion() -> void:
 	accumulation_samples = 0
