@@ -83,6 +83,7 @@ func _setup_slider(slider: HSlider, min_v: float, max_v: float, step_v: float, c
 func _on_fractal_selected(index: int) -> void:
 	renderer.current_pipeline = renderer.pipelines[index]
 	Global.g_fractal = Global.g_data_arr[index]
+	renderer.camera_rig.reset_to_start()
 	_apply_fractal_defaults(Global.g_fractal)
 	renderer._mark_motion()
 	_sync_ui()
