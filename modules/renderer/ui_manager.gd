@@ -41,6 +41,7 @@ extends Control
 @onready var camera_mode_switch: Button = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/CameraModeSwitch
 
 @export var renderer: Node
+var _is_syncing_ui := false
 
 func _ready() -> void:
 	_setup_ui_elements()
@@ -92,6 +93,8 @@ func _on_iterations_changed(value: float) -> void:
 	renderer._mark_motion()
 
 func _on_fractal_param_changed(value: float, index: int) -> void:
+	if _is_syncing_ui:
+		return
 	var defs = Global.g_fractal.get_param_definitions()
 	if index >= defs.size():
 		return
@@ -157,6 +160,7 @@ func _update_camera_mode_label() -> void:
 	camera_mode_switch.text = "Camera Mode: %s" % mode_name
 
 func _sync_ui() -> void:
+	_is_syncing_ui = true
 	_apply_fractal_defaults(Global.g_fractal)
 	iterations_slider.value = Global.g_fractal.iterations
 	iterations_lbl.text = "Iterations: %d" % Global.g_fractal.iterations
@@ -186,6 +190,7 @@ func _sync_ui() -> void:
 	mas_scale_slider.value = renderer.VRSScale
 	sensitivity_slider.value = renderer.camera_rig.mouse_sensitivity
 	_update_camera_mode_label()
+	_is_syncing_ui = false
 
 func _apply_fractal_defaults(fractal: FractalData) -> void:
 	if fractal == null:
