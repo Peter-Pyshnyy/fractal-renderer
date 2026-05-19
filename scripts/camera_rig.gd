@@ -66,9 +66,10 @@ func _process(delta: float) -> void:
 
 # --- Mode switching ---
 
-func _switch_mode() -> void:
+func _switch_mode(mode:int = 0) -> void:
 	is_moving = true
-	if current_mode == CameraMode.ORBIT:
+	# I'm sorry for this code
+	if (mode == 1 or (current_mode == CameraMode.ORBIT and mode != 2)): 
 		current_mode = CameraMode.FPS
 		global_position = camera.global_position
 		anchor.position = Vector3.ZERO

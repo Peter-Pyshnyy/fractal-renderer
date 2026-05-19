@@ -38,7 +38,6 @@ extends Control
 
 @onready var sensitivity_slider: HSlider = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/SensitivitySlider
 @onready var sensitivity_lbl: Label = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/SensitivityLbl
-@onready var smooth_orbit_toggle: CheckBox = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/SmoothOrbitToggle
 @onready var camera_mode_dropdown: OptionButton = $MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content/CameraModeDropdown
 
 @export var renderer: Node
@@ -71,7 +70,6 @@ func _setup_ui_elements() -> void:
 	_setup_slider(mas_scale_slider, 1.0, 8.0, 1.0, _on_mas_scale_changed)
 
 	_setup_slider(sensitivity_slider, 0.001, 0.1, 0.001, _on_sensitivity_changed)
-	smooth_orbit_toggle.toggled.connect(_on_smooth_orbit_toggled)
 	camera_mode_dropdown.add_item("FPS")
 	camera_mode_dropdown.add_item("Orbit")
 	camera_mode_dropdown.item_selected.connect(_on_camera_mode_selected)
@@ -133,6 +131,7 @@ func _on_light_z_changed(value: float) -> void:
 
 func _on_mas_toggled(pressed: bool) -> void:
 	renderer.VRS = pressed
+	renderer.camera_rig.smooth_orbit = !pressed
 	renderer._mark_motion()
 
 func _on_mas_scale_changed(value: float) -> void:
@@ -146,12 +145,8 @@ func _on_sensitivity_changed(value: float) -> void:
 	renderer.camera_rig.mouse_sensitivity = value
 	renderer._mark_motion()
 
-func _on_smooth_orbit_toggled(pressed: bool) -> void:
-	renderer.camera_rig.smooth_orbit = pressed
-	renderer._mark_motion()
-
 func _on_camera_mode_selected(index: int) -> void:
-	renderer.camera_rig.current_mode = index
+	renderer.camera_rig._switch_mode(index + 1)
 	renderer._mark_motion()
 
 func _sync_ui() -> void:
@@ -182,5 +177,4 @@ func _sync_ui() -> void:
 	mas_toggle.button_pressed = renderer.VRS
 	mas_scale_slider.value = renderer.VRSScale
 	sensitivity_slider.value = renderer.camera_rig.mouse_sensitivity
-	smooth_orbit_toggle.button_pressed = renderer.camera_rig.smooth_orbit
 	camera_mode_dropdown.select(renderer.camera_rig.current_mode)
