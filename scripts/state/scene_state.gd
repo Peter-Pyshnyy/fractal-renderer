@@ -8,9 +8,9 @@ class_name SceneStateR extends Resource
 	set(v): fractal_index = v; emit_changed()
 @export var light_dir: Vector3 = Vector3(1, 1, 1):
 	set(v): light_dir = v; emit_changed()
-@export_range(0.0, 1.0, 0.01) var metallic: float = 0.75:
+@export_range(0.0, 1.0, 0.01) var metallic: float = 0.4:
 	set(v): metallic = v; emit_changed()
-@export_range(0.0, 1.0, 0.01) var roughness: float = 0.5:
+@export_range(0.0, 1.0, 0.01) var roughness: float = 0.8:
 	set(v): roughness = v; emit_changed()
 @export var use_pbr: bool = true:
 	set(v): use_pbr = v; emit_changed()
