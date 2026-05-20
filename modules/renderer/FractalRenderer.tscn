@@ -1,15 +1,28 @@
-[gd_scene load_steps=11 format=3 uid="uid://dcgcssobxgh5o"]
+[gd_scene load_steps=15 format=3 uid="uid://dcgcssobxgh5o"]
 
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
+[ext_resource type="Script" uid="uid://bbsh05bh0sled" path="res://scripts/sdfs/mandelbulb.gd" id="3_kciyt"]
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
+[ext_resource type="Script" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
+[ext_resource type="Script" uid="uid://cmmd8kh5ixv5a" path="res://scripts/UI/accordion_btn.gd" id="6_bn4l7"]
 [ext_resource type="Script" uid="uid://dlwclhp11cutq" path="res://modules/renderer/ui_manager.gd" id="6_kciyt"]
-[ext_resource type="Script" uid="uid://cmmd8kh5ixv5a" path="res://modules/renderer/accordion_menu.gd" id="7_4ov7m"]
 [ext_resource type="Script" uid="uid://cnbo1c7mdna5i" path="res://scripts/UI/fractal_section.gd" id="9_ksikl"]
 [ext_resource type="Script" uid="uid://l2jfq07i1t4v" path="res://scripts/UI/pbr_section.gd" id="10_bn4l7"]
 [ext_resource type="Script" uid="uid://omxvvg04368j" path="res://scripts/UI/mas_section.gd" id="11_i0rrr"]
 [ext_resource type="Script" uid="uid://tqdnit8ceif1" path="res://scripts/UI/camera_section.gd" id="12_b4yyk"]
+
+[sub_resource type="Resource" id="Resource_b4yyk"]
+script = ExtResource("3_kciyt")
+iterations = 15
+metadata/_custom_type_script = "uid://bbsh05bh0sled"
+
+[sub_resource type="Resource" id="Resource_5o5ty"]
+script = ExtResource("5_c2qj7")
+color0 = Color(1, 0.894118, 0.768627, 1)
+color1 = Color(0.647059, 0.164706, 0.164706, 1)
+metadata/_custom_type_script = "uid://cq0tbtlqqmyh0"
 
 [node name="FractalRenderer" type="Node"]
 
@@ -33,6 +46,8 @@ script = ExtResource("2_dws3f")
 texture_rect = NodePath("../UI_Root/MainSplit/FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
+initial_fractal = SubResource("Resource_b4yyk")
+initial_material = SubResource("Resource_5o5ty")
 
 [node name="VRSTimer" type="Timer" parent="RendererController"]
 one_shot = true
@@ -42,7 +57,7 @@ script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
 benchmark_mode = 1
 
-[node name="UI_Root" type="Control" parent="." node_paths=PackedStringArray("renderer")]
+[node name="UI_Root" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -51,7 +66,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("6_kciyt")
-renderer = NodePath("../RendererController")
 
 [node name="MainSplit" type="HBoxContainer" parent="UI_Root"]
 layout_mode = 1
@@ -102,12 +116,13 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 14
-script = ExtResource("7_4ov7m")
 
-[node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+[node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
+script = ExtResource("6_bn4l7")
+content = NodePath("../Section_Fractal_Content")
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Btn"]
 layout_mode = 1
@@ -175,10 +190,12 @@ text = "Param 3: 0.00"
 [node name="FractalParamSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/FractalParamRow3"]
 layout_mode = 2
 
-[node name="Section_PBR_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+[node name="Section_PBR_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
+script = ExtResource("6_bn4l7")
+content = NodePath("../Section_PBR_Content")
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Btn"]
 layout_mode = 1
@@ -246,10 +263,12 @@ text = "Light Z: 1.00"
 layout_mode = 2
 value = 1.0
 
-[node name="Section_MAS_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+[node name="Section_MAS_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
+script = ExtResource("6_bn4l7")
+content = NodePath("../Section_MAS_Content")
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Btn"]
 layout_mode = 1
@@ -263,7 +282,7 @@ mouse_filter = 2
 [node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Btn/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "  Motion Adaptive Shading"
+text = "  MAS Settings"
 vertical_alignment = 1
 
 [node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Btn/HeaderRow"]
@@ -288,10 +307,12 @@ text = "MAS Scale: 4"
 layout_mode = 2
 value = 4.0
 
-[node name="Section_Camera_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+[node name="Section_Camera_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 toggle_mode = true
+script = ExtResource("6_bn4l7")
+content = NodePath("../Section_Camera_Content")
 
 [node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Btn"]
 layout_mode = 1
