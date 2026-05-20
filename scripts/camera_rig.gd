@@ -40,6 +40,10 @@ var precise_z: float = 0.0
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	is_moving = true
+	StateBus.render.changed.connect(_on_render_state_changed)
+	StateBus.camera.changed.connect(_on_camera_state_changed)
+	_on_render_state_changed()
+	_on_camera_state_changed()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -81,6 +85,9 @@ func _switch_mode() -> void:
 		position = Vector3.ZERO
 		_sync_precise()
 	camera_mode_changed.emit(current_mode)
+	# Keep StateBus in sync so camera_section label reflects keyboard-triggered switches
+	if StateBus.camera.mode != int(current_mode):
+		StateBus.camera.mode = int(current_mode)
 
 
 # --- Precise position sync ---
@@ -116,8 +123,17 @@ func _set_mouse_capture(active: bool) -> void:
 
 # --- SDF helpers ---
 
+func _on_render_state_changed() -> void:
+	smooth_orbit = not StateBus.render.vrs_enabled
+
+func _on_camera_state_changed() -> void:
+	mouse_sensitivity = StateBus.camera.mouse_sensitivity
+	if StateBus.camera.mode != int(current_mode):
+		_switch_mode()
+
 func _update_sdf_metrics() -> void:
-	dist_to_sdf = Global.g_fractal.sdf(anchor.global_position)
+	if StateBus.scene.fractal_data == null: return
+	dist_to_sdf = StateBus.scene.fractal_data.sdf(anchor.global_position)
 	orbit_sensitivity = (dist_to_sdf * orbit_zoom_factor) * mouse_sensitivity
 	fps_move_speed = dist_to_sdf * fps_zoom_factor * 10.0
 

@@ -2,26 +2,17 @@ extends Node
 
 @export var texture_rect: TextureRect
 @export var target_camera: Camera3D
-var camera_rig: Node3D
+@export var VRSTimer: Timer
 @export var render_resolution := Vector2(1920, 1080)
-@export var VRSTimer : Timer
 
-@export var test: float = 0.1
-@export var VRS: bool = true
-@export var VRSScale: int = 2
+@export_category("Initial Scene State")
+@export var initial_fractal: FractalData
+@export var initial_material: FractalMaterial
 
-@export_category("Raymarching Tuning")
-@export var fractal_data: FractalData
-@export var material: FractalMaterial
-
-@export_category("PBR Settings")
-@export var use_pbr: bool = true
-@export_range(0.0, 1.0, 0.01) var u_metallic: float = 0.75
-@export_range(0.0, 1.0, 0.01) var u_roughness: float = 0.5
-@export var u_lightDir: Vector3 = Vector3(1.0, 1.0, 1.0)
-
+var camera_rig: Node3D
 var rd: RenderingDevice
 var camera_buffer_rid: RID
+var scene_buffer_rid: RID
 
 var texture_rids: Array[RID]
 var tex_rd_resources: Array[Texture2DRD]
@@ -40,23 +31,32 @@ var pipelines: Dictionary = {}
 var current_pipeline: RID
 var shader_layout_rid: RID
 
-func _ready() -> void: 
-	if not target_camera: 
-		push_error("Camera3D not assigned") 
-		return 
-	
-	Global.g_fractal = fractal_data
-	Global.g_active_material = material
+var _last_fractal_index := -1
+var _scene_dirty := true
+
+
+func _ready() -> void:
+	if not target_camera:
+		push_error("Camera3D not assigned"); return
+
+	StateBus.scene.fractal_data = initial_fractal
+	StateBus.scene.material = initial_material
 	camera_rig = target_camera.get_parent()
-	rd = RenderingServer.get_rendering_device() 
-	
+	rd = RenderingServer.get_rendering_device()
+
 	render_resolution = texture_rect.size.max(Vector2.ONE)
-	
-	_create_texture() 
-	_create_camera_buffer() 
-	_create_pipeline() 
-	
+
+	_create_texture()
+	_create_camera_buffer()
+	_create_scene_buffer()
+	_create_pipeline()
+
 	texture_rect.resized.connect(_on_texture_rect_resized)
+	StateBus.scene.changed.connect(_on_scene_changed)
+	StateBus.render.changed.connect(_mark_motion)
+
+	_last_fractal_index = StateBus.scene.fractal_index
+	current_pipeline = pipelines[_last_fractal_index]
 
 
 # --- Setup ---
@@ -66,18 +66,16 @@ func _create_texture() -> void:
 	fmt.width = int(render_resolution.x)
 	fmt.height = int(render_resolution.y)
 	fmt.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
-	fmt.usage_bits = RenderingDevice.TEXTURE_USAGE_STORAGE_BIT | RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
-
+	fmt.usage_bits = RenderingDevice.TEXTURE_USAGE_STORAGE_BIT \
+				   | RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
 	for i in 2:
-		var tex_rid = rd.texture_create(fmt, RDTextureView.new())
+		var tex_rid := rd.texture_create(fmt, RDTextureView.new())
 		texture_rids.append(tex_rid)
-
 		var tex_res := Texture2DRD.new()
 		tex_res.texture_rd_rid = tex_rid
 		tex_rd_resources.append(tex_res)
-
-	# initialize display
 	texture_rect.texture = tex_rd_resources[0]
+
 
 func _on_texture_rect_resized() -> void:
 	var new_size := texture_rect.size.floor()
@@ -95,7 +93,6 @@ func _on_texture_rect_resized() -> void:
 	texture_rids.clear()
 	tex_rd_resources.clear()
 
-
 	_create_texture()
 	_rebuild_uniform_sets()
 
@@ -103,27 +100,28 @@ func _on_texture_rect_resized() -> void:
 	taa_history_weight = 0.0
 	_mark_motion()
 
-func _create_camera_buffer() -> void:
-	# 5 vec4 = 20 floats
-	cam_data.resize(20)
-	cam_data.fill(0.0)
 
+func _create_camera_buffer() -> void:
+	cam_data.resize(20); cam_data.fill(0.0)
 	var bytes := cam_data.to_byte_array()
 	camera_buffer_rid = rd.storage_buffer_create(bytes.size(), bytes)
 
 
+func _create_scene_buffer() -> void:
+	var bytes := GPULayout.pack_scene(StateBus.scene)
+	scene_buffer_rid = rd.storage_buffer_create(bytes.size(), bytes)
+
+
 func _create_pipeline() -> void:
-	var mandelbulb_file := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
-	var mandelbulb_rid = rd.shader_create_from_spirv(mandelbulb_file.get_spirv())
-	pipelines[0] = rd.compute_pipeline_create(mandelbulb_rid)
+	var mandelbulb := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
+	var mb_rid := rd.shader_create_from_spirv(mandelbulb.get_spirv())
+	pipelines[0] = rd.compute_pipeline_create(mb_rid)
 
-	var sierpinski_file := load("res://shaders/fragment/sierpinski.glsl") as RDShaderFile
-	var sierpinski_rid = rd.shader_create_from_spirv(sierpinski_file.get_spirv())
-	pipelines[1] = rd.compute_pipeline_create(sierpinski_rid)
+	var sierpinski := load("res://shaders/fragment/sierpinski.glsl") as RDShaderFile
+	var sp_rid := rd.shader_create_from_spirv(sierpinski.get_spirv())
+	pipelines[1] = rd.compute_pipeline_create(sp_rid)
 
-	current_pipeline = pipelines[0]
-	shader_layout_rid = mandelbulb_rid
-
+	shader_layout_rid = mb_rid
 	_rebuild_uniform_sets()
 
 
@@ -135,38 +133,50 @@ func _rebuild_uniform_sets() -> void:
 	for i in 2:
 		var read_i := 1 - i
 
-		var img_uniform := RDUniform.new()
-		img_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
-		img_uniform.binding = 0
-		img_uniform.add_id(texture_rids[i])
+		var img_u := RDUniform.new()
+		img_u.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
+		img_u.binding = 0
+		img_u.add_id(texture_rids[i])
 
-		var history_uniform := RDUniform.new()
-		history_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
-		history_uniform.binding = 2
-		history_uniform.add_id(texture_rids[read_i])
+		var cam_u := RDUniform.new()
+		cam_u.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+		cam_u.binding = 1
+		cam_u.add_id(camera_buffer_rid)
 
-		var cam_uniform := RDUniform.new()
-		cam_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-		cam_uniform.binding = 1
-		cam_uniform.add_id(camera_buffer_rid)
+		var hist_u := RDUniform.new()
+		hist_u.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
+		hist_u.binding = 2
+		hist_u.add_id(texture_rids[read_i])
+
+		var scene_u := RDUniform.new()
+		scene_u.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
+		scene_u.binding = 3
+		scene_u.add_id(scene_buffer_rid)
 
 		uniform_sets.append(
-			rd.uniform_set_create([img_uniform, cam_uniform, history_uniform], shader_layout_rid, 0)
+			rd.uniform_set_create([img_u, cam_u, hist_u, scene_u], shader_layout_rid, 0)
 		)
 
+
+func _on_scene_changed() -> void:
+	_scene_dirty = true
+	if StateBus.scene.fractal_index != _last_fractal_index:
+		_last_fractal_index = StateBus.scene.fractal_index
+		current_pipeline = pipelines[_last_fractal_index]
+	_mark_motion()
 
 
 # --- Per-frame update ---
 
 func _process(_delta: float) -> void:
-	var is_moving = camera_rig.is_moving
+	var is_moving : bool = camera_rig.is_moving
 	last_cam_transform = target_camera.global_transform
-	
+
 	if is_moving:
 		accumulation_samples = 0
 		taa_jitter = Vector2.ZERO
 		taa_history_weight = 0.0
-		current_res_scale = VRSScale if VRS else 1
+		current_res_scale = StateBus.render.vrs_scale if StateBus.render.vrs_enabled else 1
 		if camera_rig.motion_version != last_motion_version:
 			last_motion_version = camera_rig.motion_version
 			VRSTimer.start()
@@ -176,147 +186,87 @@ func _process(_delta: float) -> void:
 			taa_jitter = Vector2.ZERO
 			taa_history_weight = 0.0
 		else:
-			var sample_index := accumulation_samples - 1
-			taa_jitter = Vector2(
-				_halton(sample_index, 2) - 0.5,
-				_halton(sample_index, 3) - 0.5
-			)
+			var s_idx := accumulation_samples - 1
+			taa_jitter = Vector2(_halton(s_idx, 2) - 0.5, _halton(s_idx, 3) - 0.5)
 			taa_history_weight = float(accumulation_samples - 1) / float(accumulation_samples)
-	
+
 	_update_camera_buffer()
+
+	if _scene_dirty:
+		var scene_bytes := GPULayout.pack_scene(StateBus.scene)
+		rd.buffer_update(scene_buffer_rid, 0, scene_bytes.size(), scene_bytes)
+		_scene_dirty = false
+
 	_dispatch()
 
 
 func _update_camera_buffer() -> void:
 	var t := target_camera.global_transform
 	var basis := t.basis
-
-	# precompute once
 	var fov_scale := tan(deg_to_rad(target_camera.fov * 0.5))
 
-	# fill buffer directly (no push_back, no resize)
-	# cameraPos
-	cam_data[0] = t.origin.x
-	cam_data[1] = t.origin.y
-	cam_data[2] = t.origin.z
-	cam_data[3] = 0.0
-
-	# forward (-Z)
+	cam_data[0] = t.origin.x; cam_data[1] = t.origin.y; cam_data[2] = t.origin.z; cam_data[3] = 0.0
 	var f := -basis.z
-	cam_data[4] = f.x
-	cam_data[5] = f.y
-	cam_data[6] = f.z
-	cam_data[7] = 0.0
-
-	# right (X)
+	cam_data[4] = f.x; cam_data[5] = f.y; cam_data[6] = f.z; cam_data[7] = 0.0
 	var r := basis.x
-	cam_data[8] = r.x
-	cam_data[9] = r.y
-	cam_data[10] = r.z
-	cam_data[11] = 0.0
-
-	# up (Y)
+	cam_data[8] = r.x; cam_data[9] = r.y; cam_data[10] = r.z; cam_data[11] = 0.0
 	var u := basis.y
-	cam_data[12] = u.x
-	cam_data[13] = u.y
-	cam_data[14] = u.z
-	cam_data[15] = 0.0
-
-	# resolution + fovScale
+	cam_data[12] = u.x; cam_data[13] = u.y; cam_data[14] = u.z; cam_data[15] = 0.0
 	cam_data[16] = render_resolution.x
 	cam_data[17] = render_resolution.y
 	cam_data[18] = fov_scale
-	cam_data[19] = 0.0 # padding
+	cam_data[19] = 0.0
 
 	rd.buffer_update(camera_buffer_rid, 0, cam_data.size() * 4, cam_data.to_byte_array())
 
 
 func _dispatch() -> void:
 	var write_i := frame_index & 1
-
-	# display current output texture
 	texture_rect.texture = tex_rd_resources[write_i]
 
-	var scaled_width := int(ceil(render_resolution.x / float(current_res_scale)))
-	var scaled_height := int(ceil(render_resolution.y / float(current_res_scale)))
-	var x_groups := int(ceil(scaled_width / 16.0))
-	var y_groups := int(ceil(scaled_height / 16.0))
+	var sw := int(ceil(render_resolution.x / float(current_res_scale)))
+	var sh := int(ceil(render_resolution.y / float(current_res_scale)))
+	var gx := int(ceil(sw / 16.0))
+	var gy := int(ceil(sh / 16.0))
 
 	var list := rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(list, current_pipeline)
 	rd.compute_list_bind_uniform_set(list, uniform_sets[write_i], 0)
 
-	var params = Global.g_fractal.get_shader_params()
-	var col0 = Global.g_active_material.color0
-	var col1 = Global.g_active_material.color1
-	var pc_bytes := PackedByteArray()
-	pc_bytes.append_array(PackedFloat32Array([
-	params[0], params[1], params[2], params[3],
-	params[4], params[5], params[6], params[7],
-	col0.r, col0.g, col0.b, 1.0,
-	col1.r, col1.g, col1.b, 1.0,
-	u_lightDir.x, u_lightDir.y, u_lightDir.z, 0.0,
-	u_metallic,
-	u_roughness,
-	]).to_byte_array())
-	pc_bytes.append_array(PackedInt32Array([
-	1 if use_pbr else 0,
-	current_res_scale,
-	]).to_byte_array())
-	pc_bytes.append_array(PackedFloat32Array([
-	taa_jitter.x,
-	taa_jitter.y,
-	taa_history_weight,
-	0.0,
-	]).to_byte_array())
+	var pc := GPULayout.pack_frame(taa_jitter, taa_history_weight, current_res_scale, frame_index)
+	rd.compute_list_set_push_constant(list, pc, pc.size())
 
-	rd.compute_list_set_push_constant(list, pc_bytes, pc_bytes.size())
-	# --------------------------------------------
-
-	rd.compute_list_dispatch(list, x_groups, y_groups, 1)
+	rd.compute_list_dispatch(list, gx, gy, 1)
 	rd.compute_list_end()
 
 	frame_index += 1
 
 
 func _halton(index: int, base: int) -> float:
-	var f := 1.0
-	var r := 0.0
-	var i := index
-
+	var f := 1.0; var r := 0.0; var i := index
 	while i > 0:
-		f /= float(base)
-		r += f * float(i % base)
-		i = int(i / base)
-
+		f /= float(base); r += f * float(i % base); i = int(i / base)
 	return r
 
 
 # --- Cleanup ---
 
 func _exit_tree() -> void:
-	if not rd:
-		return
-
+	if not rd: return
 	texture_rect.texture = null
-
-	for u in uniform_sets:
-		if u.is_valid(): rd.free_rid(u)
-	for t in texture_rids:
-		if t.is_valid(): rd.free_rid(t)
-	for p in pipelines.values():
-		if p.is_valid(): rd.free_rid(p)
+	for u in uniform_sets: if u.is_valid(): rd.free_rid(u)
+	for t in texture_rids: if t.is_valid(): rd.free_rid(t)
+	for p in pipelines.values(): if p.is_valid(): rd.free_rid(p)
 	if camera_buffer_rid.is_valid(): rd.free_rid(camera_buffer_rid)
-
-	uniform_sets.clear()
-	texture_rids.clear()
-	tex_rd_resources.clear()
-	pipelines.clear()
+	if scene_buffer_rid.is_valid():  rd.free_rid(scene_buffer_rid)
+	uniform_sets.clear(); texture_rids.clear()
+	tex_rd_resources.clear(); pipelines.clear()
 
 
 func _on_vrs_timer_timeout() -> void:
 	current_res_scale = 1
 	camera_rig.is_moving = false
+
 
 func _mark_motion() -> void:
 	accumulation_samples = 0

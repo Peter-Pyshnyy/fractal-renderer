@@ -30,10 +30,9 @@ func set_param_value(index: int, value: float) -> void:
 
 func get_shader_params() -> PackedFloat32Array:
 	var arr = super.get_shader_params()
-	arr[0] = iterations
-	arr[1] = scale
-	arr[2] = alpha
-	arr[3] = beta
+	arr[0] = scale   # scene.params.param0
+	arr[1] = alpha   # scene.params.param1
+	arr[2] = beta    # scene.params.param2
 	return arr
 
 func sdf(pos: Vector3) -> float:
@@ -46,28 +45,20 @@ func sdf(pos: Vector3) -> float:
 
 	for i in range(iterations):
 		if z.x + z.y < 0.0:
-			var t1: float = -z.y
-			z.y = -z.x
-			z.x = t1
+			var t1: float = -z.y; z.y = -z.x; z.x = t1
 		if z.x + z.z < 0.0:
-			var t2: float = -z.z
-			z.z = -z.x
-			z.x = t2
+			var t2: float = -z.z; z.z = -z.x; z.x = t2
 		if z.y + z.z < 0.0:
-			var t3: float = -z.z
-			z.z = -z.y
-			z.y = t3
+			var t3: float = -z.z; z.z = -z.y; z.y = t3
 
 		z = z * scale - Vector3.ONE * (offset * (scale - 1.0))
 
 		var rx: float = ca * z.x - sa * z.z
 		var rz: float = sa * z.x + ca * z.z
-		z.x = rx
-		z.z = rz
+		z.x = rx; z.z = rz
 
 		var ry: float = cb * z.y - sb * z.z
 		var rz2: float = sb * z.y + cb * z.z
-		z.y = ry
-		z.z = rz2
+		z.y = ry; z.z = rz2
 
 	return z.length() * pow(scale, -float(iterations))

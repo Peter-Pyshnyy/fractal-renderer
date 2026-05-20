@@ -1,14 +1,13 @@
 vec3 hsv2rgb(vec3 c) {
-    vec3 rgb = clamp( abs(mod(c.x*6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0,
-                      0.0,
-                      1.0 );
-    rgb = rgb * rgb * (3.0 - 2.0 * rgb); // optional smoothing
-    return c.z * mix(vec3(1.0), rgb, c.y);
+	vec3 rgb = clamp( abs(mod(c.x*6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0,
+	                  0.0, 1.0 );
+	rgb = rgb * rgb * (3.0 - 2.0 * rgb);
+	return c.z * mix(vec3(1.0), rgb, c.y);
 }
 
 vec3 get_trap_color_mix(float x) {
 	float i = smoothstep(0.0, 1.0, x);
-	return mix(material.color_a.rgb, material.color_b.rgb, i);
+	return mix(scene.material.color_a.rgb, scene.material.color_b.rgb, i);
 }
 
 vec3 get_trap_color_sinmask(float x) {
@@ -16,19 +15,17 @@ vec3 get_trap_color_sinmask(float x) {
 }
 
 vec3 get_trap_color_hsv(float x) {
-    float hue = fract(x * 3.0 + 8.5); // x * spread + offset
-    vec3 orbit_color = hsv2rgb(vec3(hue, 1.0, 1.0));
-    return mix(material.color_a.rgb, orbit_color, 0.5);
+	float hue = fract(x * 3.0 + 8.5);
+	vec3 orbit_color = hsv2rgb(vec3(hue, 1.0, 1.0));
+	return mix(scene.material.color_a.rgb, orbit_color, 0.5);
 }
 
 float get_normalized_trap(float d) {
 	float k = 0.22;
 	float res = d / (d + k);
 	return res;
-	//return pow(res, 2.718281828459045); // x^e
-	return 1.0 - exp(6.0 * res);
 }
 
 float get_trap_distance(vec3 p) {
-	return abs(length(p) - 1.0); // spehrical trap of r=1
+	return abs(length(p) - 1.0);
 }

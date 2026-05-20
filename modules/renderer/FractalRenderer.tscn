@@ -3,29 +3,24 @@
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
 [ext_resource type="Script" uid="uid://1gplhxrpwqp2" path="res://scripts/camera_rig.gd" id="3_dws3f"]
-[ext_resource type="Script" uid="uid://bbsh05bh0sled" path="res://scripts/sdfs/mandelbulb.gd" id="3_kciyt"]
 [ext_resource type="Script" uid="uid://crv3j8i1vlmcy" path="res://scripts/benchmark.gd" id="4_mq4g3"]
-[ext_resource type="Script" path="res://scripts/fractal_material.gd" id="5_c2qj7"]
 [ext_resource type="Script" uid="uid://dlwclhp11cutq" path="res://modules/renderer/ui_manager.gd" id="6_kciyt"]
 [ext_resource type="Script" uid="uid://cmmd8kh5ixv5a" path="res://modules/renderer/accordion_menu.gd" id="7_4ov7m"]
-
-[sub_resource type="Resource" id="Resource_kciyt"]
-script = ExtResource("3_kciyt")
-iterations = 15
-metadata/_custom_type_script = "uid://bbsh05bh0sled"
-
-[sub_resource type="Resource" id="Resource_4ov7m"]
-script = ExtResource("5_c2qj7")
-color0 = Color(0.953744, 0.225706, 3.85046e-07, 1)
-color1 = Color(0.387404, 0.293899, 0.26004, 1)
-metadata/_custom_type_script = "uid://cq0tbtlqqmyh0"
+[ext_resource type="Script" uid="uid://cnbo1c7mdna5i" path="res://scripts/UI/fractal_section.gd" id="9_ksikl"]
+[ext_resource type="Script" uid="uid://l2jfq07i1t4v" path="res://scripts/UI/pbr_section.gd" id="10_bn4l7"]
+[ext_resource type="Script" uid="uid://omxvvg04368j" path="res://scripts/UI/mas_section.gd" id="11_i0rrr"]
+[ext_resource type="Script" uid="uid://tqdnit8ceif1" path="res://scripts/UI/camera_section.gd" id="12_b4yyk"]
 
 [node name="FractalRenderer" type="Node"]
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("3_dws3f")
+current_mode = null
 mouse_sensitivity = 0.017
+orbit_radius = null
+zoom_speed = null
 max_orbit_radius = 2.0
+smooth_orbit = null
 
 [node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
@@ -38,13 +33,6 @@ script = ExtResource("2_dws3f")
 texture_rect = NodePath("../UI_Root/MainSplit/FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
-VRS = false
-VRSScale = 4
-fractal_data = SubResource("Resource_kciyt")
-material = SubResource("Resource_4ov7m")
-u_metallic = 0.23
-u_roughness = 0.42
-u_lightDir = Vector3(0.495, 1.58, 1)
 
 [node name="VRSTimer" type="Timer" parent="RendererController"]
 one_shot = true
@@ -144,6 +132,7 @@ vertical_alignment = 1
 
 [node name="Section_Fractal_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
+script = ExtResource("9_ksikl")
 
 [node name="FractalDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content"]
 layout_mode = 2
@@ -214,6 +203,7 @@ vertical_alignment = 1
 
 [node name="Section_PBR_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
+script = ExtResource("10_bn4l7")
 
 [node name="PBRToggle" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
 layout_mode = 2
@@ -284,6 +274,7 @@ vertical_alignment = 1
 
 [node name="Section_MAS_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
+script = ExtResource("11_i0rrr")
 
 [node name="MASToggle" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Content"]
 layout_mode = 2
@@ -325,6 +316,7 @@ vertical_alignment = 1
 
 [node name="Section_Camera_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
 layout_mode = 2
+script = ExtResource("12_b4yyk")
 
 [node name="SensitivityLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
 layout_mode = 2

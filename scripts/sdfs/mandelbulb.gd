@@ -30,17 +30,15 @@ func set_param_value(index: int, value: float) -> void:
 
 func get_shader_params() -> PackedFloat32Array:
 	var arr = super.get_shader_params()
-	arr[0] = iterations
-	arr[1] = power
-	arr[2] = test1
-	arr[3] = test2
+	arr[0] = power   # scene.params.param0
+	arr[1] = test1   # scene.params.param1
+	arr[2] = test2   # scene.params.param2
 	return arr
 
 func sdf(pos: Vector3) -> float:
 	var z: Vector3 = pos
 	var r: float = 0.0
 	var dr: float = 1.0
-
 	var power_minus_1: float = power - 1.0
 
 	for i in range(iterations):

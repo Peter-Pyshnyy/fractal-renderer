@@ -1,41 +1,48 @@
-struct FractalData { // float = 8*7 = 56b
-	float param0;
-    float param1;
-    float param2;
-    float param3;
-    float param4;
-    float param5;
-    float param6;
-    float param7;
+struct FractalData {
+	float param0, param1, param2, param3;
+	float param4, param5, param6, param7;
 };
 
-struct MaterialData { // vec4 = 4*4 = 16b, 16*2 = 32b
+struct MaterialData {
 	vec4 color_a;
 	vec4 color_b;
 };
 
+// Binding 1: camera — per frame, unchanged
 layout(set = 0, binding = 1, std430) buffer CameraData {
-    vec4 position;
-    vec4 forward;
-    vec4 right;
-    vec4 up;
-    vec2 resolution;
-    float fovScale;
-    float padding;
+	vec4 position;
+	vec4 forward;
+	vec4 right;
+	vec4 up;
+	vec2 resolution;
+	float fovScale;
+	float padding;
 } cam;
 
-layout(push_constant, std430) uniform PushConstants {
-    FractalData params;       // 32
-    MaterialData material;    // 32
-    vec4 u_lightDir;          // 16
-    float u_metallic;         // 4
-    float u_roughness;        // 4
-    int use_pbr;              // 4
-    int resolution_scale;     // 4
-    float jitter_x;           // 4
-    float jitter_y;           // 4
-    float history_blend;      // 4
-    float push_constant_padding; // 4
+// Binding 3: scene SSBO — updated only when SceneState.changed fires
+layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
+	FractalData params;   // 32 B
+	MaterialData material; // 32 B
+	vec4  light_dir;      // 16 B
+	float metallic;       //  4 B
+	float roughness;      //  4 B
+	float _pad0;          //  4 B
+	float _pad1;          //  4 B
+	int   iterations;     //  4 B
+	int   use_pbr;        //  4 B
+	int   _pad2;          //  4 B
+	int   _pad3;          //  4 B
+} scene;                  // total: 112 B
+
+// Push constants — frame-transient only (32 B)
+layout(push_constant, std430) uniform FrameConstants {
+	vec2  jitter;         //  8 B
+	float history_blend;  //  4 B
+	float _pad_f0;        //  4 B (aligns int block to 16 B)
+	int   resolution_scale; // 4 B
+	int   frame_index;    //  4 B
+	int   _pad_i0;        //  4 B
+	int   _pad_i1;        //  4 B
 };
 
 const int MAX_STEPS = 250;
