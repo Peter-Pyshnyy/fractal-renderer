@@ -17,6 +17,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	float sdfScaler = 0.75;
 	float beta = 0.3;
 	float pixelRadius = cam.fovScale / cam.resolution.y;
+	float LODScalar = 0.75;
 
 	float t = 0.0;
 	float r = sdf(cam.position.xyz) * sdfScaler;
@@ -27,7 +28,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	float bestError = 1e9;
 
 	for (int i = 0; i < MAX_STEPS; i++) {
-		float pixelError = r / max(t * pixelRadius * 0.75, 1e-7);
+		float pixelError = r / max(t * pixelRadius * LODScalar, 1e-7);
 
 		if (pixelError < bestError) {
 			bestError = pixelError;
@@ -63,7 +64,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	float trap_normalized = get_normalized_trap(trap);
 	vec3 albedo = get_trap_color_hsv(trap_normalized);
 	albedo = mix(vec3(1.0), albedo, 0.85);
-	float normal_h = clamp(bestT * pixelRadius * 0.75, 1e-7, 0.01);
+	float normal_h = clamp(bestT * pixelRadius * LODScalar, 1e-7, 0.01);
 	vec3 norm = calcNormal(hit_pos, normal_h);
 	float ao = calcAO(hit_pos, norm);
 	if (scene.use_pbr == 1) {
