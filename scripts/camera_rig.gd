@@ -4,7 +4,7 @@ enum CameraMode { FPS, ORBIT }
 
 @export var current_mode: CameraMode = CameraMode.ORBIT
 @export var mouse_sensitivity := 0.03
-@export var orbit_radius := 1.5
+@export var orbit_radius := 2.0
 
 @export var zoom_speed := 0.1
 @export var max_orbit_radius := 4.0

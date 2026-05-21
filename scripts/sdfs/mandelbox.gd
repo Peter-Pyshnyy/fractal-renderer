@@ -6,13 +6,13 @@ var fixed_radius: float = 1.0
 var min_radius: float = 0.5
 
 func _init():
-	iterations = 20
+	iterations = 30
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "Scale", "min": -4.0, "max": 4.0, "step": 0.01, "default": 2.0},
-		{"name": "Fixed Radius", "min": 0.1, "max": 4.0, "step": 0.01, "default": 1.0},
-		{"name": "Min Radius", "min": 0.01, "max": 2.0, "step": 0.01, "default": 0.5},
+		{"name": "Scale", "min": -2.75, "max": -1.75, "step": 0.01, "default": -2.0},
+		{"name": "Fixed Radius", "min": 0.5, "max": 1.75, "step": 0.01, "default": 0.9},
+		{"name": "Min Radius", "min": 0.01, "max": 1.0, "step": 0.01, "default": 0.5},
 	]
 
 func get_param_value(index: int) -> float:
@@ -41,13 +41,20 @@ func sdf(pos: Vector3) -> float:
 	var f_r2 := fixed_radius * fixed_radius
 	var m_r2 := min_radius * min_radius
 	var de_factor := scale
+	var limit := 0.4
+	
 	for i in range(iterations):
-		if z.x > 1.0: z.x = 2.0 - z.x
-		elif z.x < -1.0: z.x = -2.0 - z.x
-		if z.y > 1.0: z.y = 2.0 - z.y
-		elif z.y < -1.0: z.y = -2.0 - z.y
-		if z.z > 1.0: z.z = 2.0 - z.z
-		elif z.z < -1.0: z.z = -2.0 - z.z
+		# Parameterized Box Fold
+		if z.x > limit: z.x = 2.0 * limit - z.x
+		elif z.x < -limit: z.x = -2.0 * limit - z.x
+		
+		if z.y > limit: z.y = 2.0 * limit - z.y
+		elif z.y < -limit: z.y = -2.0 * limit - z.y
+		
+		if z.z > limit: z.z = 2.0 * limit - z.z
+		elif z.z < -limit: z.z = -2.0 * limit - z.z
+		
+		# Sphere Fold
 		var r2 := z.dot(z)
 		if r2 < m_r2:
 			var s := f_r2 / m_r2
@@ -57,6 +64,9 @@ func sdf(pos: Vector3) -> float:
 			var s2 := f_r2 / r2
 			z *= s2
 			de_factor *= s2
+			
+		# Scale and Shift
 		z = z * scale + c
 		de_factor *= scale
+		
 	return z.length() / abs(de_factor)

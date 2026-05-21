@@ -1,9 +1,9 @@
 float sdf(vec3 pos) {
 	vec3 z = pos;
-	float scale  = scene.params.param0;
-	float offset = 1.0;
-	float alpha  = scene.params.param1;
-	float beta   = scene.params.param2;
+	float scale = scene.params.param0;
+	float alpha = scene.params.param1;
+	float beta  = scene.params.param2;
+	float limit = 0.8;
 
 	float ca = cos(alpha), sa = sin(alpha);
 	float cb = cos(beta),  sb = sin(beta);
@@ -14,7 +14,8 @@ float sdf(vec3 pos) {
 		if (z.x + z.z < 0.0) z.xz = -z.zx;
 		if (z.y + z.z < 0.0) z.zy = -z.yz;
 
-		z = z * scale - offset * (scale - 1.0);
+		// Scale and shift using the new limit
+		z = z * scale - limit * (scale - 1.0);
 
 		z.xz = vec2(ca * z.x - sa * z.z, sa * z.x + ca * z.z);
 		z.yz = vec2(cb * z.y - sb * z.z, sb * z.y + cb * z.z);
@@ -25,10 +26,10 @@ float sdf(vec3 pos) {
 
 float sdf_with_trap(vec3 pos, out float trap) {
 	vec3 z = pos;
-	float scale  = scene.params.param0;
-	float offset = 1.0;
-	float alpha  = scene.params.param1;
-	float beta   = scene.params.param2;
+	float scale = scene.params.param0;
+	float alpha = scene.params.param1;
+	float beta  = scene.params.param2;
+	float limit = 0.8;
 
 	float ca = cos(alpha), sa = sin(alpha);
 	float cb = cos(beta),  sb = sin(beta);
@@ -41,7 +42,8 @@ float sdf_with_trap(vec3 pos, out float trap) {
 		if (z.x + z.z < 0.0) z.xz = -z.zx;
 		if (z.y + z.z < 0.0) z.zy = -z.yz;
 
-		z = z * scale - offset * (scale - 1.0);
+		// Scale and shift using the new limit
+		z = z * scale - limit * (scale - 1.0);
 
 		z.xz = vec2(ca * z.x - sa * z.z, sa * z.x + ca * z.z);
 		z.yz = vec2(cb * z.y - sb * z.z, sb * z.y + cb * z.z);

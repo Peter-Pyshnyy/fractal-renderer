@@ -10,9 +10,9 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "Scale", "min": 1.0, "max": 4.0, "step": 0.01, "default": 2.0},
-		{"name": "Alpha", "min": -3.14, "max": 3.14, "step": 0.01, "default": 0.0},
-		{"name": "Beta", "min": -3.14, "max": 3.14, "step": 0.01, "default": 0.0},
+		{"name": "Scale", "min": 1.1, "max": 2.3, "step": 0.01, "default": 2.0},
+		{"name": "Alpha", "min": 0.0, "max": 3.14, "step": 0.01, "default": 0.0},
+		{"name": "Beta", "min": 0.0, "max": 3.14, "step": 0.01, "default": 0.0},
 	]
 
 func get_param_value(index: int) -> float:
@@ -37,11 +37,11 @@ func get_shader_params() -> PackedFloat32Array:
 
 func sdf(pos: Vector3) -> float:
 	var z: Vector3 = pos
-	var offset: float = 1.0
 	var ca: float = cos(alpha)
 	var sa: float = sin(alpha)
 	var cb: float = cos(beta)
 	var sb: float = sin(beta)
+	var limit: float = 0.8
 
 	for i in range(iterations):
 		if z.x + z.y < 0.0:
@@ -51,7 +51,8 @@ func sdf(pos: Vector3) -> float:
 		if z.y + z.z < 0.0:
 			var t3: float = -z.z; z.z = -z.y; z.y = t3
 
-		z = z * scale - Vector3.ONE * (offset * (scale - 1.0))
+		# Scale and shift using the new limit class variable
+		z = z * scale - Vector3.ONE * (limit * (scale - 1.0))
 
 		var rx: float = ca * z.x - sa * z.z
 		var rz: float = sa * z.x + ca * z.z

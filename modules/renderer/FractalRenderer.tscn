@@ -28,12 +28,8 @@ metadata/_custom_type_script = "uid://cq0tbtlqqmyh0"
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("3_dws3f")
-current_mode = null
 mouse_sensitivity = 0.017
-orbit_radius = null
-zoom_speed = null
-max_orbit_radius = 2.75
-smooth_orbit = null
+max_orbit_radius = 2.5
 
 [node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(0.905, 0, 0, 0, 0.905, 0, 0, 0, 0.905, 0, 0, 0)
