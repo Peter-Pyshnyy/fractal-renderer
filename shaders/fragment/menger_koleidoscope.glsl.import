@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dyp531od04l8v"
+path="res://.godot/imported/menger_koleidoscope.glsl-7d4f7493c6dcde18218c2cb52cf90f2c.res"
+
+[deps]
+
+source_file="res://shaders/fragment/menger_koleidoscope.glsl"
+dest_files=["res://.godot/imported/menger_koleidoscope.glsl-7d4f7493c6dcde18218c2cb52cf90f2c.res"]
+
+[params]
+

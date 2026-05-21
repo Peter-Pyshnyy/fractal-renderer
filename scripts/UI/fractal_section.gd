@@ -34,8 +34,11 @@ func _wire_signals() -> void:
 	dropdown.add_item("Mandelbulb A")
 	dropdown.add_item("Mandelbulb B")
 	dropdown.add_item("Mandelbulb C")
+	dropdown.add_item("Mandelbox")
 	dropdown.add_item("Quaternion Julia Set")
+	dropdown.add_item("Dual Quaternion Julia Set")
 	dropdown.add_item("Sierpinski Koleidoscope")
+	dropdown.add_item("Menger Koleidoscope")
 	dropdown.item_selected.connect(func(i): if not _syncing: _on_fractal_selected(i))
 	iter_slider.min_value = 1; iter_slider.max_value = 100; iter_slider.step = 1
 	iter_slider.value_changed.connect(func(v):
