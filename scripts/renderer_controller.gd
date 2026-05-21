@@ -113,15 +113,27 @@ func _create_scene_buffer() -> void:
 
 
 func _create_pipeline() -> void:
-	var mandelbulb := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
-	var mb_rid := rd.shader_create_from_spirv(mandelbulb.get_spirv())
-	pipelines[0] = rd.compute_pipeline_create(mb_rid)
+	var mandelbulb_a := load("res://shaders/fragment/mandelbulb.glsl") as RDShaderFile
+	var mb_a_rid := rd.shader_create_from_spirv(mandelbulb_a.get_spirv())
+	pipelines[0] = rd.compute_pipeline_create(mb_a_rid)
+
+	var mandelbulb_b := load("res://shaders/fragment/mandelbulb_b.glsl") as RDShaderFile
+	var mb_b_rid := rd.shader_create_from_spirv(mandelbulb_b.get_spirv())
+	pipelines[1] = rd.compute_pipeline_create(mb_b_rid)
+
+	var mandelbulb_c := load("res://shaders/fragment/mandelbulb_c.glsl") as RDShaderFile
+	var mb_c_rid := rd.shader_create_from_spirv(mandelbulb_c.get_spirv())
+	pipelines[2] = rd.compute_pipeline_create(mb_c_rid)
+
+	var quaternion_julia := load("res://shaders/fragment/quaternion_julia.glsl") as RDShaderFile
+	var qj_rid := rd.shader_create_from_spirv(quaternion_julia.get_spirv())
+	pipelines[3] = rd.compute_pipeline_create(qj_rid)
 
 	var sierpinski := load("res://shaders/fragment/sierpinski.glsl") as RDShaderFile
 	var sp_rid := rd.shader_create_from_spirv(sierpinski.get_spirv())
-	pipelines[1] = rd.compute_pipeline_create(sp_rid)
+	pipelines[4] = rd.compute_pipeline_create(sp_rid)
 
-	shader_layout_rid = mb_rid
+	shader_layout_rid = mb_a_rid
 	_rebuild_uniform_sets()
 
 
