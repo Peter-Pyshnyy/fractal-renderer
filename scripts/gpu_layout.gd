@@ -1,7 +1,7 @@
 class_name GPULayout
 
-# 112 bytes, std430. Mirrors SceneBuffer in shared_data.gdshaderinc.
-# Layout: 24 floats (FractalData params + colors + lightDir + material scalars)
+# 128 bytes, std430. Mirrors SceneBuffer in shared_data.gdshaderinc.
+# Layout: 28 floats (FractalData params + colors + lightDir + material scalars + RT scalars + background color)
 #       + 4 ints  (iterations, use_pbr, 2 pads)
 static func pack_scene(s: SceneStateR) -> PackedByteArray:
 	var p := s.fractal_data.get_shader_params()
@@ -13,7 +13,8 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 		ca.r, ca.g, ca.b, 1.0,
 		cb.r, cb.g, cb.b, 1.0,
 		s.light_dir.x, s.light_dir.y, s.light_dir.z, 0.0,
-		s.metallic, s.roughness, 0.0, 0.0,
+		s.metallic, s.roughness, s.sdf_scalar, s.lod_scalar,
+		s.background_color.r, s.background_color.g, s.background_color.b, s.background_color.a,
 	]).to_byte_array())
 	out.append_array(PackedInt32Array([
 		s.fractal_data.iterations,

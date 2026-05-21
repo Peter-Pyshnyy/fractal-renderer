@@ -26,13 +26,14 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	vec4  light_dir;      // 16 B
 	float metallic;       //  4 B
 	float roughness;      //  4 B
-	float _pad0;          //  4 B
-	float _pad1;          //  4 B
+	float sdf_scalar;     //  4 B
+	float lod_scalar;     //  4 B
+	vec4  background_color; // 16 B
 	int   iterations;     //  4 B
 	int   use_pbr;        //  4 B
 	int   max_steps;          //  4 B
 	int   _pad3;          //  4 B
-} scene;                  // total: 112 B
+} scene;                  // total: 128 B
 
 // Push constants — frame-transient only (32 B)
 layout(push_constant, std430) uniform FrameConstants {
