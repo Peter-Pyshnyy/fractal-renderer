@@ -18,7 +18,7 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 	out.append_array(PackedInt32Array([
 		s.fractal_data.iterations,
 		1 if s.use_pbr else 0,
-		0, 0,
+		s.max_steps, 0,
 	]).to_byte_array())
 	return out
 

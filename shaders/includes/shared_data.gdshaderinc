@@ -30,7 +30,7 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float _pad1;          //  4 B
 	int   iterations;     //  4 B
 	int   use_pbr;        //  4 B
-	int   _pad2;          //  4 B
+	int   max_steps;          //  4 B
 	int   _pad3;          //  4 B
 } scene;                  // total: 112 B
 
@@ -45,6 +45,6 @@ layout(push_constant, std430) uniform FrameConstants {
 	int   _pad_i1;        //  4 B
 };
 
-const int MAX_STEPS = 250;
+#define MAX_STEPS scene.max_steps
 const float EPSILON = 0.001;
 const float MAX_DIST = 20.0;
