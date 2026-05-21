@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://djnj20w7kun0s"
+path="res://.godot/imported/mandelbox.glsl-2e11e9cca1ae263a64c41a2ebb578f0a.res"
+
+[deps]
+
+source_file="res://shaders/fragment/mandelbox.glsl"
+dest_files=["res://.godot/imported/mandelbox.glsl-2e11e9cca1ae263a64c41a2ebb578f0a.res"]
+
+[params]
+
