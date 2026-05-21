@@ -1,5 +1,7 @@
 extends VBoxContainer
 
+const MAX_PARAM_ROWS := 8
+
 var _syncing := false
 @onready var dropdown: OptionButton = $FractalDropdown
 @onready var iter_slider: HSlider = $IterationsSlider
@@ -9,16 +11,30 @@ var _param_labels: Array
 var _param_sliders: Array
 
 func _ready() -> void:
+	_build_param_rows()
+	_wire_signals()
+	_connect_state()
+	await get_tree().process_frame
+	_sync()
+
+func _build_param_rows() -> void:
 	_param_rows = [$FractalParamRow1, $FractalParamRow2, $FractalParamRow3]
 	_param_labels = [$FractalParamRow1/FractalParamLbl, $FractalParamRow2/FractalParamLbl, $FractalParamRow3/FractalParamLbl]
 	_param_sliders = [$FractalParamRow1/FractalParamSlider, $FractalParamRow2/FractalParamSlider, $FractalParamRow3/FractalParamSlider]
-	_wire_signals()
-	_connect_state()
-	await get_tree().process_frame  # fractal_data is null until renderer._ready() seeds it
-	_sync()
+	while _param_rows.size() < MAX_PARAM_ROWS:
+		var base_row: VBoxContainer = _param_rows[0]
+		var row: VBoxContainer = base_row.duplicate()
+		row.name = "FractalParamRow%d" % (_param_rows.size() + 1)
+		add_child(row)
+		_param_rows.append(row)
+		_param_labels.append(row.get_node("FractalParamLbl"))
+		_param_sliders.append(row.get_node("FractalParamSlider"))
 
 func _wire_signals() -> void:
-	dropdown.add_item("Mandelbulb")
+	dropdown.add_item("Mandelbulb A")
+	dropdown.add_item("Mandelbulb B")
+	dropdown.add_item("Mandelbulb C")
+	dropdown.add_item("Quaternion Julia Set")
 	dropdown.add_item("Sierpinski Koleidoscope")
 	dropdown.item_selected.connect(func(i): if not _syncing: _on_fractal_selected(i))
 	iter_slider.min_value = 1; iter_slider.max_value = 100; iter_slider.step = 1
@@ -26,7 +42,7 @@ func _wire_signals() -> void:
 		if _syncing: return
 		iter_lbl.text = "Iterations: %d" % int(v)
 		StateBus.scene.set_iterations(int(v)))
-	for i in 3:
+	for i in _param_sliders.size():
 		_param_sliders[i].value_changed.connect(func(v, idx=i): _on_param_changed(v, idx))
 
 func _connect_state() -> void:
