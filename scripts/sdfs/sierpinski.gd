@@ -6,7 +6,7 @@ var alpha: float = 0.0
 var beta: float = 0.0
 
 func _init():
-	iterations = 40
+	iterations = 50
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [

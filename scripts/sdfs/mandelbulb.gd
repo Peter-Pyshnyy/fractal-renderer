@@ -11,28 +11,20 @@ func _init():
 func get_param_definitions() -> Array[Dictionary]:
 	return [
 		{"name": "Power", "min": 1.0, "max": 16.0, "step": 0.1, "default": 8.0},
-		{"name": "Test1", "min": 0.0, "max": 5.0, "step": 0.01, "default": 1.0},
-		{"name": "Test2", "min": 0.0, "max": 5.0, "step": 0.01, "default": 1.0},
 	]
 
 func get_param_value(index: int) -> float:
 	match index:
 		0: return power
-		1: return test1
-		2: return test2
 		_: return 0.0
 
 func set_param_value(index: int, value: float) -> void:
 	match index:
 		0: power = value
-		1: test1 = value
-		2: test2 = value
 
 func get_shader_params() -> PackedFloat32Array:
 	var arr = super.get_shader_params()
 	arr[0] = power   # scene.params.param0
-	arr[1] = test1   # scene.params.param1
-	arr[2] = test2   # scene.params.param2
 	return arr
 
 func sdf(pos: Vector3) -> float:

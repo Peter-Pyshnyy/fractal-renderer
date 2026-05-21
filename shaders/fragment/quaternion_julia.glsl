@@ -31,14 +31,21 @@ void main() {
 			if (write_coord.x < image_size.x && write_coord.y < image_size.y) {
 
 				float exposure = 3.0;
-				vec3 current_ldr = color * exposure;
-				current_ldr = current_ldr / (current_ldr + 1.0);
 
+				vec3 current_color;
+				
+				if (scene.use_pbr == 1) {
+					current_color = color * exposure;
+					current_color = current_color / (current_color + 1.0);
+				} else {
+					current_color = color;
+				}
+				
 				vec3 history_gamma = imageLoad(history_image, write_coord).rgb;
 				vec3 history_linear = pow(history_gamma, vec3(2.2));
-
-				vec3 blended_linear = mix(current_ldr, history_linear, history_blend);
-
+				
+				vec3 blended_linear = mix(current_color, history_linear, history_blend);
+				
 				vec3 final_color = pow(blended_linear, vec3(1.0 / 2.2));
 				imageStore(output_image, write_coord, vec4(final_color, 1.0));
 			}

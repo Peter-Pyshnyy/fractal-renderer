@@ -10,29 +10,21 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "Power", "min": 1.0, "max": 16.0, "step": 0.1, "default": 8.0},
-		{"name": "Warp Time", "min": 0.0, "max": 10.0, "step": 0.01, "default": 1.0},
-		{"name": "Warp Phase", "min": -3.14, "max": 3.14, "step": 0.01, "default": 1.0},
+		{"name": "Power", "min": 1.0, "max": 16.0, "step": 0.1, "default": 2.0},
 	]
 
 func get_param_value(index: int) -> float:
 	match index:
 		0: return power
-		1: return warp_time
-		2: return warp_phase
 		_: return 0.0
 
 func set_param_value(index: int, value: float) -> void:
 	match index:
 		0: power = value
-		1: warp_time = value
-		2: warp_phase = value
 
 func get_shader_params() -> PackedFloat32Array:
 	var arr = super.get_shader_params()
 	arr[0] = power
-	arr[1] = warp_time
-	arr[2] = warp_phase
 	return arr
 
 func sdf(pos: Vector3) -> float:

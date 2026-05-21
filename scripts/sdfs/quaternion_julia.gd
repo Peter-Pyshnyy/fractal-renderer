@@ -20,7 +20,7 @@ func get_param_definitions() -> Array[Dictionary]:
 		{"name": "cReal Y", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.7},
 		{"name": "cReal Z", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
 		{"name": "cReal W", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
-		{"name": "cDual X", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.2},
+		{"name": "cDual X", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
 		{"name": "cDual Y", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
 		{"name": "cDual Z", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
 	]
@@ -77,19 +77,33 @@ func _qmul(a: Vector4, b: Vector4) -> Vector4:
 	)
 
 func sdf(pos: Vector3) -> float:
-	var za := Vector4(pos.x, pos.y, 0.0, 0.0)
-	var zb := Vector4(pos.z, 0.0, 0.0, 0.0)
+	# 1. Initialization Mismatches Fixed:
+	# GLSL uses: za = vec4(pos, 0.0) -> (pos.x, pos.y, pos.z, 0.0)
+	#            zb = vec4(0.0) -> (0.0, 0.0, 0.0, 0.0)
+	var za := Vector4(pos.x, pos.y, pos.z, 0.0)
+	var zb := Vector4(0.0, 0.0, 0.0, 0.0)
+	
+	# GLSL uses: dza = (1.0, 0.0, 0.0, 0.0), dzb = (0.0, 0.0, 0.0, 0.0)
 	var dza := Vector4(1.0, 0.0, 0.0, 0.0)
-	var dzb := Vector4(1.0, 0.0, 0.0, 0.0)
+	var dzb := Vector4(0.0, 0.0, 0.0, 0.0)
+	
 	var c_real := Vector4(c_real_x, c_real_y, c_real_z, c_real_w)
 	var c_dual := Vector4(c_dual_x, c_dual_y, c_dual_z, 0.0)
 
 	var m2: float = za.dot(za) + zb.dot(zb)
+	
 	for i in range(iterations):
-		dza = 2.0 * _qmul(za, dza)
-		dzb = 2.0 * _qmul(zb, dzb)
-		za = _qsqr(za) + c_real
-		zb = _qsqr(zb) + c_dual
+		var dza_new := 2.0 * _qmul(za, dza)
+		var dzb_new := 2.0 * (_qmul(za, dzb) + _qmul(zb, dza))
+		
+		var za_new := _qsqr(za) + c_real
+		var zb_new := _qmul(za, zb) + _qmul(zb, za) + c_dual
+		
+		dza = dza_new
+		dzb = dzb_new
+		za = za_new
+		zb = zb_new
+		
 		m2 = za.dot(za) + zb.dot(zb)
 		if m2 > 4.0:
 			break

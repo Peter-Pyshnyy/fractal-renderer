@@ -32,7 +32,7 @@ current_mode = null
 mouse_sensitivity = 0.017
 orbit_radius = null
 zoom_speed = null
-max_orbit_radius = 2.0
+max_orbit_radius = 2.75
 smooth_orbit = null
 
 [node name="VirtualCamera" type="Camera3D" parent="CameraRig"]
@@ -350,8 +350,8 @@ layout_mode = 2
 layout_mode = 2
 text = "Camera Mode: Orbit"
 
-[node name="PhotoModeBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
+[node name="ScreenshotBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Photo Mode"
+text = "Take Screenshot"
 
 [connection signal="timeout" from="RendererController/VRSTimer" to="RendererController" method="_on_vrs_timer_timeout"]

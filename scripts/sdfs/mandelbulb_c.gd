@@ -11,7 +11,7 @@ func _init():
 func get_param_definitions() -> Array[Dictionary]:
 	return [
 		{"name": "Power", "min": 1.0, "max": 16.0, "step": 0.1, "default": 8.0},
-		{"name": "Time", "min": 0.0, "max": 12.0, "step": 0.01, "default": 0.75},
+		{"name": "Offset", "min": 0.0, "max": 20.0, "step": 0.01, "default": 0.75},
 		{"name": "Phase", "min": -3.14, "max": 3.14, "step": 0.01, "default": 0.8},
 	]
 
