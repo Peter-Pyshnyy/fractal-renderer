@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://c0mhoqcvew5r"
+path="res://.godot/imported/quaternion_julia.glsl-f7d1ab43a971c509795e62df0ea3bccb.res"
+
+[deps]
+
+source_file="res://shaders/fragment/quaternion_julia.glsl"
+dest_files=["res://.godot/imported/quaternion_julia.glsl-f7d1ab43a971c509795e62df0ea3bccb.res"]
+
+[params]
+
