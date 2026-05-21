@@ -15,7 +15,7 @@ func _wire_signals() -> void:
 	sdf_scalar_slider.min_value = 0.1; sdf_scalar_slider.max_value = 2.0; sdf_scalar_slider.step = 0.01
 	sdf_scalar_slider.value_changed.connect(func(v):
 		if _syncing: return
-		sdf_scalar_lbl.text = "SDF Scalar: %.2f" % v
+		sdf_scalar_lbl.text = "Step-Size Scalar: %.2f" % v
 		StateBus.scene.sdf_scalar = v)
 	lod_scalar_slider.min_value = 0.1; lod_scalar_slider.max_value = 2.0; lod_scalar_slider.step = 0.01
 	lod_scalar_slider.value_changed.connect(func(v):
@@ -29,7 +29,7 @@ func _connect_state() -> void:
 func _sync() -> void:
 	_syncing = true
 	sdf_scalar_slider.value = StateBus.scene.sdf_scalar
-	sdf_scalar_lbl.text = "SDF Scalar: %.2f" % StateBus.scene.sdf_scalar
+	sdf_scalar_lbl.text = "Step-Size Scalar: %.2f" % StateBus.scene.sdf_scalar
 	lod_scalar_slider.value = StateBus.scene.lod_scalar
 	lod_scalar_lbl.text = "LOD Scalar: %.2f" % StateBus.scene.lod_scalar
 	_syncing = false

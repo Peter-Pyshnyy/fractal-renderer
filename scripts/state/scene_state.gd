@@ -14,7 +14,7 @@ class_name SceneStateR extends Resource
 	set(v): roughness = v; emit_changed()
 @export var use_pbr: bool = true:
 	set(v): use_pbr = v; emit_changed()
-@export_range(0.1, 2.0, 0.01) var sdf_scalar: float = 0.75:
+@export_range(0.1, 1.0, 0.01) var sdf_scalar: float = 0.75:
 	set(v): sdf_scalar = v; emit_changed()
 @export_range(0.1, 2.0, 0.01) var lod_scalar: float = 0.75:
 	set(v): lod_scalar = v; emit_changed()
