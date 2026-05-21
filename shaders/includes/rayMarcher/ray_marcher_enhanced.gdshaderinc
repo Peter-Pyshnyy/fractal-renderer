@@ -77,7 +77,7 @@ vec3 raymarch_enhanced(vec3 rayDir) {
     // ── Discontinuity reduction — fixed-point iteration (§3.4, Equation 3) ──
     // p_{i+1} = p_i + d * ( f(p_i) − err(‖p_i − o‖) )
     // err(dist) = pixelRadius * dist  (screen-space metric, Hart & DeFanti §3.4)
-	
+
     //for (int j = 0; j < 3; j++) {
         //vec3 p = cam.position.xyz + rayDir * t;
         //t += functionSign * sdf(p) - pixelRadius * t;

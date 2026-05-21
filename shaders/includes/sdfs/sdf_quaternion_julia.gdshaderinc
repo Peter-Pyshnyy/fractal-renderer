@@ -21,8 +21,8 @@ float sdf(vec3 pos) {
 	vec4 zb = vec4(0.0);
 	vec4 dza = vec4(1.0, 0.0, 0.0, 0.0);
 	vec4 dzb = vec4(0.0);
-	vec4 cReal = vec4(scene.params.param1, scene.params.param2, scene.params.param3, scene.params.param4);
-	vec4 cDual = vec4(scene.params.param5, scene.params.param6, scene.params.param7, 0.0);
+	vec4 cReal = vec4(scene.params.param0, scene.params.param1, scene.params.param2, scene.params.param3);
+	vec4 cDual = vec4(scene.params.param4, scene.params.param5, scene.params.param6, scene.params.param7);
 	float m2 = dot(za, za) + dot(zb, zb);
 	for (int i = 0; i < scene.iterations; i++) {
 		vec4 dza_new = 2.0 * qmul(za, dza);
@@ -34,7 +34,7 @@ float sdf(vec3 pos) {
 		za  = za_new;
 		zb  = zb_new;
 		m2 = dot(za, za) + dot(zb, zb);
-		if (m2 > 4.0) break;
+		if (m2 > 10000.0) break;
 	}
 	float m = sqrt(m2);
 	float dm = sqrt(dot(dza, dza) + dot(dzb, dzb));
@@ -46,8 +46,8 @@ float sdf_with_trap(vec3 pos, out float trap) {
 	vec4 zb = vec4(0.0);
 	vec4 dza = vec4(1.0, 0.0, 0.0, 0.0);
 	vec4 dzb = vec4(0.0);
-	vec4 cReal = vec4(scene.params.param1, scene.params.param2, scene.params.param3, scene.params.param4);
-	vec4 cDual = vec4(scene.params.param5, scene.params.param6, scene.params.param7, 0.0);
+	vec4 cReal = vec4(scene.params.param0, scene.params.param1, scene.params.param2, scene.params.param3);
+	vec4 cDual = vec4(scene.params.param4, scene.params.param5, scene.params.param6, scene.params.param7);
 	float m2 = dot(za, za) + dot(zb, zb);
 	trap = 1e6;
 	for (int i = 0; i < scene.iterations; i++) {
@@ -62,7 +62,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
 		m2 = dot(za, za) + dot(zb, zb);
 		float r = sqrt(m2);
 		trap = min(get_trap_distance(za.yzw + zb.yzw) / max(r, 1e-8), trap);
-		if (m2 > 4.0) break;
+		if (m2 > 10000.0) break;
 	}
 	float m = sqrt(m2);
 	float dm = sqrt(dot(dza, dza) + dot(dzb, dzb));
