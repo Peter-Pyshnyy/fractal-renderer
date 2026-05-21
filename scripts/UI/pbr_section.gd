@@ -12,6 +12,7 @@ var _syncing := false
 @onready var light_y_lbl: Label = $LightYLbl
 @onready var light_z_slider: HSlider = $LightZSlider
 @onready var light_z_lbl: Label = $LightZLbl
+@onready var background_color_picker: ColorPickerButton = $BackgroundColorPicker
 
 func _ready() -> void:
 	_wire_signals()
@@ -43,6 +44,9 @@ func _wire_signals() -> void:
 		if _syncing: return
 		light_z_lbl.text = "Light Z: %.2f" % v
 		StateBus.scene.light_dir = Vector3(StateBus.scene.light_dir.x, StateBus.scene.light_dir.y, v))
+	background_color_picker.color_changed.connect(func(v):
+		if _syncing: return
+		StateBus.scene.background_color = v)
 
 func _connect_state() -> void:
 	StateBus.scene.changed.connect(_sync)
@@ -58,4 +62,5 @@ func _sync() -> void:
 	light_x_slider.value = ld.x; light_x_lbl.text = "Light X: %.2f" % ld.x
 	light_y_slider.value = ld.y; light_y_lbl.text = "Light Y: %.2f" % ld.y
 	light_z_slider.value = ld.z; light_z_lbl.text = "Light Z: %.2f" % ld.z
+	background_color_picker.color = StateBus.scene.background_color
 	_syncing = false

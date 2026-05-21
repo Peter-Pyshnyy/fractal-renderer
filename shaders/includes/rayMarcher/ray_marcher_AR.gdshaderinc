@@ -14,10 +14,10 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
 
 
 vec3 raymarch_AR(vec3 rayDir) {
-	float sdfScaler = 0.75;
+	float sdfScaler = scene.sdf_scalar;
 	float beta = 0.3;
 	float pixelRadius = cam.fovScale / cam.resolution.y;
-	float LODScalar = 0.75;
+	float LODScalar = scene.lod_scalar;
 
 	float t = 0.0;
 	float r = sdf(cam.position.xyz) * sdfScaler;
@@ -55,7 +55,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	}
 
 	if (bestError >= 1.0 || bestT >= MAX_DIST) {
-		return vec3(0.75);
+		return scene.background_color.rgb;
 	}
 
 	float trap;

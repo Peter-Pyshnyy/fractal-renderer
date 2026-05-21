@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dcgcssobxgh5o"]
+[gd_scene load_steps=16 format=3 uid="uid://dcgcssobxgh5o"]
 
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://l2jfq07i1t4v" path="res://scripts/UI/pbr_section.gd" id="10_bn4l7"]
 [ext_resource type="Script" uid="uid://omxvvg04368j" path="res://scripts/UI/mas_section.gd" id="11_i0rrr"]
 [ext_resource type="Script" uid="uid://tqdnit8ceif1" path="res://scripts/UI/camera_section.gd" id="12_b4yyk"]
+[ext_resource type="Script" path="res://scripts/UI/sphere_tracing_section.gd" id="13_sphere"]
 
 [sub_resource type="Resource" id="Resource_b4yyk"]
 script = ExtResource("3_kciyt")
@@ -258,6 +259,61 @@ text = "Light Z: 1.00"
 [node name="LightZSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
 layout_mode = 2
 value = 1.0
+
+[node name="BackgroundColorLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Background Color"
+
+[node name="BackgroundColorPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+
+[node name="Section_SphereTracing_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+toggle_mode = true
+script = ExtResource("6_bn4l7")
+content = NodePath("../Section_SphereTracing_Content")
+
+[node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_SphereTracing_Btn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_SphereTracing_Btn/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Sphere Tracing Settings"
+vertical_alignment = 1
+
+[node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_SphereTracing_Btn/HeaderRow"]
+layout_mode = 2
+text = "▶"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Section_SphereTracing_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+script = ExtResource("13_sphere")
+
+[node name="SDFScalarLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_SphereTracing_Content"]
+layout_mode = 2
+text = "SDF Scalar: 0.75"
+
+[node name="SDFScalarSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_SphereTracing_Content"]
+layout_mode = 2
+value = 0.75
+
+[node name="LODScalarLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_SphereTracing_Content"]
+layout_mode = 2
+text = "LOD Scalar: 0.75"
+
+[node name="LODScalarSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_SphereTracing_Content"]
+layout_mode = 2
+value = 0.75
 
 [node name="Section_MAS_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
