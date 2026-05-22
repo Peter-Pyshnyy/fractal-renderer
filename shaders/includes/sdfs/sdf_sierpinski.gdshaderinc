@@ -24,7 +24,7 @@ float sdf(vec3 pos) {
 	return length(z) * pow(scale, -float(n));
 }
 
-float sdf_with_trap(vec3 pos, out float trap) {
+float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
 	vec3 z = pos;
 	float scale = scene.params.param0;
 	float alpha = scene.params.param1;
@@ -35,6 +35,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
 	float cb = cos(beta),  sb = sin(beta);
 
 	trap = 1e6;
+	iter_count = scene.iterations;
 
 	int n = 0;
 	for (int i = 0; i < scene.iterations; i++) {

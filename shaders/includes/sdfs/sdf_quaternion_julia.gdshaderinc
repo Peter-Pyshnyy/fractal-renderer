@@ -41,7 +41,7 @@ float sdf(vec3 pos) {
 	return 0.5 * log(m) * m / max(dm, 1e-8);
 }
 
-float sdf_with_trap(vec3 pos, out float trap) {
+float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
 	vec4 za = vec4(pos, 0.0);
 	vec4 zb = vec4(0.0);
 	vec4 dza = vec4(1.0, 0.0, 0.0, 0.0);
@@ -50,6 +50,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
 	vec4 cDual = vec4(scene.params.param4, scene.params.param5, scene.params.param6, scene.params.param7);
 	float m2 = dot(za, za) + dot(zb, zb);
 	trap = 1e6;
+	iter_count = scene.iterations;
 	for (int i = 0; i < scene.iterations; i++) {
 		vec4 dza_new = 2.0 * qmul(za, dza);
 		vec4 dzb_new = 2.0 * (qmul(za, dzb) + qmul(zb, dza));
@@ -62,7 +63,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
 		m2 = dot(za, za) + dot(zb, zb);
 		float r = sqrt(m2);
 		trap = min(get_trap_distance(za.yzw + zb.yzw) / max(r, 1e-8), trap);
-		if (m2 > 10000.0) break;
+		if (m2 > 10000.0) { iter_count = i; break; }
 	}
 	float m = sqrt(m2);
 	float dm = sqrt(dot(dza, dza) + dot(dzb, dzb));

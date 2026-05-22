@@ -23,6 +23,37 @@ class_name SceneStateR extends Resource
 @export var background_color: Color = Color(0.75, 0.75, 0.75, 1.0):
 	set(v): background_color = v; emit_changed()
 
+@export var color_mode: int = 2:
+	set(v): color_mode = v; emit_changed()
+@export var palette_type: int = 2:
+	set(v): palette_type = v; emit_changed()
+@export var iter_norm_factor: float = 30.0:
+	set(v): iter_norm_factor = v; emit_changed()
+@export var iter_bw_preview: bool = false:
+	set(v): iter_bw_preview = v; emit_changed()
+@export var uniform_color: Color = Color(1.0, 1.0, 1.0, 1.0):
+	set(v): uniform_color = v; emit_changed()
+@export var trap_shape: int = 0:
+	set(v): trap_shape = v; emit_changed()
+@export var trap_position: Vector3 = Vector3.ZERO:
+	set(v): trap_position = v; emit_changed()
+@export var trap_size: float = 1.0:
+	set(v): trap_size = v; emit_changed()
+@export var trap_norm_k: float = 0.22:
+	set(v): trap_norm_k = v; emit_changed()
+@export var trap_bw_preview: bool = false:
+	set(v): trap_bw_preview = v; emit_changed()
+@export var sinmask_phase: float = 0.15:
+	set(v): sinmask_phase = v; emit_changed()
+@export var sinmask_amp: float = 3.5:
+	set(v): sinmask_amp = v; emit_changed()
+@export var hsv_cycles: float = 3.0:
+	set(v): hsv_cycles = v; emit_changed()
+@export var hsv_hue_offset: float = 8.5:
+	set(v): hsv_hue_offset = v; emit_changed()
+@export var hsv_blend: float = 0.5:
+	set(v): hsv_blend = v; emit_changed()
+
 func set_iterations(v: int) -> void:
 	if fractal_data: fractal_data.iterations = v; emit_changed()
 
@@ -32,3 +63,9 @@ func set_param(i: int, v: float) -> void:
 func switch_fractal(idx: int, data: FractalData) -> void:
 	fractal_index = idx
 	fractal_data = data
+
+func set_color_a(c: Color) -> void:
+	material.color0 = c; emit_changed()
+
+func set_color_b(c: Color) -> void:
+	material.color1 = c; emit_changed()

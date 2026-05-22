@@ -23,12 +23,13 @@ float sdf(vec3 pos) {
 	return 0.25 * sqrt(mz2 / md2) * log(mz2);
 }
 
-float sdf_with_trap(vec3 pos, out float trap) {
+float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
 	vec4 c = vec4(scene.params.param0, scene.params.param1, scene.params.param2, scene.params.param3);
 	vec4 z = vec4(pos, 0.0);
 	float md2 = 1.0;
 	float mz2 = dot(z, z);
 	trap = 1e6;
+	iter_count = scene.iterations;
 	for (int i = 0; i < scene.iterations; i++) {
 		md2 *= 4.0 * mz2;
 		z = qsqr(z) + c;
@@ -36,7 +37,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
 		float r = max(length(z.xyz), 1e-4);
 		float d = get_trap_distance(z.xyz);
 		trap = min(trap, d / r);
-		if (mz2 > 4.0) break;
+		if (mz2 > 4.0) { iter_count = i; break; }
 	}
 	return 0.25 * sqrt(mz2 / md2) * log(mz2);
 }

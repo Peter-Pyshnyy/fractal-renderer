@@ -59,16 +59,36 @@ vec3 raymarch_AR(vec3 rayDir) {
 	}
 
 	float trap;
+	int iter_count;
 	vec3 hit_pos = cam.position.xyz + rayDir * bestT;
-	sdf_with_trap(hit_pos, trap);
-	float trap_normalized = get_normalized_trap(trap);
-	vec3 albedo = get_trap_color_hsv(trap_normalized);
+	sdf_with_trap(hit_pos, trap, iter_count);
+
+	vec3 albedo;
+
+	if (scene.color_mode == 0) {
+		albedo = scene.uniform_color.rgb;
+
+	} else if (scene.color_mode == 1) {
+		float t = clamp(float(iter_count) / scene.iter_norm_factor, 0.0, 1.0);
+		if (scene.iter_bw_preview == 1) {
+			return vec3(t);
+		}
+		albedo = get_palette_color(t);
+
+	} else {
+		float trap_normalized = get_normalized_trap(trap);
+		if (scene.trap_bw_preview == 1) {
+			return vec3(trap_normalized);
+		}
+		albedo = get_palette_color(trap_normalized);
+	}
+
 	albedo = mix(vec3(1.0), albedo, 0.85);
 	float normal_h = clamp(bestT * pixelRadius * LODScalar, 1e-7, 0.01);
 	vec3 norm = calcNormal(hit_pos, normal_h);
 	float ao = calcAO(hit_pos, norm);
 	if (scene.use_pbr == 1) {
-	return PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao);
+		return PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao);
 	}
 	return albedo * (ao + 0.1);
 }

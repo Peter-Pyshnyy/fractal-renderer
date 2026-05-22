@@ -4,10 +4,11 @@ class_name GPULayout
 # Layout: 28 floats (FractalData params + colors + lightDir + material scalars + RT scalars + background color)
 #       + 4 ints  (iterations, use_pbr, 2 pads)
 static func pack_scene(s: SceneStateR) -> PackedByteArray:
-	var p := s.fractal_data.get_shader_params()
-	var ca: Color = s.material.color0
-	var cb: Color = s.material.color1
+	var p  := s.fractal_data.get_shader_params()
+	var ca := s.material.color0
+	var cb := s.material.color1
 	var out := PackedByteArray()
+
 	out.append_array(PackedFloat32Array([
 		p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7],
 		ca.r, ca.g, ca.b, 1.0,
@@ -21,7 +22,31 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 		1 if s.use_pbr else 0,
 		s.max_steps, 0,
 	]).to_byte_array())
+
+	out.append_array(PackedInt32Array([s.color_mode, s.palette_type]).to_byte_array())
+	out.append_array(PackedFloat32Array([s.iter_norm_factor]).to_byte_array())
+	out.append_array(PackedInt32Array([1 if s.iter_bw_preview else 0]).to_byte_array())
+
+	out.append_array(PackedFloat32Array([
+		s.uniform_color.r, s.uniform_color.g, s.uniform_color.b, s.uniform_color.a,
+	]).to_byte_array())
+
+	out.append_array(PackedFloat32Array([
+		s.trap_position.x, s.trap_position.y, s.trap_position.z, s.trap_size,
+	]).to_byte_array())
+
+	out.append_array(PackedInt32Array([s.trap_shape]).to_byte_array())
+	out.append_array(PackedFloat32Array([s.trap_norm_k]).to_byte_array())
+	out.append_array(PackedInt32Array([1 if s.trap_bw_preview else 0]).to_byte_array())
+	out.append_array(PackedFloat32Array([0.0]).to_byte_array())
+
+	out.append_array(PackedFloat32Array([
+		s.sinmask_phase, s.sinmask_amp, s.hsv_cycles, s.hsv_hue_offset,
+		s.hsv_blend, 0.0, 0.0, 0.0,
+	]).to_byte_array())
+
 	return out
+
 
 # 32 bytes, std430. Push constants — frame-transient only.
 static func pack_frame(jitter: Vector2, history_blend: float,

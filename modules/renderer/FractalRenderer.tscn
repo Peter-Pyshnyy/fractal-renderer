@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dcgcssobxgh5o"]
+[gd_scene load_steps=17 format=3 uid="uid://dcgcssobxgh5o"]
 
 [ext_resource type="Texture2D" uid="uid://cmk806a4h4l1b" path="res://modules/renderer/output_image.tres" id="2_c2qj7"]
 [ext_resource type="Script" uid="uid://doucx2h1osup7" path="res://scripts/renderer_controller.gd" id="2_dws3f"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://tqdnit8ceif1" path="res://scripts/UI/camera_section.gd" id="12_b4yyk"]
 [ext_resource type="Script" uid="uid://cnxbxijsi32b8" path="res://scripts/UI/sphere_tracing_section.gd" id="13_sphere"]
 
+[ext_resource type="Script" path="res://scripts/UI/color_section.gd" id="14_color"]
 [sub_resource type="Resource" id="Resource_b4yyk"]
 script = ExtResource("3_kciyt")
 iterations = 15
@@ -369,6 +370,200 @@ text = "MAS Scale: 4"
 layout_mode = 2
 value = 4.0
 
+
+[node name="Section_Color_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+toggle_mode = true
+script = ExtResource("6_bn4l7")
+content = NodePath("../Section_Color_Content")
+
+[node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Btn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Btn/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Color Settings"
+vertical_alignment = 1
+
+[node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Btn/HeaderRow"]
+layout_mode = 2
+text = "▶"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Section_Color_Content" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
+layout_mode = 2
+script = ExtResource("14_color")
+
+[node name="ColorModeDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content"]
+layout_mode = 2
+
+[node name="UniformGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content"]
+layout_mode = 2
+
+[node name="SurfaceColorLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/UniformGroup"]
+layout_mode = 2
+text = "Surface Color"
+
+[node name="UniformColorPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/UniformGroup"]
+layout_mode = 2
+
+[node name="IterGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content"]
+layout_mode = 2
+
+[node name="IterNormLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
+layout_mode = 2
+text = "Iter. Norm.: 30.0"
+
+[node name="IterNormSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
+layout_mode = 2
+value = 30.0
+
+[node name="IterBWPreview" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
+layout_mode = 2
+text = "B&W Preview"
+
+[node name="TrapGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content"]
+layout_mode = 2
+
+[node name="TrapShapeDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+
+[node name="TrapPosXLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "Trap X: 0.00"
+
+[node name="TrapPosXSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+
+[node name="TrapPosYLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "Trap Y: 0.00"
+
+[node name="TrapPosYSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+
+[node name="TrapPosZLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "Trap Z: 0.00"
+
+[node name="TrapPosZSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+
+[node name="TrapSizeLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "Trap Size: 1.00"
+
+[node name="TrapSizeSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+value = 1.0
+
+[node name="TrapNormKLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "Norm. K: 0.22"
+
+[node name="TrapNormKSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+value = 0.22
+
+[node name="TrapBWPreview" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "B&W Preview"
+
+[node name="PaletteGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content"]
+layout_mode = 2
+
+[node name="PaletteLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
+layout_mode = 2
+text = "Palette"
+
+[node name="PaletteDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
+layout_mode = 2
+
+[node name="ColorBlendParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
+layout_mode = 2
+
+[node name="ColorALbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/ColorBlendParams"]
+layout_mode = 2
+text = "Color A"
+
+[node name="ColorAPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/ColorBlendParams"]
+layout_mode = 2
+
+[node name="ColorBLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/ColorBlendParams"]
+layout_mode = 2
+text = "Color B"
+
+[node name="ColorBPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/ColorBlendParams"]
+layout_mode = 2
+
+[node name="SinmaskParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
+layout_mode = 2
+
+[node name="SinmaskPhaseLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+text = "Phase: 0.15"
+
+[node name="SinmaskPhaseSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+value = 0.15
+
+[node name="SinmaskAmpLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+text = "Amplitude: 3.50"
+
+[node name="SinmaskAmpSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+value = 3.5
+
+[node name="SinmaskTintLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+text = "Tint Color"
+
+[node name="SinmaskTintPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+
+[node name="HSVParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
+layout_mode = 2
+
+[node name="HSVCyclesLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
+text = "Hue Cycles: 3.00"
+
+[node name="HSVCyclesSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
+value = 3.0
+
+[node name="HSVOffsetLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
+text = "Hue Offset: 8.50"
+
+[node name="HSVOffsetSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
+value = 8.5
+
+[node name="HSVBlendLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
+text = "Base Blend: 0.50"
+
+[node name="HSVBlendSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
+value = 0.5
+
+[node name="HSVBaseLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
+text = "Base Color"
+
+[node name="HSVBasePicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
+layout_mode = 2
 [node name="Section_Camera_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2

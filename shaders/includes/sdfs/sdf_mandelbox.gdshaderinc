@@ -34,7 +34,7 @@ float sdf(vec3 pos) {
 	return length(z) / abs(DEfactor);
 }
 
-float sdf_with_trap(vec3 pos, out float trap) {
+float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
 	vec3 z = pos;
 	vec3 c = pos;
 	float scale = scene.params.param0;
@@ -45,6 +45,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
 	float mR2 = minRadius * minRadius;
 	float DEfactor = scale;
 	trap = 1e6;
+	iter_count = scene.iterations;
 	for (int i = 0; i < scene.iterations; i++) {
 		// Parameterized Box Fold
 		if (z.x >  limit) z.x =  2.0 * limit - z.x;
