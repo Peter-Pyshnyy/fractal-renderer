@@ -73,13 +73,13 @@ func _wire_signals() -> void:
 	color_mode_dropdown.item_selected.connect(func(i):
 		if not _syncing: StateBus.scene.color_mode = i)
 
-	_configure_slider(iter_norm_a_slider, 0.01, 2.0, 0.01)
+	_configure_slider(iter_norm_a_slider, -2.5, 2.5, 0.01)
 	iter_norm_a_slider.value_changed.connect(func(v):
 		if _syncing: return
 		iter_norm_a_lbl.text = "Iter Norm A: %.2f" % v
 		StateBus.scene.iter_norm_a = v)
 
-	_configure_slider(iter_norm_b_slider, 1.0, 200.0, 0.5)
+	_configure_slider(iter_norm_b_slider, 1.0, 30.0, 0.01)
 	iter_norm_b_slider.value_changed.connect(func(v):
 		if _syncing: return
 		iter_norm_b_lbl.text = "Iter Norm B: %.1f" % v
@@ -122,13 +122,13 @@ func _wire_signals() -> void:
 		trap_size_lbl.text = "Trap Size: %.2f" % v
 		StateBus.scene.trap_size = v)
 
-	_configure_slider(trap_norm_a_slider, 0.01, 24.0, 0.01)
+	_configure_slider(trap_norm_a_slider, -30.0, 30.0, 0.01)
 	trap_norm_a_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_norm_a_lbl.text = "Trap Norm A: %.2f" % v
 		StateBus.scene.trap_norm_a = v)
 
-	_configure_slider(trap_norm_b_slider, 0.0, 2.0, 0.01)
+	_configure_slider(trap_norm_b_slider, 0.0, 1.5, 0.01)
 	trap_norm_b_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_norm_b_lbl.text = "Trap Norm B: %.2f" % v

@@ -29,9 +29,9 @@ class_name SceneStateR extends Resource
 	set(v): color_mode = v; emit_changed()
 @export var palette_type: int = 2:
 	set(v): palette_type = v; emit_changed()
-@export var iter_norm_a: float = 0.2:
+@export var iter_norm_a: float = 2.0:
 	set(v): iter_norm_a = v; emit_changed()
-@export var iter_norm_b: float = 30.0:
+@export var iter_norm_b: float = 5.0:
 	set(v): iter_norm_b = v; emit_changed()
 @export var iter_bw_preview: bool = false:
 	set(v): iter_bw_preview = v; emit_changed()

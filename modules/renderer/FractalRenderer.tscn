@@ -432,7 +432,6 @@ text = "Iter Norm A: 0.20"
 
 [node name="IterNormASlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
 layout_mode = 2
-value = 0.2
 
 [node name="IterNormBLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
 layout_mode = 2
@@ -495,7 +494,6 @@ text = "Trap Norm B: 0.22"
 
 [node name="TrapNormBSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2
-value = 0.22
 
 [node name="TrapLpPowerLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2

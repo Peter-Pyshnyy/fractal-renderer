@@ -25,6 +25,7 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 	]).to_byte_array())
 
 	out.append_array(PackedInt32Array([s.color_mode, s.palette_type]).to_byte_array())
+	out.append_array(PackedFloat32Array([0.0]).to_byte_array())  
 	out.append_array(PackedInt32Array([1 if s.iter_bw_preview else 0]).to_byte_array())
 
 	out.append_array(PackedFloat32Array([
