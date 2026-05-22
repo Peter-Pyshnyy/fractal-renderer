@@ -13,8 +13,8 @@
 [ext_resource type="Script" uid="uid://omxvvg04368j" path="res://scripts/UI/mas_section.gd" id="11_i0rrr"]
 [ext_resource type="Script" uid="uid://tqdnit8ceif1" path="res://scripts/UI/camera_section.gd" id="12_b4yyk"]
 [ext_resource type="Script" uid="uid://cnxbxijsi32b8" path="res://scripts/UI/sphere_tracing_section.gd" id="13_sphere"]
+[ext_resource type="Script" uid="uid://deysplwy3oxox" path="res://scripts/UI/color_section.gd" id="14_color"]
 
-[ext_resource type="Script" path="res://scripts/UI/color_section.gd" id="14_color"]
 [sub_resource type="Resource" id="Resource_b4yyk"]
 script = ExtResource("3_kciyt")
 iterations = 15
@@ -370,7 +370,6 @@ text = "MAS Scale: 4"
 layout_mode = 2
 value = 4.0
 
-
 [node name="Section_Color_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
@@ -472,7 +471,6 @@ text = "Norm. K: 0.22"
 
 [node name="TrapNormKSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2
-value = 0.22
 
 [node name="TrapLpPowerLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2
@@ -522,7 +520,6 @@ text = "Phase: 0.15"
 
 [node name="SinmaskPhaseSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
 layout_mode = 2
-value = 0.15
 
 [node name="SinmaskAmpLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
 layout_mode = 2
@@ -530,7 +527,7 @@ text = "Amplitude: 3.50"
 
 [node name="SinmaskAmpSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
 layout_mode = 2
-value = 3.5
+value = 4.0
 
 [node name="HSVParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
 layout_mode = 2
@@ -549,7 +546,7 @@ text = "Hue Offset: 8.50"
 
 [node name="HSVOffsetSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
 layout_mode = 2
-value = 8.5
+value = 9.0
 
 [node name="HSVBlendLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
 layout_mode = 2
@@ -557,7 +554,7 @@ text = "Base Blend: 0.50"
 
 [node name="HSVBlendSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
 layout_mode = 2
-value = 0.5
+value = 1.0
 
 [node name="HSVBaseLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
 layout_mode = 2
@@ -565,6 +562,7 @@ text = "Base Color"
 
 [node name="HSVBasePicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
 layout_mode = 2
+
 [node name="Section_Camera_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
