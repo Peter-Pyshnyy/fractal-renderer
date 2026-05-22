@@ -12,6 +12,8 @@ var _syncing := false
 @onready var light_y_lbl: Label = $LightYLbl
 @onready var light_z_slider: HSlider = $LightZSlider
 @onready var light_z_lbl: Label = $LightZLbl
+@onready var exposure_slider: HSlider = $ExposureSlider
+@onready var exposure_lbl: Label = $ExposureLbl
 @onready var background_color_picker: ColorPickerButton = $BackgroundColorPicker
 
 func _ready() -> void:
@@ -44,6 +46,11 @@ func _wire_signals() -> void:
 		if _syncing: return
 		light_z_lbl.text = "Light Z: %.2f" % v
 		StateBus.scene.light_dir = Vector3(StateBus.scene.light_dir.x, StateBus.scene.light_dir.y, v))
+	exposure_slider.min_value = 0.1; exposure_slider.max_value = 10.0; exposure_slider.step = 0.01
+	exposure_slider.value_changed.connect(func(v):
+		if _syncing: return
+		exposure_lbl.text = "Exposure: %.2f" % v
+		StateBus.scene.exposure = v)
 	background_color_picker.color_changed.connect(func(v):
 		if _syncing: return
 		StateBus.scene.background_color = v)
@@ -62,5 +69,7 @@ func _sync() -> void:
 	light_x_slider.value = ld.x; light_x_lbl.text = "Light X: %.2f" % ld.x
 	light_y_slider.value = ld.y; light_y_lbl.text = "Light Y: %.2f" % ld.y
 	light_z_slider.value = ld.z; light_z_lbl.text = "Light Z: %.2f" % ld.z
+	exposure_slider.value = StateBus.scene.exposure
+	exposure_lbl.text = "Exposure: %.2f" % StateBus.scene.exposure
 	background_color_picker.color = StateBus.scene.background_color
 	_syncing = false

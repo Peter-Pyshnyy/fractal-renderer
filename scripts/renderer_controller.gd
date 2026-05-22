@@ -54,6 +54,7 @@ func _ready() -> void:
 	texture_rect.resized.connect(_on_texture_rect_resized)
 	StateBus.scene.changed.connect(_on_scene_changed)
 	StateBus.render.changed.connect(_mark_motion)
+	StateBus.camera.changed.connect(_mark_motion)
 
 	_last_fractal_index = StateBus.scene.fractal_index
 	current_pipeline = pipelines[_last_fractal_index]

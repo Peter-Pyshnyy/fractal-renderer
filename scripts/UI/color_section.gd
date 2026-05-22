@@ -8,8 +8,10 @@ var _syncing := false
 @onready var uniform_color_picker: ColorPickerButton = $UniformGroup/UniformColorPicker
 
 @onready var iter_group:          VBoxContainer     = $IterGroup
-@onready var iter_norm_lbl:       Label             = $IterGroup/IterNormLbl
-@onready var iter_norm_slider:    HSlider           = $IterGroup/IterNormSlider
+@onready var iter_norm_a_lbl:     Label             = $IterGroup/IterNormALbl
+@onready var iter_norm_a_slider:  HSlider           = $IterGroup/IterNormASlider
+@onready var iter_norm_b_lbl:     Label             = $IterGroup/IterNormBLbl
+@onready var iter_norm_b_slider:  HSlider           = $IterGroup/IterNormBSlider
 @onready var iter_bw_preview:     CheckBox          = $IterGroup/IterBWPreview
 
 @onready var trap_group:          VBoxContainer     = $TrapGroup
@@ -22,8 +24,10 @@ var _syncing := false
 @onready var trap_pos_z_slider:   HSlider           = $TrapGroup/TrapPosZSlider
 @onready var trap_size_lbl:       Label             = $TrapGroup/TrapSizeLbl
 @onready var trap_size_slider:    HSlider           = $TrapGroup/TrapSizeSlider
-@onready var trap_norm_k_lbl:     Label             = $TrapGroup/TrapNormKLbl
-@onready var trap_norm_k_slider:  HSlider           = $TrapGroup/TrapNormKSlider
+@onready var trap_norm_a_lbl:     Label             = $TrapGroup/TrapNormALbl
+@onready var trap_norm_a_slider:  HSlider           = $TrapGroup/TrapNormASlider
+@onready var trap_norm_b_lbl:     Label             = $TrapGroup/TrapNormBLbl
+@onready var trap_norm_b_slider:  HSlider           = $TrapGroup/TrapNormBSlider
 @onready var trap_lp_power_lbl:   Label             = $TrapGroup/TrapLpPowerLbl
 @onready var trap_lp_power_slider: HSlider          = $TrapGroup/TrapLpPowerSlider
 @onready var trap_bw_preview:     CheckBox          = $TrapGroup/TrapBWPreview
@@ -69,13 +73,17 @@ func _wire_signals() -> void:
 	color_mode_dropdown.item_selected.connect(func(i):
 		if not _syncing: StateBus.scene.color_mode = i)
 
-	iter_norm_slider.min_value = 1.0
-	iter_norm_slider.max_value = 200.0
-	iter_norm_slider.step = 0.5
-	iter_norm_slider.value_changed.connect(func(v):
+	_configure_slider(iter_norm_a_slider, -2.5, 2.5, 0.01)
+	iter_norm_a_slider.value_changed.connect(func(v):
 		if _syncing: return
-		iter_norm_lbl.text = "Iter. Norm.: %.1f" % v
-		StateBus.scene.iter_norm_factor = v)
+		iter_norm_a_lbl.text = "Iter Norm A: %.2f" % v
+		StateBus.scene.iter_norm_a = v)
+
+	_configure_slider(iter_norm_b_slider, 1.0, 30.0, 0.01)
+	iter_norm_b_slider.value_changed.connect(func(v):
+		if _syncing: return
+		iter_norm_b_lbl.text = "Iter Norm B: %.1f" % v
+		StateBus.scene.iter_norm_b = v)
 
 	iter_bw_preview.toggled.connect(func(v):
 		if not _syncing: StateBus.scene.iter_bw_preview = v)
@@ -114,11 +122,17 @@ func _wire_signals() -> void:
 		trap_size_lbl.text = "Trap Size: %.2f" % v
 		StateBus.scene.trap_size = v)
 
-	_configure_slider(trap_norm_k_slider, 0.01, 2.0, 0.01)
-	trap_norm_k_slider.value_changed.connect(func(v):
+	_configure_slider(trap_norm_a_slider, -30.0, 30.0, 0.01)
+	trap_norm_a_slider.value_changed.connect(func(v):
 		if _syncing: return
-		trap_norm_k_lbl.text = "Norm. K: %.2f" % v
-		StateBus.scene.trap_norm_k = v)
+		trap_norm_a_lbl.text = "Trap Norm A: %.2f" % v
+		StateBus.scene.trap_norm_a = v)
+
+	_configure_slider(trap_norm_b_slider, 0.0, 1.5, 0.01)
+	trap_norm_b_slider.value_changed.connect(func(v):
+		if _syncing: return
+		trap_norm_b_lbl.text = "Trap Norm B: %.2f" % v
+		StateBus.scene.trap_norm_b = v)
 
 	_configure_slider(trap_lp_power_slider, 0.5, 8.0, 0.05)
 	trap_lp_power_slider.value_changed.connect(func(v):
@@ -221,8 +235,10 @@ func _sync() -> void:
 
 	uniform_color_picker.color = s.uniform_color
 
-	iter_norm_lbl.text     = "Iter. Norm.: %.1f" % s.iter_norm_factor
-	iter_norm_slider.value = s.iter_norm_factor
+	iter_norm_a_lbl.text     = "Iter Norm A: %.2f" % s.iter_norm_a
+	iter_norm_a_slider.value = s.iter_norm_a
+	iter_norm_b_lbl.text     = "Iter Norm B: %.1f" % s.iter_norm_b
+	iter_norm_b_slider.value = s.iter_norm_b
 	iter_bw_preview.button_pressed = s.iter_bw_preview
 
 	trap_shape_dropdown.selected = s.trap_shape
@@ -231,7 +247,8 @@ func _sync() -> void:
 	trap_pos_y_lbl.text = "Trap Y: %.2f" % s.trap_position.y; trap_pos_y_slider.value = s.trap_position.y
 	trap_pos_z_lbl.text = "Trap Z: %.2f" % s.trap_position.z; trap_pos_z_slider.value = s.trap_position.z
 	trap_size_lbl.text  = "Trap Size: %.2f" % s.trap_size;    trap_size_slider.value  = s.trap_size
-	trap_norm_k_lbl.text = "Norm. K: %.2f" % s.trap_norm_k;   trap_norm_k_slider.value = s.trap_norm_k
+	trap_norm_a_lbl.text = "Trap Norm A: %.2f" % s.trap_norm_a;   trap_norm_a_slider.value = s.trap_norm_a
+	trap_norm_b_lbl.text = "Trap Norm B: %.2f" % s.trap_norm_b;   trap_norm_b_slider.value = s.trap_norm_b
 	trap_lp_power_lbl.text = "Lp Power: %.2f" % s.trap_lp_power; trap_lp_power_slider.value = s.trap_lp_power
 	trap_bw_preview.button_pressed = s.trap_bw_preview
 

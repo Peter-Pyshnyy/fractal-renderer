@@ -69,7 +69,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 		albedo = scene.uniform_color.rgb;
 
 	} else if (scene.color_mode == 1) {
-		float t = 1.0 / (1.0 + exp(10.0 * (scene.iter_norm_factor - float(iter_count))));
+		float t = 1.0 / (1.0 + exp(scene.iter_norm_a * (scene.iter_norm_b - float(iter_count))));
 		if (scene.iter_bw_preview == 1) {
 			return vec3(t);
 		}

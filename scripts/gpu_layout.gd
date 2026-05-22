@@ -16,6 +16,7 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 		s.light_dir.x, s.light_dir.y, s.light_dir.z, 0.0,
 		s.metallic, s.roughness, s.sdf_scalar, s.lod_scalar,
 		s.background_color.r, s.background_color.g, s.background_color.b, s.background_color.a,
+		s.exposure, s.iter_norm_a, s.iter_norm_b, 0.0,
 	]).to_byte_array())
 	out.append_array(PackedInt32Array([
 		s.fractal_data.iterations,
@@ -24,7 +25,7 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 	]).to_byte_array())
 
 	out.append_array(PackedInt32Array([s.color_mode, s.palette_type]).to_byte_array())
-	out.append_array(PackedFloat32Array([s.iter_norm_factor]).to_byte_array())
+	out.append_array(PackedFloat32Array([0.0]).to_byte_array())  
 	out.append_array(PackedInt32Array([1 if s.iter_bw_preview else 0]).to_byte_array())
 
 	out.append_array(PackedFloat32Array([
@@ -36,13 +37,14 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 	]).to_byte_array())
 
 	out.append_array(PackedInt32Array([s.trap_shape]).to_byte_array())
-	out.append_array(PackedFloat32Array([s.trap_norm_k]).to_byte_array())
+	out.append_array(PackedFloat32Array([s.trap_norm_a]).to_byte_array())
 	out.append_array(PackedInt32Array([1 if s.trap_bw_preview else 0]).to_byte_array())
 	out.append_array(PackedFloat32Array([0.0]).to_byte_array())
 
 	out.append_array(PackedFloat32Array([
 		s.sinmask_phase, s.sinmask_amp, s.hsv_cycles, s.hsv_hue_offset,
 		s.hsv_blend, s.trap_lp_power, s.sinmask_offset, s.sinmask_blend,
+		s.trap_norm_b, 0.0, 0.0, 0.0,
 	]).to_byte_array())
 
 	return out
