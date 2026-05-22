@@ -27,7 +27,7 @@ float sdf(vec3 pos) {
 	return (sqrt(r2) - 2.0) * pow(scale, -float(n));
 }
 
-float sdf_with_trap(vec3 pos, out float trap) {
+float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
 	vec3 z = pos;
 	float scale = scene.params.param0;
 	float alpha = scene.params.param1;
@@ -39,6 +39,7 @@ float sdf_with_trap(vec3 pos, out float trap) {
 	float r2 = 0.0;
 	int n = 0;
 	trap = 1e6;
+	iter_count = scene.iterations;
 	for (int i = 0; i < scene.iterations; i++) {
 		z.xz = vec2(ca * z.x - sa * z.z, sa * z.x + ca * z.z);
 		z = abs(z);

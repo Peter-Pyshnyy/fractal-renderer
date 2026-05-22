@@ -33,7 +33,25 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	int   use_pbr;        //  4 B
 	int   max_steps;          //  4 B
 	int   _pad3;          //  4 B
-} scene;                  // total: 128 B
+	int   color_mode;
+	int   palette_type;
+	float iter_norm_factor;
+	int   iter_bw_preview;
+	vec4  uniform_color;
+	vec4  trap_pos_size;
+	int   trap_shape;
+	float trap_norm_k;
+	int   trap_bw_preview;
+	float _pad_trap;
+	float sinmask_phase;
+	float sinmask_amp;
+	float hsv_cycles;
+	float hsv_hue_offset;
+	float hsv_blend;
+	float trap_lp_power;
+	float _pad_p1;
+	float _pad_p2;
+} scene;                  // total: 224 B
 
 // Push constants — frame-transient only (32 B)
 layout(push_constant, std430) uniform FrameConstants {
