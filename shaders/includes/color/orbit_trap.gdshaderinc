@@ -10,8 +10,8 @@ vec3 get_trap_color_mix(float x) {
 }
 
 vec3 get_trap_color_sinmask(float x) {
-    float s = sin(x + scene.sinmask_phase) * scene.sinmask_amp;
-    return vec3(s * s);
+    vec3 s = vec3(clamp(pow(sin(x + scene.sinmask_phase) * scene.sinmask_amp, 2.0), 0.0, 1.0));
+	return hsv2rgb(s);
 }
 
 vec3 get_trap_color_hsv(float x) {
@@ -37,7 +37,8 @@ vec3 get_palette_color(float t) {
 }
 
 float get_normalized_trap(float d) {
-    return d / (d + scene.trap_norm_k);
+    float safe_d = min(d, 100000.0);
+    return safe_d / (safe_d + scene.trap_norm_k);
 }
 
 float length_Lp(vec3 p, float power) {
