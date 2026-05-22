@@ -539,6 +539,12 @@ layout_mode = 2
 layout_mode = 2
 text = "Base Blend: 1.00"
 
+[node name="SinmaskBlendSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+
+[node name="SinmaskBasePicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
+layout_mode = 2
+
 [node name="HSVParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
 layout_mode = 2
 
