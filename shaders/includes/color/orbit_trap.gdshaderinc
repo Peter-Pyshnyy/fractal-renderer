@@ -26,6 +26,11 @@ float get_normalized_trap(float d) {
 	return res;
 }
 
+float length_Lp(vec3 p, float power) {
+    vec3 ap = pow(abs(p), vec3(power));
+    return pow(ap.x + ap.y + ap.z, 1.0 / power);
+}
+
 float get_trap_distance(vec3 p) {
-	return abs(length(p) - 1.0);
+	return abs(length_Lp(p, 1.0) - 1.0);
 }

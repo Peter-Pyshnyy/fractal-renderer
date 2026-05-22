@@ -12,7 +12,7 @@
 [ext_resource type="Script" uid="uid://l2jfq07i1t4v" path="res://scripts/UI/pbr_section.gd" id="10_bn4l7"]
 [ext_resource type="Script" uid="uid://omxvvg04368j" path="res://scripts/UI/mas_section.gd" id="11_i0rrr"]
 [ext_resource type="Script" uid="uid://tqdnit8ceif1" path="res://scripts/UI/camera_section.gd" id="12_b4yyk"]
-[ext_resource type="Script" uid="uid://c7g6xj1pf72xh" path="res://scripts/UI/sphere_tracing_section.gd" id="13_sphere"]
+[ext_resource type="Script" uid="uid://cnxbxijsi32b8" path="res://scripts/UI/sphere_tracing_section.gd" id="13_sphere"]
 
 [sub_resource type="Resource" id="Resource_b4yyk"]
 script = ExtResource("3_kciyt")
