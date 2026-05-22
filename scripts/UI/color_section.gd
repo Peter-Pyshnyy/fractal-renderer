@@ -24,6 +24,8 @@ var _syncing := false
 @onready var trap_size_slider:    HSlider           = $TrapGroup/TrapSizeSlider
 @onready var trap_norm_k_lbl:     Label             = $TrapGroup/TrapNormKLbl
 @onready var trap_norm_k_slider:  HSlider           = $TrapGroup/TrapNormKSlider
+@onready var trap_lp_power_lbl:   Label             = $TrapGroup/TrapLpPowerLbl
+@onready var trap_lp_power_slider: HSlider          = $TrapGroup/TrapLpPowerSlider
 @onready var trap_bw_preview:     CheckBox          = $TrapGroup/TrapBWPreview
 
 @onready var palette_group:       VBoxContainer     = $PaletteGroup
@@ -38,7 +40,6 @@ var _syncing := false
 @onready var sinmask_phase_slider: HSlider          = $PaletteGroup/SinmaskParams/SinmaskPhaseSlider
 @onready var sinmask_amp_lbl:     Label             = $PaletteGroup/SinmaskParams/SinmaskAmpLbl
 @onready var sinmask_amp_slider:  HSlider           = $PaletteGroup/SinmaskParams/SinmaskAmpSlider
-@onready var sinmask_tint_picker: ColorPickerButton = $PaletteGroup/SinmaskParams/SinmaskTintPicker
 
 @onready var hsv_params:          VBoxContainer     = $PaletteGroup/HSVParams
 @onready var hsv_cycles_lbl:      Label             = $PaletteGroup/HSVParams/HSVCyclesLbl
@@ -74,10 +75,11 @@ func _wire_signals() -> void:
     iter_bw_preview.toggled.connect(func(v):
         if not _syncing: StateBus.scene.iter_bw_preview = v)
 
-    trap_shape_dropdown.add_item("Octahedron")
     trap_shape_dropdown.add_item("Sphere")
-    trap_shape_dropdown.add_item("Point")
-    trap_shape_dropdown.add_item("Line")
+    trap_shape_dropdown.add_item("Plane")
+    trap_shape_dropdown.add_item("Box")
+    trap_shape_dropdown.add_item("Axes")
+    trap_shape_dropdown.add_item("Cylinder")
     trap_shape_dropdown.item_selected.connect(func(i):
         if not _syncing:
             StateBus.scene.trap_shape = i
@@ -113,12 +115,20 @@ func _wire_signals() -> void:
         trap_norm_k_lbl.text = "Norm. K: %.2f" % v
         StateBus.scene.trap_norm_k = v)
 
+    _configure_slider(trap_lp_power_slider, 0.5, 8.0, 0.05)
+    trap_lp_power_slider.value_changed.connect(func(v):
+        if _syncing: return
+        trap_lp_power_lbl.text = "Lp Power: %.2f" % v
+        StateBus.scene.trap_lp_power = v)
+
     trap_bw_preview.toggled.connect(func(v):
         if not _syncing: StateBus.scene.trap_bw_preview = v)
 
     palette_dropdown.add_item("Color Blend")
     palette_dropdown.add_item("Sinmask")
     palette_dropdown.add_item("HSV")
+    palette_dropdown.add_item("Viridis")
+    palette_dropdown.add_item("Heat")
     palette_dropdown.item_selected.connect(func(i):
         if not _syncing: StateBus.scene.palette_type = i)
 
@@ -139,8 +149,6 @@ func _wire_signals() -> void:
         sinmask_amp_lbl.text = "Amplitude: %.2f" % v
         StateBus.scene.sinmask_amp = v)
 
-    sinmask_tint_picker.color_changed.connect(func(c):
-        if not _syncing: StateBus.scene.set_color_a(c))
 
     _configure_slider(hsv_cycles_slider, 0.1, 20.0, 0.01)
     hsv_cycles_slider.value_changed.connect(func(v):
@@ -204,6 +212,7 @@ func _sync() -> void:
     trap_pos_z_lbl.text = "Trap Z: %.2f" % s.trap_position.z; trap_pos_z_slider.value = s.trap_position.z
     trap_size_lbl.text  = "Trap Size: %.2f" % s.trap_size;    trap_size_slider.value  = s.trap_size
     trap_norm_k_lbl.text = "Norm. K: %.2f" % s.trap_norm_k;   trap_norm_k_slider.value = s.trap_norm_k
+    trap_lp_power_lbl.text = "Lp Power: %.2f" % s.trap_lp_power; trap_lp_power_slider.value = s.trap_lp_power
     trap_bw_preview.button_pressed = s.trap_bw_preview
 
     palette_dropdown.selected = s.palette_type
@@ -213,7 +222,6 @@ func _sync() -> void:
 
     color_a_picker.color   = s.material.color0
     color_b_picker.color   = s.material.color1
-    sinmask_tint_picker.color = s.material.color0
 
     sinmask_phase_lbl.text  = "Phase: %.2f" % s.sinmask_phase;  sinmask_phase_slider.value  = s.sinmask_phase
     sinmask_amp_lbl.text    = "Amplitude: %.2f" % s.sinmask_amp; sinmask_amp_slider.value   = s.sinmask_amp

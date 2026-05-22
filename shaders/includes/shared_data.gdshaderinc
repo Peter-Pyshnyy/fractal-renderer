@@ -48,7 +48,7 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float hsv_cycles;
 	float hsv_hue_offset;
 	float hsv_blend;
-	float _pad_p0;
+	float trap_lp_power;
 	float _pad_p1;
 	float _pad_p2;
 } scene;                  // total: 224 B

@@ -474,6 +474,14 @@ text = "Norm. K: 0.22"
 layout_mode = 2
 value = 0.22
 
+[node name="TrapLpPowerLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "Lp Power: 2.00"
+
+[node name="TrapLpPowerSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+value = 2.0
+
 [node name="TrapBWPreview" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2
 text = "B&W Preview"
@@ -523,13 +531,6 @@ text = "Amplitude: 3.50"
 [node name="SinmaskAmpSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
 layout_mode = 2
 value = 3.5
-
-[node name="SinmaskTintLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-text = "Tint Color"
-
-[node name="SinmaskTintPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
 
 [node name="HSVParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
 layout_mode = 2

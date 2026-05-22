@@ -41,6 +41,8 @@ class_name SceneStateR extends Resource
 	set(v): trap_size = v; emit_changed()
 @export var trap_norm_k: float = 0.22:
 	set(v): trap_norm_k = v; emit_changed()
+@export var trap_lp_power: float = 2.0:
+	set(v): trap_lp_power = v; emit_changed()
 @export var trap_bw_preview: bool = false:
 	set(v): trap_bw_preview = v; emit_changed()
 @export var sinmask_phase: float = 0.15:
