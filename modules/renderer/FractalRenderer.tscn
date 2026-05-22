@@ -321,6 +321,14 @@ value = 1.0
 layout_mode = 2
 text = "Background Color"
 
+[node name="ExposureLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Exposure: 3.00"
+
+[node name="ExposureSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+value = 3.0
+
 [node name="BackgroundColorPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
 custom_minimum_size = Vector2(0, 25.615)
 layout_mode = 2
@@ -418,11 +426,19 @@ layout_mode = 2
 [node name="IterGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content"]
 layout_mode = 2
 
-[node name="IterNormLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
+[node name="IterNormALbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
 layout_mode = 2
-text = "Iter. Norm.: 30.0"
+text = "Iter Norm A: 0.20"
 
-[node name="IterNormSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
+[node name="IterNormASlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
+layout_mode = 2
+value = 0.2
+
+[node name="IterNormBLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
+layout_mode = 2
+text = "Iter Norm B: 30.0"
+
+[node name="IterNormBSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/IterGroup"]
 layout_mode = 2
 value = 30.0
 
@@ -465,12 +481,21 @@ text = "Trap Size: 1.00"
 layout_mode = 2
 value = 1.0
 
-[node name="TrapNormKLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+[node name="TrapNormALbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2
-text = "Norm. K: 0.22"
+text = "Trap Norm A: 8.00"
 
-[node name="TrapNormKSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+[node name="TrapNormASlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2
+value = 8.0
+
+[node name="TrapNormBLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+text = "Trap Norm B: 0.22"
+
+[node name="TrapNormBSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
+layout_mode = 2
+value = 0.22
 
 [node name="TrapLpPowerLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/TrapGroup"]
 layout_mode = 2
@@ -621,6 +646,14 @@ layout_mode = 2
 [node name="CameraModeSwitch" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
 layout_mode = 2
 text = "Camera Mode: Orbit"
+
+[node name="FOVLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+layout_mode = 2
+text = "FOV: 75"
+
+[node name="FOVSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+layout_mode = 2
+value = 75.0
 
 [node name="ScreenshotBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
 layout_mode = 2

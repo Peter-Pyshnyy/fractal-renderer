@@ -29,18 +29,22 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float sdf_scalar;     //  4 B
 	float lod_scalar;     //  4 B
 	vec4  background_color; // 16 B
+	float exposure;
+	float iter_norm_a;
+	float iter_norm_b;
+	float _pad_exp;
 	int   iterations;     //  4 B
 	int   use_pbr;        //  4 B
 	int   max_steps;          //  4 B
 	int   _pad3;          //  4 B
 	int   color_mode;
 	int   palette_type;
-	float iter_norm_factor;
+	float _pad_color0;
 	int   iter_bw_preview;
 	vec4  uniform_color;
 	vec4  trap_pos_size;
 	int   trap_shape;
-	float trap_norm_k;
+	float trap_norm_a;
 	int   trap_bw_preview;
 	float _pad_trap;
 	float sinmask_phase;
@@ -51,6 +55,10 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float trap_lp_power;
 	float sinmask_offset;
 	float sinmask_blend;
+	float trap_norm_b;
+	float _pad_s0;
+	float _pad_s1;
+	float _pad_s2;
 } scene;                  // total: 224 B
 
 // Push constants — frame-transient only (32 B)

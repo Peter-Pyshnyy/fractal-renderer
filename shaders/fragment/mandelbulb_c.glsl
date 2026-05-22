@@ -30,7 +30,7 @@ void main() {
 			ivec2 write_coord = base_coord + ivec2(x, y);
 			if (write_coord.x < image_size.x && write_coord.y < image_size.y) {
 
-				float exposure = 3.0;
+				float exposure = scene.exposure;
 
 				vec3 current_color;
 				

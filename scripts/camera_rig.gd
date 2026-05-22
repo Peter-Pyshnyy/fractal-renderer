@@ -81,7 +81,7 @@ func _switch_mode() -> void:
 		_sync_precise()
 	else:
 		current_mode = CameraMode.ORBIT
-		camera.fov = 75.0
+		camera.fov = StateBus.camera.fov
 		position = Vector3.ZERO
 		_sync_precise()
 	camera_mode_changed.emit(current_mode)
@@ -128,6 +128,7 @@ func _on_render_state_changed() -> void:
 
 func _on_camera_state_changed() -> void:
 	mouse_sensitivity = StateBus.camera.mouse_sensitivity
+	camera.fov = StateBus.camera.fov
 	if StateBus.camera.mode != int(current_mode):
 		_switch_mode()
 

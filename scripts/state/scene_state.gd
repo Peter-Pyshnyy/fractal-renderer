@@ -14,6 +14,8 @@ class_name SceneStateR extends Resource
 	set(v): roughness = v; emit_changed()
 @export var use_pbr: bool = true:
 	set(v): use_pbr = v; emit_changed()
+@export_range(0.1, 10.0, 0.01) var exposure: float = 3.0:
+	set(v): exposure = v; emit_changed()
 @export_range(0.1, 1.0, 0.01) var sdf_scalar: float = 0.75:
 	set(v): sdf_scalar = v; emit_changed()
 @export_range(0.1, 2.0, 0.01) var lod_scalar: float = 0.75:
@@ -27,8 +29,10 @@ class_name SceneStateR extends Resource
 	set(v): color_mode = v; emit_changed()
 @export var palette_type: int = 2:
 	set(v): palette_type = v; emit_changed()
-@export var iter_norm_factor: float = 30.0:
-	set(v): iter_norm_factor = v; emit_changed()
+@export var iter_norm_a: float = 0.2:
+	set(v): iter_norm_a = v; emit_changed()
+@export var iter_norm_b: float = 30.0:
+	set(v): iter_norm_b = v; emit_changed()
 @export var iter_bw_preview: bool = false:
 	set(v): iter_bw_preview = v; emit_changed()
 @export var uniform_color: Color = Color(1.0, 1.0, 1.0, 1.0):
@@ -39,8 +43,10 @@ class_name SceneStateR extends Resource
 	set(v): trap_position = v; emit_changed()
 @export var trap_size: float = 1.0:
 	set(v): trap_size = v; emit_changed()
-@export var trap_norm_k: float = 0.22:
-	set(v): trap_norm_k = v; emit_changed()
+@export var trap_norm_a: float = 8.0:
+	set(v): trap_norm_a = v; emit_changed()
+@export var trap_norm_b: float = 0.22:
+	set(v): trap_norm_b = v; emit_changed()
 @export var trap_lp_power: float = 2.0:
 	set(v): trap_lp_power = v; emit_changed()
 @export var trap_bw_preview: bool = false:

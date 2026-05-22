@@ -39,7 +39,7 @@ vec3 get_palette_color(float t) {
 
 float get_normalized_trap(float d) {
     float safe_d = min(d, 100000.0);
-    return safe_d / (safe_d + scene.trap_norm_k);
+    return 1.0 / (1.0 + exp(scene.trap_norm_a * (scene.trap_norm_b - safe_d)));
 }
 
 float length_Lp(vec3 p, float power) {

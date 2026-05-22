@@ -4,3 +4,6 @@ class_name CameraInputState extends Resource
 	set(v): mouse_sensitivity = v; emit_changed()
 @export var mode: int = 1:  # 0 FPS, 1 Orbit
 	set(v): mode = v; emit_changed()
+
+@export_range(20.0, 120.0, 1.0) var fov: float = 75.0:
+	set(v): fov = v; emit_changed()
