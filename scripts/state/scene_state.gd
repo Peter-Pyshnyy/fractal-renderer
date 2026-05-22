@@ -49,6 +49,10 @@ class_name SceneStateR extends Resource
 	set(v): sinmask_phase = v; emit_changed()
 @export var sinmask_amp: float = 3.5:
 	set(v): sinmask_amp = v; emit_changed()
+@export var sinmask_offset: float = 0.0:
+	set(v): sinmask_offset = v; emit_changed()
+@export var sinmask_blend: float = 1.0:
+	set(v): sinmask_blend = v; emit_changed()
 @export var hsv_cycles: float = 3.0:
 	set(v): hsv_cycles = v; emit_changed()
 @export var hsv_hue_offset: float = 8.5:

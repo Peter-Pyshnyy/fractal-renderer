@@ -42,7 +42,7 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 
 	out.append_array(PackedFloat32Array([
 		s.sinmask_phase, s.sinmask_amp, s.hsv_cycles, s.hsv_hue_offset,
-		s.hsv_blend, s.trap_lp_power, 0.0, 0.0,
+		s.hsv_blend, s.trap_lp_power, s.sinmask_offset, s.sinmask_blend,
 	]).to_byte_array())
 
 	return out

@@ -10,8 +10,9 @@ vec3 get_trap_color_mix(float x) {
 }
 
 vec3 get_trap_color_sinmask(float x) {
-    vec3 s = vec3(clamp(pow(sin(x + scene.sinmask_phase) * scene.sinmask_amp, 2.0), 0.0, 1.0));
-	return hsv2rgb(s);
+    float v = clamp(pow(sin(x + scene.sinmask_offset + scene.sinmask_phase) * scene.sinmask_amp, 2.0), 0.0, 1.0);
+    vec3 sinmask_color = hsv2rgb(vec3(v, v, v));
+    return mix(scene.material.color_a.rgb, sinmask_color, scene.sinmask_blend);
 }
 
 vec3 get_trap_color_hsv(float x) {

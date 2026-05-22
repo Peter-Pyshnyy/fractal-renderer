@@ -49,8 +49,8 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float hsv_hue_offset;
 	float hsv_blend;
 	float trap_lp_power;
-	float _pad_p1;
-	float _pad_p2;
+	float sinmask_offset;
+	float sinmask_blend;
 } scene;                  // total: 224 B
 
 // Push constants — frame-transient only (32 B)

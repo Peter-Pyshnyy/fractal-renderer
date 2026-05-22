@@ -35,11 +35,16 @@ var _syncing := false
 @onready var color_a_picker:      ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorAPicker
 @onready var color_b_picker:      ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorBPicker
 
-@onready var sinmask_params:      VBoxContainer     = $PaletteGroup/SinmaskParams
-@onready var sinmask_phase_lbl:   Label             = $PaletteGroup/SinmaskParams/SinmaskPhaseLbl
-@onready var sinmask_phase_slider: HSlider          = $PaletteGroup/SinmaskParams/SinmaskPhaseSlider
-@onready var sinmask_amp_lbl:     Label             = $PaletteGroup/SinmaskParams/SinmaskAmpLbl
-@onready var sinmask_amp_slider:  HSlider           = $PaletteGroup/SinmaskParams/SinmaskAmpSlider
+@onready var sinmask_params:       VBoxContainer     = $PaletteGroup/SinmaskParams
+@onready var sinmask_phase_lbl:    Label             = $PaletteGroup/SinmaskParams/SinmaskPhaseLbl
+@onready var sinmask_phase_slider: HSlider           = $PaletteGroup/SinmaskParams/SinmaskPhaseSlider
+@onready var sinmask_amp_lbl:      Label             = $PaletteGroup/SinmaskParams/SinmaskAmpLbl
+@onready var sinmask_amp_slider:   HSlider           = $PaletteGroup/SinmaskParams/SinmaskAmpSlider
+@onready var sinmask_offset_lbl:   Label             = $PaletteGroup/SinmaskParams/SinmaskOffsetLbl
+@onready var sinmask_offset_slider: HSlider          = $PaletteGroup/SinmaskParams/SinmaskOffsetSlider
+@onready var sinmask_blend_lbl:    Label             = $PaletteGroup/SinmaskParams/SinmaskBlendLbl
+@onready var sinmask_blend_slider: HSlider           = $PaletteGroup/SinmaskParams/SinmaskBlendSlider
+@onready var sinmask_base_picker:  ColorPickerButton = $PaletteGroup/SinmaskParams/SinmaskBasePicker
 
 @onready var hsv_params:          VBoxContainer     = $PaletteGroup/HSVParams
 @onready var hsv_cycles_lbl:      Label             = $PaletteGroup/HSVParams/HSVCyclesLbl
@@ -52,183 +57,201 @@ var _syncing := false
 
 
 func _ready() -> void:
-    _wire_signals()
-    _connect_state()
-    _sync()
+	_wire_signals()
+	_connect_state()
+	_sync()
 
 
 func _wire_signals() -> void:
-    color_mode_dropdown.add_item("Uniform")
-    color_mode_dropdown.add_item("Iteration Count")
-    color_mode_dropdown.add_item("Orbit Trap")
-    color_mode_dropdown.item_selected.connect(func(i):
-        if not _syncing: StateBus.scene.color_mode = i)
+	color_mode_dropdown.add_item("Uniform")
+	color_mode_dropdown.add_item("Iteration Count")
+	color_mode_dropdown.add_item("Orbit Trap")
+	color_mode_dropdown.item_selected.connect(func(i):
+		if not _syncing: StateBus.scene.color_mode = i)
 
-    iter_norm_slider.min_value = 1.0
-    iter_norm_slider.max_value = 200.0
-    iter_norm_slider.step = 0.5
-    iter_norm_slider.value_changed.connect(func(v):
-        if _syncing: return
-        iter_norm_lbl.text = "Iter. Norm.: %.1f" % v
-        StateBus.scene.iter_norm_factor = v)
+	iter_norm_slider.min_value = 1.0
+	iter_norm_slider.max_value = 200.0
+	iter_norm_slider.step = 0.5
+	iter_norm_slider.value_changed.connect(func(v):
+		if _syncing: return
+		iter_norm_lbl.text = "Iter. Norm.: %.1f" % v
+		StateBus.scene.iter_norm_factor = v)
 
-    iter_bw_preview.toggled.connect(func(v):
-        if not _syncing: StateBus.scene.iter_bw_preview = v)
+	iter_bw_preview.toggled.connect(func(v):
+		if not _syncing: StateBus.scene.iter_bw_preview = v)
 
-    trap_shape_dropdown.add_item("Sphere")
-    trap_shape_dropdown.add_item("Plane")
-    trap_shape_dropdown.add_item("Box")
-    trap_shape_dropdown.add_item("Axes")
-    trap_shape_dropdown.add_item("Cylinder")
-    trap_shape_dropdown.item_selected.connect(func(i):
-        if not _syncing:
-            StateBus.scene.trap_shape = i
-            _update_trap_size_visibility(i))
+	trap_shape_dropdown.add_item("Sphere")
+	trap_shape_dropdown.add_item("Plane")
+	trap_shape_dropdown.add_item("Box")
+	trap_shape_dropdown.add_item("Axes")
+	trap_shape_dropdown.add_item("Cylinder")
+	trap_shape_dropdown.item_selected.connect(func(i):
+		if not _syncing:
+			StateBus.scene.trap_shape = i
+			_update_trap_size_visibility(i))
 
-    _configure_slider(trap_pos_x_slider, -3.0, 3.0, 0.01)
-    trap_pos_x_slider.value_changed.connect(func(v):
-        if _syncing: return
-        trap_pos_x_lbl.text = "Trap X: %.2f" % v
-        StateBus.scene.trap_position = Vector3(v, StateBus.scene.trap_position.y, StateBus.scene.trap_position.z))
+	_configure_slider(trap_pos_x_slider, -3.0, 3.0, 0.01)
+	trap_pos_x_slider.value_changed.connect(func(v):
+		if _syncing: return
+		trap_pos_x_lbl.text = "Trap X: %.2f" % v
+		StateBus.scene.trap_position = Vector3(v, StateBus.scene.trap_position.y, StateBus.scene.trap_position.z))
 
-    _configure_slider(trap_pos_y_slider, -3.0, 3.0, 0.01)
-    trap_pos_y_slider.value_changed.connect(func(v):
-        if _syncing: return
-        trap_pos_y_lbl.text = "Trap Y: %.2f" % v
-        StateBus.scene.trap_position = Vector3(StateBus.scene.trap_position.x, v, StateBus.scene.trap_position.z))
+	_configure_slider(trap_pos_y_slider, -3.0, 3.0, 0.01)
+	trap_pos_y_slider.value_changed.connect(func(v):
+		if _syncing: return
+		trap_pos_y_lbl.text = "Trap Y: %.2f" % v
+		StateBus.scene.trap_position = Vector3(StateBus.scene.trap_position.x, v, StateBus.scene.trap_position.z))
 
-    _configure_slider(trap_pos_z_slider, -3.0, 3.0, 0.01)
-    trap_pos_z_slider.value_changed.connect(func(v):
-        if _syncing: return
-        trap_pos_z_lbl.text = "Trap Z: %.2f" % v
-        StateBus.scene.trap_position = Vector3(StateBus.scene.trap_position.x, StateBus.scene.trap_position.y, v))
+	_configure_slider(trap_pos_z_slider, -3.0, 3.0, 0.01)
+	trap_pos_z_slider.value_changed.connect(func(v):
+		if _syncing: return
+		trap_pos_z_lbl.text = "Trap Z: %.2f" % v
+		StateBus.scene.trap_position = Vector3(StateBus.scene.trap_position.x, StateBus.scene.trap_position.y, v))
 
-    _configure_slider(trap_size_slider, 0.01, 5.0, 0.01)
-    trap_size_slider.value_changed.connect(func(v):
-        if _syncing: return
-        trap_size_lbl.text = "Trap Size: %.2f" % v
-        StateBus.scene.trap_size = v)
+	_configure_slider(trap_size_slider, 0.01, 5.0, 0.01)
+	trap_size_slider.value_changed.connect(func(v):
+		if _syncing: return
+		trap_size_lbl.text = "Trap Size: %.2f" % v
+		StateBus.scene.trap_size = v)
 
-    _configure_slider(trap_norm_k_slider, 0.01, 2.0, 0.01)
-    trap_norm_k_slider.value_changed.connect(func(v):
-        if _syncing: return
-        trap_norm_k_lbl.text = "Norm. K: %.2f" % v
-        StateBus.scene.trap_norm_k = v)
+	_configure_slider(trap_norm_k_slider, 0.01, 2.0, 0.01)
+	trap_norm_k_slider.value_changed.connect(func(v):
+		if _syncing: return
+		trap_norm_k_lbl.text = "Norm. K: %.2f" % v
+		StateBus.scene.trap_norm_k = v)
 
-    _configure_slider(trap_lp_power_slider, 0.5, 8.0, 0.05)
-    trap_lp_power_slider.value_changed.connect(func(v):
-        if _syncing: return
-        trap_lp_power_lbl.text = "Lp Power: %.2f" % v
-        StateBus.scene.trap_lp_power = v)
+	_configure_slider(trap_lp_power_slider, 0.5, 8.0, 0.05)
+	trap_lp_power_slider.value_changed.connect(func(v):
+		if _syncing: return
+		trap_lp_power_lbl.text = "Lp Power: %.2f" % v
+		StateBus.scene.trap_lp_power = v)
 
-    trap_bw_preview.toggled.connect(func(v):
-        if not _syncing: StateBus.scene.trap_bw_preview = v)
+	trap_bw_preview.toggled.connect(func(v):
+		if not _syncing: StateBus.scene.trap_bw_preview = v)
 
-    palette_dropdown.add_item("Color Blend")
-    palette_dropdown.add_item("Sinmask")
-    palette_dropdown.add_item("HSV")
-    palette_dropdown.add_item("Viridis")
-    palette_dropdown.add_item("Heat")
-    palette_dropdown.item_selected.connect(func(i):
-        if not _syncing: StateBus.scene.palette_type = i)
+	palette_dropdown.add_item("Color Blend")
+	palette_dropdown.add_item("Sinmask")
+	palette_dropdown.add_item("HSV")
+	palette_dropdown.add_item("Viridis")
+	palette_dropdown.add_item("Heat")
+	palette_dropdown.item_selected.connect(func(i):
+		if not _syncing: StateBus.scene.palette_type = i)
 
-    color_a_picker.color_changed.connect(func(c):
-        if not _syncing: StateBus.scene.set_color_a(c))
-    color_b_picker.color_changed.connect(func(c):
-        if not _syncing: StateBus.scene.set_color_b(c))
+	color_a_picker.color_changed.connect(func(c):
+		if not _syncing: StateBus.scene.set_color_a(c))
+	color_b_picker.color_changed.connect(func(c):
+		if not _syncing: StateBus.scene.set_color_b(c))
 
-    _configure_slider(sinmask_phase_slider, -3.14159, 3.14159, 0.01)
-    sinmask_phase_slider.value_changed.connect(func(v):
-        if _syncing: return
-        sinmask_phase_lbl.text = "Phase: %.2f" % v
-        StateBus.scene.sinmask_phase = v)
+	_configure_slider(sinmask_phase_slider, -3.14159, 3.14159, 0.01)
+	sinmask_phase_slider.value_changed.connect(func(v):
+		if _syncing: return
+		sinmask_phase_lbl.text = "Phase: %.2f" % v
+		StateBus.scene.sinmask_phase = v)
 
-    _configure_slider(sinmask_amp_slider, 0.1, 10.0, 0.01)
-    sinmask_amp_slider.value_changed.connect(func(v):
-        if _syncing: return
-        sinmask_amp_lbl.text = "Amplitude: %.2f" % v
-        StateBus.scene.sinmask_amp = v)
+	_configure_slider(sinmask_amp_slider, 0.1, 10.0, 0.01)
+	sinmask_amp_slider.value_changed.connect(func(v):
+		if _syncing: return
+		sinmask_amp_lbl.text = "Amplitude: %.2f" % v
+		StateBus.scene.sinmask_amp = v)
+
+	_configure_slider(sinmask_offset_slider, 0.0, 10.0, 0.01)
+	sinmask_offset_slider.value_changed.connect(func(v):
+		if _syncing: return
+		sinmask_offset_lbl.text = "Offset: %.2f" % v
+		StateBus.scene.sinmask_offset = v)
+
+	_configure_slider(sinmask_blend_slider, 0.0, 1.0, 0.01)
+	sinmask_blend_slider.value_changed.connect(func(v):
+		if _syncing: return
+		sinmask_blend_lbl.text = "Base Blend: %.2f" % v
+		StateBus.scene.sinmask_blend = v)
+
+	sinmask_base_picker.color_changed.connect(func(c):
+		if not _syncing: StateBus.scene.set_color_a(c))
 
 
-    _configure_slider(hsv_cycles_slider, 0.1, 20.0, 0.01)
-    hsv_cycles_slider.value_changed.connect(func(v):
-        if _syncing: return
-        hsv_cycles_lbl.text = "Hue Cycles: %.2f" % v
-        StateBus.scene.hsv_cycles = v)
+	_configure_slider(hsv_cycles_slider, 0.1, 20.0, 0.01)
+	hsv_cycles_slider.value_changed.connect(func(v):
+		if _syncing: return
+		hsv_cycles_lbl.text = "Hue Cycles: %.2f" % v
+		StateBus.scene.hsv_cycles = v)
 
-    _configure_slider(hsv_offset_slider, 0.0, 10.0, 0.01)
-    hsv_offset_slider.value_changed.connect(func(v):
-        if _syncing: return
-        hsv_offset_lbl.text = "Hue Offset: %.2f" % v
-        StateBus.scene.hsv_hue_offset = v)
+	_configure_slider(hsv_offset_slider, 0.0, 10.0, 0.01)
+	hsv_offset_slider.value_changed.connect(func(v):
+		if _syncing: return
+		hsv_offset_lbl.text = "Hue Offset: %.2f" % v
+		StateBus.scene.hsv_hue_offset = v)
 
-    _configure_slider(hsv_blend_slider, 0.0, 1.0, 0.01)
-    hsv_blend_slider.value_changed.connect(func(v):
-        if _syncing: return
-        hsv_blend_lbl.text = "Base Blend: %.2f" % v
-        StateBus.scene.hsv_blend = v)
+	_configure_slider(hsv_blend_slider, 0.0, 1.0, 0.01)
+	hsv_blend_slider.value_changed.connect(func(v):
+		if _syncing: return
+		hsv_blend_lbl.text = "Base Blend: %.2f" % v
+		StateBus.scene.hsv_blend = v)
 
-    hsv_base_picker.color_changed.connect(func(c):
-        if not _syncing: StateBus.scene.set_color_a(c))
+	hsv_base_picker.color_changed.connect(func(c):
+		if not _syncing: StateBus.scene.set_color_a(c))
 
-    uniform_color_picker.color_changed.connect(func(c):
-        if not _syncing: StateBus.scene.uniform_color = c)
+	uniform_color_picker.color_changed.connect(func(c):
+		if not _syncing: StateBus.scene.uniform_color = c)
 
 
 func _configure_slider(s: HSlider, mn: float, mx: float, st: float) -> void:
-    s.min_value = mn; s.max_value = mx; s.step = st
+	s.min_value = mn; s.max_value = mx; s.step = st
 
 
 func _connect_state() -> void:
-    StateBus.scene.changed.connect(_sync)
+	StateBus.scene.changed.connect(_sync)
 
 
 func _update_trap_size_visibility(shape: int) -> void:
-    trap_size_lbl.visible  = shape != 2
-    trap_size_slider.visible = shape != 2
+	trap_size_lbl.visible  = shape != 2
+	trap_size_slider.visible = shape != 2
 
 
 func _sync() -> void:
-    _syncing = true
-    var s := StateBus.scene
+	_syncing = true
+	var s := StateBus.scene
 
-    color_mode_dropdown.selected = s.color_mode
+	color_mode_dropdown.selected = s.color_mode
 
-    uniform_group.visible  = (s.color_mode == 0)
-    iter_group.visible     = (s.color_mode == 1)
-    trap_group.visible     = (s.color_mode == 2)
-    palette_group.visible  = (s.color_mode != 0)
+	uniform_group.visible  = (s.color_mode == 0)
+	iter_group.visible     = (s.color_mode == 1)
+	trap_group.visible     = (s.color_mode == 2)
+	palette_group.visible  = (s.color_mode != 0)
 
-    uniform_color_picker.color = s.uniform_color
+	uniform_color_picker.color = s.uniform_color
 
-    iter_norm_lbl.text     = "Iter. Norm.: %.1f" % s.iter_norm_factor
-    iter_norm_slider.value = s.iter_norm_factor
-    iter_bw_preview.button_pressed = s.iter_bw_preview
+	iter_norm_lbl.text     = "Iter. Norm.: %.1f" % s.iter_norm_factor
+	iter_norm_slider.value = s.iter_norm_factor
+	iter_bw_preview.button_pressed = s.iter_bw_preview
 
-    trap_shape_dropdown.selected = s.trap_shape
-    _update_trap_size_visibility(s.trap_shape)
-    trap_pos_x_lbl.text = "Trap X: %.2f" % s.trap_position.x; trap_pos_x_slider.value = s.trap_position.x
-    trap_pos_y_lbl.text = "Trap Y: %.2f" % s.trap_position.y; trap_pos_y_slider.value = s.trap_position.y
-    trap_pos_z_lbl.text = "Trap Z: %.2f" % s.trap_position.z; trap_pos_z_slider.value = s.trap_position.z
-    trap_size_lbl.text  = "Trap Size: %.2f" % s.trap_size;    trap_size_slider.value  = s.trap_size
-    trap_norm_k_lbl.text = "Norm. K: %.2f" % s.trap_norm_k;   trap_norm_k_slider.value = s.trap_norm_k
-    trap_lp_power_lbl.text = "Lp Power: %.2f" % s.trap_lp_power; trap_lp_power_slider.value = s.trap_lp_power
-    trap_bw_preview.button_pressed = s.trap_bw_preview
+	trap_shape_dropdown.selected = s.trap_shape
+	_update_trap_size_visibility(s.trap_shape)
+	trap_pos_x_lbl.text = "Trap X: %.2f" % s.trap_position.x; trap_pos_x_slider.value = s.trap_position.x
+	trap_pos_y_lbl.text = "Trap Y: %.2f" % s.trap_position.y; trap_pos_y_slider.value = s.trap_position.y
+	trap_pos_z_lbl.text = "Trap Z: %.2f" % s.trap_position.z; trap_pos_z_slider.value = s.trap_position.z
+	trap_size_lbl.text  = "Trap Size: %.2f" % s.trap_size;    trap_size_slider.value  = s.trap_size
+	trap_norm_k_lbl.text = "Norm. K: %.2f" % s.trap_norm_k;   trap_norm_k_slider.value = s.trap_norm_k
+	trap_lp_power_lbl.text = "Lp Power: %.2f" % s.trap_lp_power; trap_lp_power_slider.value = s.trap_lp_power
+	trap_bw_preview.button_pressed = s.trap_bw_preview
 
-    palette_dropdown.selected = s.palette_type
-    color_blend_params.visible = (s.palette_type == 0)
-    sinmask_params.visible     = (s.palette_type == 1)
-    hsv_params.visible         = (s.palette_type == 2)
+	palette_dropdown.selected = s.palette_type
+	color_blend_params.visible = (s.palette_type == 0)
+	sinmask_params.visible     = (s.palette_type == 1)
+	hsv_params.visible         = (s.palette_type == 2)
 
-    color_a_picker.color   = s.material.color0
-    color_b_picker.color   = s.material.color1
+	color_a_picker.color   = s.material.color0
+	color_b_picker.color   = s.material.color1
 
-    sinmask_phase_lbl.text  = "Phase: %.2f" % s.sinmask_phase;  sinmask_phase_slider.value  = s.sinmask_phase
-    sinmask_amp_lbl.text    = "Amplitude: %.2f" % s.sinmask_amp; sinmask_amp_slider.value   = s.sinmask_amp
+	sinmask_phase_lbl.text  = "Phase: %.2f" % s.sinmask_phase;  sinmask_phase_slider.value  = s.sinmask_phase
+	sinmask_amp_lbl.text    = "Amplitude: %.2f" % s.sinmask_amp; sinmask_amp_slider.value   = s.sinmask_amp
+	sinmask_offset_lbl.text = "Offset: %.2f" % s.sinmask_offset; sinmask_offset_slider.value = s.sinmask_offset
+	sinmask_blend_lbl.text  = "Base Blend: %.2f" % s.sinmask_blend; sinmask_blend_slider.value = s.sinmask_blend
+	sinmask_base_picker.color = s.material.color0
 
-    hsv_cycles_lbl.text  = "Hue Cycles: %.2f" % s.hsv_cycles;   hsv_cycles_slider.value  = s.hsv_cycles
-    hsv_offset_lbl.text  = "Hue Offset: %.2f" % s.hsv_hue_offset; hsv_offset_slider.value = s.hsv_hue_offset
-    hsv_blend_lbl.text   = "Base Blend: %.2f" % s.hsv_blend;    hsv_blend_slider.value   = s.hsv_blend
-    hsv_base_picker.color = s.material.color0
+	hsv_cycles_lbl.text  = "Hue Cycles: %.2f" % s.hsv_cycles;   hsv_cycles_slider.value  = s.hsv_cycles
+	hsv_offset_lbl.text  = "Hue Offset: %.2f" % s.hsv_hue_offset; hsv_offset_slider.value = s.hsv_hue_offset
+	hsv_blend_lbl.text   = "Base Blend: %.2f" % s.hsv_blend;    hsv_blend_slider.value   = s.hsv_blend
+	hsv_base_picker.color = s.material.color0
 
-    _syncing = false
+	_syncing = false
