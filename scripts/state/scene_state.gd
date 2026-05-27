@@ -53,9 +53,9 @@ class_name SceneStateR extends Resource
 	set(v): trap_bw_preview = v; emit_changed()
 @export var hsv_cycles: float = 3.0:
 	set(v): hsv_cycles = v; emit_changed()
-@export var hsv_hue_offset: float = 8.5:
+@export var hsv_hue_offset: float = 0.0:
 	set(v): hsv_hue_offset = v; emit_changed()
-@export var hsv_blend: float = 0.5:
+@export var hsv_blend: float = 0.85:
 	set(v): hsv_blend = v; emit_changed()
 
 func set_iterations(v: int) -> void:

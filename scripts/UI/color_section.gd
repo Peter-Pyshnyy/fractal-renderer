@@ -144,13 +144,13 @@ func _wire_signals() -> void:
 	color_b_picker.color_changed.connect(func(c):
 		if not _syncing: StateBus.scene.set_color_b(c))
 
-	_configure_slider(hsv_cycles_slider, 0.1, 20.0, 0.01)
+	_configure_slider(hsv_cycles_slider, 0.1, 15.0, 0.01)
 	hsv_cycles_slider.value_changed.connect(func(v):
 		if _syncing: return
 		hsv_cycles_lbl.text = "Color Cycles: %.2f" % v
 		StateBus.scene.hsv_cycles = v)
 
-	_configure_slider(hsv_offset_slider, 0.0, 10.0, 0.01)
+	_configure_slider(hsv_offset_slider, 0.0, 1.0, 0.01)
 	hsv_offset_slider.value_changed.connect(func(v):
 		if _syncing: return
 		hsv_offset_lbl.text = "Color Offset: %.2f" % v
@@ -215,7 +215,7 @@ func _sync() -> void:
 	palette_dropdown.selected = s.palette_type
 	print(s.palette_type)
 	color_blend_params.visible = (s.palette_type == 0)
-	hsv_params.visible         = (s.palette_type == 1)
+	hsv_params.visible         = (s.palette_type != 0)
 
 	color_a_picker.color   = s.material.color0
 	color_b_picker.color   = s.material.color1

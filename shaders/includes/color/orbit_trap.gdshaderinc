@@ -9,26 +9,35 @@ vec3 get_trap_color_mix(float x) {
     return mix(scene.material.color_a.rgb, scene.material.color_b.rgb, i);
 }
 
-vec3 get_trap_color_hsv(float x) {
+vec3 get_trap_color_palette1(float x) {
     float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
     vec3 orbit_color = hsv2rgb(vec3(hue, 1.0, 1.0));
     return mix(scene.material.color_a.rgb, orbit_color, scene.hsv_blend);
 }
 
-vec3 get_trap_color_viridis(float x) {
-    return clamp(vec3(0.2803 + 1.3217 * x - 1.16 * x * x, -0.001 + 1.27 * x - 0.37 * x * x, 0.334 + 1.44 * x - 1.37 * x * x), 0.0, 1.0);
+vec3 pal( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
+{
+    return a + b*cos( 6.28318*(c*t+d) );
 }
 
-vec3 get_trap_color_heat(float x) {
-    return clamp(vec3(1.5 * x, 1.7 * x * x, x * x * x), 0.0, 1.0);
+vec3 get_trap_color_palette2(float x) {
+	float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
+	vec3 orbit_color = pal(hue,vec3(0.55),vec3(0.8),vec3(0.29),vec3(0.00,0.05,0.15) + 0.54 );
+    vec3 col = mix(scene.material.color_a.rgb, orbit_color, scene.hsv_blend);
+	return clamp(col, 0.0, 1.0);
+}
+
+vec3 get_trap_color_palette3(float x) {
+    float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
+    vec3 orbit_color = hsv2rgb(vec3(hue, 1.0, 1.0));
+    return mix(scene.material.color_a.rgb, orbit_color, scene.hsv_blend);
 }
 
 vec3 get_palette_color(float t) {
     if (scene.palette_type == 0) return get_trap_color_mix(t);
-    //if (scene.palette_type == 1) return get_trap_color_sinmask(t);
-    if (scene.palette_type == 1) return get_trap_color_hsv(t);
-    if (scene.palette_type == 2) return get_trap_color_viridis(t);
-    return get_trap_color_heat(t);
+    if (scene.palette_type == 1) return get_trap_color_palette1(t);
+    if (scene.palette_type == 2) return get_trap_color_palette2(t);
+    if (scene.palette_type == 3) return get_trap_color_palette3(t);
 }
 
 float get_normalized_trap(float d) {
