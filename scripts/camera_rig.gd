@@ -31,6 +31,8 @@ var is_moving := false
 var motion_version := 0
 signal camera_mode_changed(mode: int)
 
+var _last_fractal_index := -1
+
 # float64 position accumulators
 var precise_x: float = 0.0
 var precise_y: float = 0.0
@@ -41,6 +43,8 @@ func _ready() -> void:
 	is_moving = true
 	StateBus.render.changed.connect(_on_render_state_changed)
 	StateBus.camera.changed.connect(_on_camera_state_changed)
+	StateBus.scene.changed.connect(_on_scene_changed_fractal_check)
+	_last_fractal_index = StateBus.scene.fractal_index
 	_on_render_state_changed()
 	_on_camera_state_changed()
 
@@ -83,6 +87,23 @@ func _switch_mode() -> void:
 	camera_mode_changed.emit(current_mode)
 	if StateBus.camera.mode != int(current_mode):
 		StateBus.camera.mode = int(current_mode)
+
+func _reset_position() -> void:
+	yaw = 0.0
+	pitch = 0.0
+	rotation = Vector3.ZERO
+	orbit_radius = 2.0
+	orbit_zoom_speed = 0.1
+	precise_x = 0.0
+	precise_y = 0.0
+	precise_z = 0.0
+	position = Vector3.ZERO
+	_mark_motion()
+
+func _on_scene_changed_fractal_check() -> void:
+	if StateBus.scene.fractal_index != _last_fractal_index:
+		_last_fractal_index = StateBus.scene.fractal_index
+		_reset_position()
 
 func _sync_precise() -> void:
 	precise_x = position.x
