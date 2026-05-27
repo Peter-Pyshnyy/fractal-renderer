@@ -14,7 +14,6 @@ float sdf(vec3 pos) {
 		if (z.x + z.z < 0.0) z.xz = -z.zx;
 		if (z.y + z.z < 0.0) z.zy = -z.yz;
 
-		// Scale and shift using the new limit
 		z = z * scale - limit * (scale - 1.0);
 
 		z.xz = vec2(ca * z.x - sa * z.z, sa * z.x + ca * z.z);
@@ -43,7 +42,6 @@ float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
 		if (z.x + z.z < 0.0) z.xz = -z.zx;
 		if (z.y + z.z < 0.0) z.zy = -z.yz;
 
-		// Scale and shift using the new limit
 		z = z * scale - limit * (scale - 1.0);
 
 		z.xz = vec2(ca * z.x - sa * z.z, sa * z.x + ca * z.z);

@@ -11,7 +11,6 @@ float sdf(vec3 pos) {
 	float DEfactor = scale;
 
 	for (int i = 0; i < scene.iterations; i++) {
-		// Parameterized Box Fold
 		if (z.x >  limit) z.x =  2.0 * limit - z.x;
 		else if (z.x < -limit) z.x = -2.0 * limit - z.x;
 		
@@ -21,12 +20,10 @@ float sdf(vec3 pos) {
 		if (z.z >  limit) z.z =  2.0 * limit - z.z;
 		else if (z.z < -limit) z.z = -2.0 * limit - z.z;
 
-		// Sphere Fold
 		float r2 = dot(z, z);
 		if (r2 < mR2) { z *= fR2 / mR2; DEfactor *= fR2 / mR2; }
 		else if (r2 < fR2) { z *= fR2 / r2; DEfactor *= fR2 / r2; }
 		
-		// Scale and Shift
 		z = z * scale + c;
 		DEfactor *= scale;
 	}
@@ -47,7 +44,6 @@ float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
 	trap = 1e6;
 	iter_count = scene.iterations;
 	for (int i = 0; i < scene.iterations; i++) {
-		// Parameterized Box Fold
 		if (z.x >  limit) z.x =  2.0 * limit - z.x;
 		else if (z.x < -limit) z.x = -2.0 * limit - z.x;
 		

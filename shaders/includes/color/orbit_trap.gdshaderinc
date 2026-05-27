@@ -84,9 +84,24 @@ float get_trap_distance(vec3 p) {
     float ts = scene.trap_pos_size.w;
     float lp = scene.trap_lp_power;
     vec3 q = p - tp;
-    if (scene.trap_shape == 0) return abs(length_Lp(q, lp) - ts);
-    if (scene.trap_shape == 1) return abs(q.y - ts);
-    if (scene.trap_shape == 2) return length_Lp(max(abs(q) - vec3(ts), vec3(0.0)), lp);
-    if (scene.trap_shape == 3) return min(min(length_Lp2(q.yz, lp), length_Lp2(q.xz, lp)), length_Lp2(q.xy, lp));
-    return abs(length_Lp2(q.xz, lp) - ts);
+	
+	//Sphere
+	if (scene.trap_shape == 0) return abs(length_Lp(q, lp) - ts);
+
+	//Plane (XZ plane, normal along Y)
+	if (scene.trap_shape == 1) return abs(q.y) - ts;
+
+	//Box 
+	if (scene.trap_shape == 2) {
+    	vec3 d = abs(q) - vec3(ts);
+    	float ext = length_Lp(max(d, 0.0), lp);
+    	float inter = min(max(d.x, max(d.y, d.z)), 0.0);
+    	return abs(ext + inter); 
+	}
+
+	//Axes
+	if (scene.trap_shape == 3) return min(length_Lp2(q.yz, lp), min(length_Lp2(q.xz, lp), length_Lp2(q.xy, lp)));
+
+	//Cylinder (Infinite, aligned along Y-axis)
+	if (scene.trap_shape == 4) return abs(length_Lp2(q.xz, lp) - ts);
 }

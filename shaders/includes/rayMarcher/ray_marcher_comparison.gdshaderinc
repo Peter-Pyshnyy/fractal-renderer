@@ -5,7 +5,6 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     screen.x *= aspect;
     screen *= cam.fovScale;
 
-    // combine basis vectors
     return normalize(
         cam.forward.xyz +
         cam.right.xyz * screen.x +
@@ -13,6 +12,7 @@ vec3 getRayDirection(vec2 resolution, vec2 uv) {
     );
 }
 
+// for nice step-count presentation
 vec3 magma(float t) {
     t = clamp(t, 0.0, 1.0);
     const vec3 c0 = vec3(-0.002136485053939582, -0.000749655052795221, -0.005386127855323933);
@@ -65,7 +65,6 @@ vec3 raymarch_relaxed(vec3 rayDir) {
         float R       = sdf(pos) * sdfScaler;
 
         if (omegaActive > 1.0 && (r + abs(R)) < stepLen) {
-            // Overshoot — discard, stay at t, switch to omega = 1 from now on.
             omegaActive = 1.0;
         } else {
             t = T;
@@ -82,7 +81,7 @@ vec3 raymarch_enhanced(vec3 rayDir) {
 
     float t = 0.0;
     float r = sdf(cam.position.xyz) * sdfScaler;
-    float z = r;   // first step is basic (no slope info yet)
+    float z = r;
     int steps;
 
     for (steps = 0; steps < MAX_STEPS; steps++) {
@@ -93,7 +92,6 @@ vec3 raymarch_enhanced(vec3 rayDir) {
         float R   = sdf(pos) * sdfScaler;
 
         if (z <= r + abs(R)) {
-            // Accept and compute the next planar-inferred step
             float prev_r   = r;
             float z_actual = z;
             t = T;
@@ -104,7 +102,6 @@ vec3 raymarch_enhanced(vec3 rayDir) {
             float z_next = (denom <= EPSILON) ? R : R + omega * R * numer / denom;
             z = max(z_next, R);
         } else {
-            // Reject — retry with basic step from same t
             z = r;
         }
     }
@@ -119,7 +116,7 @@ vec3 raymarch_AR(vec3 rayDir) {
     float t = 0.0;
     float r = sdf(cam.position.xyz) * sdfScaler;
     float m = -1.0;
-    float z = 2.0 * r / (1.0 - m);   // = r initially
+    float z = 2.0 * r / (1.0 - m); 
     int steps;
 
     for (steps = 0; steps < MAX_STEPS; steps++) {

@@ -78,14 +78,14 @@ func _wire_signals() -> void:
 		if not _syncing: StateBus.scene.iter_bw_preview = v)
 
 	trap_shape_dropdown.add_item("Sphere")
-	trap_shape_dropdown.add_item("Plane")
+	trap_shape_dropdown.add_item("XZ-Plane")
 	trap_shape_dropdown.add_item("Box")
-	trap_shape_dropdown.add_item("Axes")
+	trap_shape_dropdown.add_item("XYZ-Axes")
 	trap_shape_dropdown.add_item("Cylinder")
 	trap_shape_dropdown.item_selected.connect(func(i):
 		if not _syncing:
 			StateBus.scene.trap_shape = i
-			_update_trap_size_visibility(i))
+			_update_params_visibility(i))
 
 	_configure_slider(trap_pos_x_slider, -3.0, 3.0, 0.01)
 	trap_pos_x_slider.value_changed.connect(func(v):
@@ -179,9 +179,17 @@ func _connect_state() -> void:
 	StateBus.scene.changed.connect(_sync)
 
 
-func _update_trap_size_visibility(shape: int) -> void:
-	trap_size_lbl.visible  = shape != 2
-	trap_size_slider.visible = shape != 2
+func _update_params_visibility(shape: int) -> void:
+	trap_size_lbl.visible  = shape != 3
+	trap_size_slider.visible = shape != 3
+	trap_pos_x_lbl.visible = shape != 1
+	trap_pos_x_slider.visible = shape != 1
+	trap_pos_z_lbl.visible = shape != 1
+	trap_pos_z_slider.visible = shape != 1
+	trap_lp_power_lbl.visible = shape != 1
+	trap_lp_power_slider.visible = shape != 1
+	trap_pos_y_lbl.visible = shape != 4
+	trap_pos_y_slider.visible = shape != 4
 
 
 func _sync() -> void:
@@ -204,7 +212,7 @@ func _sync() -> void:
 	iter_bw_preview.button_pressed = s.iter_bw_preview
 
 	trap_shape_dropdown.selected = s.trap_shape
-	_update_trap_size_visibility(s.trap_shape)
+	_update_params_visibility(s.trap_shape)
 	trap_pos_x_lbl.text = "Trap X: %.2f" % s.trap_position.x; trap_pos_x_slider.value = s.trap_position.x
 	trap_pos_y_lbl.text = "Trap Y: %.2f" % s.trap_position.y; trap_pos_y_slider.value = s.trap_position.y
 	trap_pos_z_lbl.text = "Trap Z: %.2f" % s.trap_position.z; trap_pos_z_slider.value = s.trap_position.z
