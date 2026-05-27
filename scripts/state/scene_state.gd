@@ -51,7 +51,7 @@ class_name SceneStateR extends Resource
 	set(v): trap_lp_power = v; emit_changed()
 @export var trap_bw_preview: bool = false:
 	set(v): trap_bw_preview = v; emit_changed()
-@export var hsv_cycles: float = 3.0:
+@export var hsv_cycles: float = 1.0:
 	set(v): hsv_cycles = v; emit_changed()
 @export var hsv_hue_offset: float = 0.0:
 	set(v): hsv_hue_offset = v; emit_changed()

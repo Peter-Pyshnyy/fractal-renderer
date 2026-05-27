@@ -133,9 +133,11 @@ func _wire_signals() -> void:
 		if not _syncing: StateBus.scene.trap_bw_preview = v)
 
 	palette_dropdown.add_item("Color Blend")
-	palette_dropdown.add_item("HSV")
-	palette_dropdown.add_item("Viridis")
-	palette_dropdown.add_item("Heat")
+	palette_dropdown.add_item("Palette1")
+	palette_dropdown.add_item("Palette2")
+	palette_dropdown.add_item("Palette3")
+	palette_dropdown.add_item("Palette4")
+	palette_dropdown.add_item("Palette5")
 	palette_dropdown.item_selected.connect(func(i):
 		if not _syncing: StateBus.scene.palette_type = i)
 
@@ -144,7 +146,7 @@ func _wire_signals() -> void:
 	color_b_picker.color_changed.connect(func(c):
 		if not _syncing: StateBus.scene.set_color_b(c))
 
-	_configure_slider(hsv_cycles_slider, 0.1, 15.0, 0.01)
+	_configure_slider(hsv_cycles_slider, 0.1, 10.0, 0.01)
 	hsv_cycles_slider.value_changed.connect(func(v):
 		if _syncing: return
 		hsv_cycles_lbl.text = "Color Cycles: %.2f" % v
@@ -213,7 +215,6 @@ func _sync() -> void:
 	trap_bw_preview.button_pressed = s.trap_bw_preview
 
 	palette_dropdown.selected = s.palette_type
-	print(s.palette_type)
 	color_blend_params.visible = (s.palette_type == 0)
 	hsv_params.visible         = (s.palette_type != 0)
 
