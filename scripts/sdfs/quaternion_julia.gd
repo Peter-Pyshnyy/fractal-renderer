@@ -77,13 +77,9 @@ func _qmul(a: Vector4, b: Vector4) -> Vector4:
 	)
 
 func sdf(pos: Vector3) -> float:
-	# 1. Initialization Mismatches Fixed:
-	# GLSL uses: za = vec4(pos, 0.0) -> (pos.x, pos.y, pos.z, 0.0)
-	#            zb = vec4(0.0) -> (0.0, 0.0, 0.0, 0.0)
 	var za := Vector4(pos.x, pos.y, pos.z, 0.0)
 	var zb := Vector4(0.0, 0.0, 0.0, 0.0)
-	
-	# GLSL uses: dza = (1.0, 0.0, 0.0, 0.0), dzb = (0.0, 0.0, 0.0, 0.0)
+
 	var dza := Vector4(1.0, 0.0, 0.0, 0.0)
 	var dzb := Vector4(0.0, 0.0, 0.0, 0.0)
 	

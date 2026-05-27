@@ -51,7 +51,6 @@ func sdf(pos: Vector3) -> float:
 		if z.y + z.z < 0.0:
 			var t3: float = -z.z; z.z = -z.y; z.y = t3
 
-		# Scale and shift using the new limit class variable
 		z = z * scale - Vector3.ONE * (limit * (scale - 1.0))
 
 		var rx: float = ca * z.x - sa * z.z

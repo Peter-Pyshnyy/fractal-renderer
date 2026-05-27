@@ -10,13 +10,11 @@ var is_profiling := false
 var time_accum := 0.0
 var frame_count := 0
 
-# fixed benchmark start state
 const BENCHMARK_YAW := 0.0
 const BENCHMARK_PITCH := 0.3
 const BENCHMARK_RADIUS := 3.0
 const ZOOM_LEVEL := 2.0
 
-# saved user state
 var user_yaw := 0.0
 var user_pitch := 0.0
 var user_radius := 0.0
@@ -32,7 +30,6 @@ func start_profiling() -> void:
 		push_error("Profiler: CameraRig not assigned")
 		return
 
-	# ensure orbit mode
 	if camera_rig.current_mode != camera_rig.CameraMode.ORBIT:
 		camera_rig._switch_mode()
 	
@@ -68,9 +65,6 @@ func _process(delta: float) -> void:
 	else:
 		_finish_profiling()
 
-
-# --- Setup / Restore ---
-
 func _save_user_state() -> void:
 	user_yaw = camera_rig.yaw
 	user_pitch = camera_rig.pitch
@@ -103,16 +97,11 @@ func _warmup_frames(count: int) -> void:
 	for i in count:
 		await get_tree().process_frame
 
-
-# --- Benchmark update ---
-
 func _update_camera(progress: float) -> void:
 	var cycles := _get_cycles()
 
-	# full rotation(s)
 	var yaw = BENCHMARK_YAW + progress * TAU * cycles
 
-	# vertical oscillation
 	var pitch = BENCHMARK_PITCH + sin(progress * TAU * cycles) * 0.4
 
 	# zoom in/out (use abs() to ensure it only zooms inward across multiple cycles)
@@ -124,18 +113,12 @@ func _update_camera(progress: float) -> void:
 
 	_apply_rotation(pitch, yaw)
 
-
-# --- Helpers ---
-
 func _get_duration() -> float:
 	return 10.0 if benchmark_mode == BenchmarkMode.SHORT_10S else 60.0
 
 
 func _get_cycles() -> float:
 	return 1.0 if benchmark_mode == BenchmarkMode.SHORT_10S else 3.0
-
-
-# --- Finish ---
 
 func _finish_profiling() -> void:
 	is_profiling = false

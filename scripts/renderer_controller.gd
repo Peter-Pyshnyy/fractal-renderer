@@ -59,9 +59,6 @@ func _ready() -> void:
 	_last_fractal_index = StateBus.scene.fractal_index
 	current_pipeline = pipelines[_last_fractal_index]
 
-
-# --- Setup ---
-
 func _create_texture() -> void:
 	var fmt := RDTextureFormat.new()
 	fmt.width = int(render_resolution.x)
@@ -191,9 +188,6 @@ func _on_scene_changed() -> void:
 		current_pipeline = pipelines[_last_fractal_index]
 	_mark_motion()
 
-
-# --- Per-frame update ---
-
 func _process(_delta: float) -> void:
 	var is_moving : bool = camera_rig.is_moving
 	last_cam_transform = target_camera.global_transform
@@ -273,9 +267,6 @@ func _halton(index: int, base: int) -> float:
 	while i > 0:
 		f /= float(base); r += f * float(i % base); i = int(i / base)
 	return r
-
-
-# --- Cleanup ---
 
 func _exit_tree() -> void:
 	if not rd: return

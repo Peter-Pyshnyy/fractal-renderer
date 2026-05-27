@@ -26,7 +26,7 @@ func _wire_signals() -> void:
 		StateBus.camera.fov = v)
 
 func _on_mode_pressed() -> void:
-	StateBus.camera.mode = 1 - StateBus.camera.mode  # toggle FPS(0) / Orbit(1)
+	StateBus.camera.mode = 1 - StateBus.camera.mode 
 
 func _connect_state() -> void:
 	StateBus.camera.changed.connect(_sync)

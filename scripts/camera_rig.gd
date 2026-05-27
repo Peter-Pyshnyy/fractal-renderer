@@ -16,7 +16,6 @@ enum CameraMode { FPS, ORBIT }
 var yaw := 0.0
 var pitch := 0.0
 
-# dynamic orbit tuning
 var orbit_zoom_speed := 0.1
 var orbit_zoom_factor := 0.2
 var orbit_sensitivity := 0.003
@@ -68,9 +67,6 @@ func _process(delta: float) -> void:
 		CameraMode.ORBIT:
 			_process_orbit(delta)
 
-
-# --- Mode switching ---
-
 func _switch_mode() -> void:
 	is_moving = true
 	if current_mode == CameraMode.ORBIT:
@@ -85,20 +81,13 @@ func _switch_mode() -> void:
 		position = Vector3.ZERO
 		_sync_precise()
 	camera_mode_changed.emit(current_mode)
-	# Keep StateBus in sync so camera_section label reflects keyboard-triggered switches
 	if StateBus.camera.mode != int(current_mode):
 		StateBus.camera.mode = int(current_mode)
-
-
-# --- Precise position sync ---
 
 func _sync_precise() -> void:
 	precise_x = position.x
 	precise_y = position.y
 	precise_z = position.z
-
-
-# --- Input handling ---
 
 func _handle_mouse_buttons(event: InputEventMouseButton) -> void:
 	if event.button_index == MOUSE_BUTTON_RIGHT and current_mode == CameraMode.FPS:
@@ -119,9 +108,6 @@ func _set_mouse_capture(active: bool) -> void:
 	Input.set_mouse_mode(
 		Input.MOUSE_MODE_CAPTURED if active else Input.MOUSE_MODE_VISIBLE
 	)
-
-
-# --- SDF helpers ---
 
 func _on_render_state_changed() -> void:
 	smooth_orbit = not StateBus.render.vrs_enabled
@@ -144,9 +130,6 @@ func _update_sdf_metrics() -> void:
 	else:
 		fps_zoom_lock = false
 
-
-# --- Zoom ---
-
 func _zoom(direction: int) -> void:
 	_mark_motion()
 	
@@ -163,8 +146,6 @@ func _zoom(direction: int) -> void:
 
 	_update_sdf_metrics()
 
-
-# --- FPS zoom ---
 
 func _zoom_fps(direction: int) -> void:
 	if dist_to_sdf < 0.0:
@@ -187,9 +168,6 @@ func _zoom_fps(direction: int) -> void:
 
 	position = Vector3(precise_x, precise_y, precise_z)
 
-
-# --- Orbit zoom ---
-
 func _zoom_orbit(direction: int) -> void:
 	if direction > 0:
 		orbit_radius += orbit_zoom_speed
@@ -204,9 +182,6 @@ func _zoom_orbit(direction: int) -> void:
 			orbit_radius -= orbit_zoom_speed
 		else:
 			orbit_zoom_speed *= 4.0
-
-
-# --- Rotation ---
 
 func _handle_rotation(event: InputEventMouseMotion) -> void:
 	var rotating := (
@@ -228,8 +203,6 @@ func _handle_rotation(event: InputEventMouseMotion) -> void:
 	rotation = Vector3(pitch, yaw, 0)
 
 
-# --- FPS mode ---
-
 func _process_fps(delta: float) -> void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
@@ -250,12 +223,8 @@ func _process_fps(delta: float) -> void:
 			precise_z += dir.z * step
 			_mark_motion()
 
-	# single float32 write per frame
 	position = Vector3(precise_x, precise_y, precise_z)
 	camera.position = camera.position.lerp(Vector3.ZERO, delta * 10.0)
-
-
-# --- Orbit mode ---
 
 func _process_orbit(delta: float) -> void:
 	var target := Vector3(0, 0, orbit_radius)
