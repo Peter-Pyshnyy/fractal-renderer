@@ -191,6 +191,7 @@ func _zoom_fps(direction: int) -> void:
 
 func _zoom_orbit(direction: int) -> void:
 	if direction > 0:
+		print("zooming")
 		orbit_radius += orbit_zoom_speed
 
 		var reverse_speed := _get_reverse_scalar(orbit_zoom_factor)
@@ -198,11 +199,15 @@ func _zoom_orbit(direction: int) -> void:
 
 		orbit_radius = min(orbit_radius, max_orbit_radius)
 	else:
-		if dist_to_sdf > 0.0:
+		if dist_to_sdf < 0.0:
+			orbit_zoom_speed *= 4.0
+			return
+		if dist_to_sdf < 0.000005:
+			return
+		else:
 			orbit_zoom_speed = dist_to_sdf * orbit_zoom_factor
 			orbit_radius -= orbit_zoom_speed
-		else:
-			orbit_zoom_speed *= 4.0
+			
 
 func _handle_rotation(event: InputEventMouseMotion) -> void:
 	var rotating := (
