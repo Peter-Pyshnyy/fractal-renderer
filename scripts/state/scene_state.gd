@@ -27,7 +27,7 @@ class_name SceneStateR extends Resource
 
 @export var color_mode: int = 2:
 	set(v): color_mode = v; emit_changed()
-@export var palette_type: int = 2:
+@export var palette_type: int = 1:
 	set(v): palette_type = v; emit_changed()
 @export var iter_norm_a: float = 2.0:
 	set(v): iter_norm_a = v; emit_changed()
@@ -51,14 +51,6 @@ class_name SceneStateR extends Resource
 	set(v): trap_lp_power = v; emit_changed()
 @export var trap_bw_preview: bool = false:
 	set(v): trap_bw_preview = v; emit_changed()
-@export var sinmask_phase: float = 0.15:
-	set(v): sinmask_phase = v; emit_changed()
-@export var sinmask_amp: float = 3.5:
-	set(v): sinmask_amp = v; emit_changed()
-@export var sinmask_offset: float = 0.0:
-	set(v): sinmask_offset = v; emit_changed()
-@export var sinmask_blend: float = 1.0:
-	set(v): sinmask_blend = v; emit_changed()
 @export var hsv_cycles: float = 3.0:
 	set(v): hsv_cycles = v; emit_changed()
 @export var hsv_hue_offset: float = 8.5:

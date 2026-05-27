@@ -39,17 +39,6 @@ var _syncing := false
 @onready var color_a_picker:      ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorAPicker
 @onready var color_b_picker:      ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorBPicker
 
-@onready var sinmask_params:       VBoxContainer     = $PaletteGroup/SinmaskParams
-@onready var sinmask_phase_lbl:    Label             = $PaletteGroup/SinmaskParams/SinmaskPhaseLbl
-@onready var sinmask_phase_slider: HSlider           = $PaletteGroup/SinmaskParams/SinmaskPhaseSlider
-@onready var sinmask_amp_lbl:      Label             = $PaletteGroup/SinmaskParams/SinmaskAmpLbl
-@onready var sinmask_amp_slider:   HSlider           = $PaletteGroup/SinmaskParams/SinmaskAmpSlider
-@onready var sinmask_offset_lbl:   Label             = $PaletteGroup/SinmaskParams/SinmaskOffsetLbl
-@onready var sinmask_offset_slider: HSlider          = $PaletteGroup/SinmaskParams/SinmaskOffsetSlider
-@onready var sinmask_blend_lbl:    Label             = $PaletteGroup/SinmaskParams/SinmaskBlendLbl
-@onready var sinmask_blend_slider: HSlider           = $PaletteGroup/SinmaskParams/SinmaskBlendSlider
-@onready var sinmask_base_picker:  ColorPickerButton = $PaletteGroup/SinmaskParams/SinmaskBasePicker
-
 @onready var hsv_params:          VBoxContainer     = $PaletteGroup/HSVParams
 @onready var hsv_cycles_lbl:      Label             = $PaletteGroup/HSVParams/HSVCyclesLbl
 @onready var hsv_cycles_slider:   HSlider           = $PaletteGroup/HSVParams/HSVCyclesSlider
@@ -144,7 +133,6 @@ func _wire_signals() -> void:
 		if not _syncing: StateBus.scene.trap_bw_preview = v)
 
 	palette_dropdown.add_item("Color Blend")
-	palette_dropdown.add_item("Sinmask")
 	palette_dropdown.add_item("HSV")
 	palette_dropdown.add_item("Viridis")
 	palette_dropdown.add_item("Heat")
@@ -156,50 +144,22 @@ func _wire_signals() -> void:
 	color_b_picker.color_changed.connect(func(c):
 		if not _syncing: StateBus.scene.set_color_b(c))
 
-	_configure_slider(sinmask_phase_slider, -3.14159, 3.14159, 0.01)
-	sinmask_phase_slider.value_changed.connect(func(v):
-		if _syncing: return
-		sinmask_phase_lbl.text = "Phase: %.2f" % v
-		StateBus.scene.sinmask_phase = v)
-
-	_configure_slider(sinmask_amp_slider, 0.1, 10.0, 0.01)
-	sinmask_amp_slider.value_changed.connect(func(v):
-		if _syncing: return
-		sinmask_amp_lbl.text = "Amplitude: %.2f" % v
-		StateBus.scene.sinmask_amp = v)
-
-	_configure_slider(sinmask_offset_slider, 0.0, 10.0, 0.01)
-	sinmask_offset_slider.value_changed.connect(func(v):
-		if _syncing: return
-		sinmask_offset_lbl.text = "Offset: %.2f" % v
-		StateBus.scene.sinmask_offset = v)
-
-	_configure_slider(sinmask_blend_slider, 0.0, 1.0, 0.01)
-	sinmask_blend_slider.value_changed.connect(func(v):
-		if _syncing: return
-		sinmask_blend_lbl.text = "Base Blend: %.2f" % v
-		StateBus.scene.sinmask_blend = v)
-
-	sinmask_base_picker.color_changed.connect(func(c):
-		if not _syncing: StateBus.scene.set_color_a(c))
-
-
 	_configure_slider(hsv_cycles_slider, 0.1, 20.0, 0.01)
 	hsv_cycles_slider.value_changed.connect(func(v):
 		if _syncing: return
-		hsv_cycles_lbl.text = "Hue Cycles: %.2f" % v
+		hsv_cycles_lbl.text = "Color Cycles: %.2f" % v
 		StateBus.scene.hsv_cycles = v)
 
 	_configure_slider(hsv_offset_slider, 0.0, 10.0, 0.01)
 	hsv_offset_slider.value_changed.connect(func(v):
 		if _syncing: return
-		hsv_offset_lbl.text = "Hue Offset: %.2f" % v
+		hsv_offset_lbl.text = "Color Offset: %.2f" % v
 		StateBus.scene.hsv_hue_offset = v)
 
 	_configure_slider(hsv_blend_slider, 0.0, 1.0, 0.01)
 	hsv_blend_slider.value_changed.connect(func(v):
 		if _syncing: return
-		hsv_blend_lbl.text = "Base Blend: %.2f" % v
+		hsv_blend_lbl.text = "Color Blend: %.2f" % v
 		StateBus.scene.hsv_blend = v)
 
 	hsv_base_picker.color_changed.connect(func(c):
@@ -253,22 +213,16 @@ func _sync() -> void:
 	trap_bw_preview.button_pressed = s.trap_bw_preview
 
 	palette_dropdown.selected = s.palette_type
+	print(s.palette_type)
 	color_blend_params.visible = (s.palette_type == 0)
-	sinmask_params.visible     = (s.palette_type == 1)
-	hsv_params.visible         = (s.palette_type == 2)
+	hsv_params.visible         = (s.palette_type == 1)
 
 	color_a_picker.color   = s.material.color0
 	color_b_picker.color   = s.material.color1
 
-	sinmask_phase_lbl.text  = "Phase: %.2f" % s.sinmask_phase;  sinmask_phase_slider.value  = s.sinmask_phase
-	sinmask_amp_lbl.text    = "Amplitude: %.2f" % s.sinmask_amp; sinmask_amp_slider.value   = s.sinmask_amp
-	sinmask_offset_lbl.text = "Offset: %.2f" % s.sinmask_offset; sinmask_offset_slider.value = s.sinmask_offset
-	sinmask_blend_lbl.text  = "Base Blend: %.2f" % s.sinmask_blend; sinmask_blend_slider.value = s.sinmask_blend
-	sinmask_base_picker.color = s.material.color0
-
-	hsv_cycles_lbl.text  = "Hue Cycles: %.2f" % s.hsv_cycles;   hsv_cycles_slider.value  = s.hsv_cycles
-	hsv_offset_lbl.text  = "Hue Offset: %.2f" % s.hsv_hue_offset; hsv_offset_slider.value = s.hsv_hue_offset
-	hsv_blend_lbl.text   = "Base Blend: %.2f" % s.hsv_blend;    hsv_blend_slider.value   = s.hsv_blend
+	hsv_cycles_lbl.text  = "Palette Cycles: %.2f" % s.hsv_cycles;   hsv_cycles_slider.value  = s.hsv_cycles
+	hsv_offset_lbl.text  = "Palette Offset: %.2f" % s.hsv_hue_offset; hsv_offset_slider.value = s.hsv_hue_offset
+	hsv_blend_lbl.text   = "Color Blend: %.2f" % s.hsv_blend;    hsv_blend_slider.value   = s.hsv_blend
 	hsv_base_picker.color = s.material.color0
 
 	_syncing = false

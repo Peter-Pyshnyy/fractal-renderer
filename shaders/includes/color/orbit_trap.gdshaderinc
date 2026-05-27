@@ -9,12 +9,6 @@ vec3 get_trap_color_mix(float x) {
     return mix(scene.material.color_a.rgb, scene.material.color_b.rgb, i);
 }
 
-vec3 get_trap_color_sinmask(float x) {
-    float v = clamp(pow(sin(x + scene.sinmask_offset + scene.sinmask_phase) * scene.sinmask_amp, 2.0), 0.0, 1.0);
-    vec3 sinmask_color = hsv2rgb(vec3(v, v, v));
-    return mix(scene.material.color_a.rgb, sinmask_color, scene.sinmask_blend);
-}
-
 vec3 get_trap_color_hsv(float x) {
     float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
     vec3 orbit_color = hsv2rgb(vec3(hue, 1.0, 1.0));
@@ -31,9 +25,9 @@ vec3 get_trap_color_heat(float x) {
 
 vec3 get_palette_color(float t) {
     if (scene.palette_type == 0) return get_trap_color_mix(t);
-    if (scene.palette_type == 1) return get_trap_color_sinmask(t);
-    if (scene.palette_type == 2) return get_trap_color_hsv(t);
-    if (scene.palette_type == 3) return get_trap_color_viridis(t);
+    //if (scene.palette_type == 1) return get_trap_color_sinmask(t);
+    if (scene.palette_type == 1) return get_trap_color_hsv(t);
+    if (scene.palette_type == 2) return get_trap_color_viridis(t);
     return get_trap_color_heat(t);
 }
 

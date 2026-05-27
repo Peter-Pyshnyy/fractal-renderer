@@ -534,40 +534,6 @@ text = "Color B"
 [node name="ColorBPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/ColorBlendParams"]
 layout_mode = 2
 
-[node name="SinmaskParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
-layout_mode = 2
-
-[node name="SinmaskPhaseLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-text = "Phase: 0.15"
-
-[node name="SinmaskPhaseSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-
-[node name="SinmaskAmpLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-text = "Amplitude: 3.50"
-
-[node name="SinmaskAmpSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-
-[node name="SinmaskOffsetLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-text = "Offset: 0.00"
-
-[node name="SinmaskOffsetSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-
-[node name="SinmaskBlendLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-text = "Base Blend: 1.00"
-
-[node name="SinmaskBlendSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-
-[node name="SinmaskBasePicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/SinmaskParams"]
-layout_mode = 2
-
 [node name="HSVParams" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup"]
 layout_mode = 2
 

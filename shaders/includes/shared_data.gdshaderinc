@@ -47,18 +47,18 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float trap_norm_a;
 	int   trap_bw_preview;
 	float _pad_trap;
-	float sinmask_phase;
-	float sinmask_amp;
 	float hsv_cycles;
 	float hsv_hue_offset;
 	float hsv_blend;
 	float trap_lp_power;
-	float sinmask_offset;
-	float sinmask_blend;
 	float trap_norm_b;
 	float _pad_s0;
 	float _pad_s1;
 	float _pad_s2;
+	float _pad_s3;
+	float _pad_s4;
+	float _pad_s5;
+	float _pad_s6;
 } scene;                  // total: 224 B
 
 // Push constants — frame-transient only (32 B)
