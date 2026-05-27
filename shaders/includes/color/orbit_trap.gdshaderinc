@@ -14,6 +14,11 @@ vec3 pal( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
     return a + b*cos( 6.28318*(c*t+d) );
 }
 
+vec3 npal( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
+{
+    return a - b*cos( 6.28318*(c*t+d) );
+}
+
 vec3 get_trap_color_palette1(float x) {
     float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
 	vec3 orbit_color = pal(hue,vec3(0.55,0.4,0.3),vec3(0.50,0.51,0.35)+0.1,vec3(0.8,0.75,0.8),vec3(0.075,0.33,0.67)+0.21);
@@ -23,8 +28,8 @@ vec3 get_trap_color_palette1(float x) {
 
 
 vec3 get_trap_color_palette2(float x) {
-	float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
-	vec3 orbit_color = pal(hue,vec3(0.965,0.549,0.325),vec3(0.969,0.376,0.431),vec3(1.0,1.0,1.5),vec3(0.5,0.5,0.5) );
+    float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
+	vec3 orbit_color = (pow(npal(hue, vec3(0.4,0.2,0.0),vec3(5.0,1.0,1.0),vec3(1.0,1.0,0.5),vec3(0.7,0.9,0.3)),vec3(0.9)));
     vec3 col = mix(scene.material.color_a.rgb, orbit_color, scene.hsv_blend);
 	return clamp(col, 0.0, 1.0);
 }
@@ -45,7 +50,7 @@ vec3 get_trap_color_palette4(float x) {
 
 vec3 get_trap_color_palette5(float x) {
     float hue = fract(x * scene.hsv_cycles + scene.hsv_hue_offset);
-	vec3 orbit_color = pal(hue,vec3(0.5),vec3(0.5),vec3(2.0,1.0,0.0),vec3(0.5,0.20,0.25) );
+	vec3 orbit_color = npal(hue,vec3(0.15),vec3(0.5),vec3(2.0,1.0,0.0),vec3(0.5,0.20,0.25) );
     vec3 col = mix(scene.material.color_a.rgb, orbit_color, scene.hsv_blend);
 	return clamp(col, 0.0, 1.0);
 }
