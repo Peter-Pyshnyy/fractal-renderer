@@ -110,57 +110,11 @@ layout_mode = 2
 [node name="ScrollContainer" type="ScrollContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
 
 [node name="AccordionMenu" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 14
-
-[node name="Section_Controls_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
-custom_minimum_size = Vector2(0, 36)
-layout_mode = 2
-toggle_mode = true
-script = ExtResource("6_bn4l7")
-content = NodePath("../Controls_Text")
-
-[node name="HeaderRow" type="HBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Controls_Btn"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="HeaderTitle" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Controls_Btn/HeaderRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "  Controls"
-vertical_alignment = 1
-
-[node name="HeaderArrow" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Controls_Btn/HeaderRow"]
-layout_mode = 2
-text = "▶"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="Controls_Text" type="RichTextLabel" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu"]
-custom_minimum_size = Vector2(0, 280)
-layout_mode = 2
-size_flags_vertical = 3
-text = "ORBIT CAMERA
-LMB: Rotate
-Scroll: Zoom
-
-FREE FLIGHT
-RMB: Enable
-WASDEQ: Move
-Scroll: Adjust Speed
-
-GENERAL
-C: Change Camera
-Ctrl+Scroll: FOV Zoom"
 
 [node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)
@@ -376,6 +330,10 @@ layout_mode = 2
 value = 1.0
 scrollable = false
 
+[node name="BackgroundColorLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+text = "Background Color"
+
 [node name="ExposureLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
 layout_mode = 2
 text = "Exposure: 3.00"
@@ -384,10 +342,6 @@ text = "Exposure: 3.00"
 layout_mode = 2
 value = 3.0
 scrollable = false
-
-[node name="BackgroundColorLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
-layout_mode = 2
-text = "Background Color"
 
 [node name="BackgroundColorPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
 custom_minimum_size = Vector2(0, 25)
@@ -642,7 +596,6 @@ layout_mode = 2
 text = "Base Color"
 
 [node name="HSVBasePicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Color_Content/PaletteGroup/HSVParams"]
-custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
 
 [node name="Section_Camera_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
@@ -685,6 +638,10 @@ text = "Sensitivity: 0.017"
 layout_mode = 2
 scrollable = false
 
+[node name="CameraModeSwitch" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
+layout_mode = 2
+text = "Camera Mode: Orbit"
+
 [node name="FOVLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
 layout_mode = 2
 text = "FOV: 75"
@@ -694,12 +651,7 @@ layout_mode = 2
 value = 75.0
 scrollable = false
 
-[node name="CameraModeSwitch" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Camera_Content"]
-layout_mode = 2
-text = "Camera Mode: Orbit"
-
 [node name="ScreenshotBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 text = "Take Screenshot"
 
