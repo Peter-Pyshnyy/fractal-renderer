@@ -977,4 +977,7 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 text = "Take Screenshot"
 
+[node name="FileDialog" type="FileDialog" parent="UI_Root/MainSplit"]
+
 [connection signal="timeout" from="RendererController/VRSTimer" to="RendererController" method="_on_vrs_timer_timeout"]
+[connection signal="pressed" from="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScreenshotBtn" to="RendererController" method="_on_screenshot_btn_pressed"]

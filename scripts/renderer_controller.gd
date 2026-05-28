@@ -9,6 +9,9 @@ extends Node
 @export var initial_fractal: FractalData
 @export var initial_material: FractalMaterial
 
+@onready var file_dialog: FileDialog = $"../UI_Root/MainSplit/FileDialog"
+
+
 var camera_rig: Node3D
 var rd: RenderingDevice
 var camera_buffer_rid: RID
@@ -61,6 +64,12 @@ func _ready() -> void:
 	StateBus.renderer_controller = self
 	_last_fractal_index = StateBus.scene.fractal_index
 	current_pipeline = pipelines[_last_fractal_index]
+	
+	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	file_dialog.filters = PackedStringArray(["*.png ; PNG Image"])
+
+	file_dialog.file_selected.connect(save_texture)
 
 func _create_texture() -> void:
 	var fmt := RDTextureFormat.new()
@@ -69,6 +78,7 @@ func _create_texture() -> void:
 	fmt.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
 	fmt.usage_bits = RenderingDevice.TEXTURE_USAGE_STORAGE_BIT \
 				   | RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+	fmt.usage_bits |= RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
 	for i in 2:
 		var tex_rid := rd.texture_create(fmt, RDTextureView.new())
 		texture_rids.append(tex_rid)
@@ -321,3 +331,36 @@ func _mark_motion() -> void:
 	taa_history_weight = 0.0
 	if camera_rig and camera_rig.has_method("_mark_motion"):
 		camera_rig._mark_motion()
+
+func save_texture(path: String) -> void:
+	var tex: Texture2DRD = texture_rect.texture
+
+	rd.submit()
+	rd.sync()
+
+	var rid := tex.texture_rd_rid
+	var data: PackedByteArray = rd.texture_get_data(rid, 0)
+
+	print("Data size: ", data.size())
+
+	if data.is_empty():
+		push_error("Texture readback failed")
+		return
+
+	var image := Image.create_from_data(
+		tex.get_width(),
+		tex.get_height(),
+		false,
+		Image.FORMAT_RGBAF,
+		data
+	)
+
+	image.convert(Image.FORMAT_RGBA8)
+
+	var err := image.save_png(path)
+
+	print("Save result: ", err)
+
+
+func _on_screenshot_btn_pressed() -> void:
+	file_dialog.popup_centered()
