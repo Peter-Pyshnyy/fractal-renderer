@@ -23,7 +23,7 @@ float sdf(vec3 pos) {
 	return 0.25 * sqrt(mz2 / md2) * log(mz2);
 }
 
-float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
+float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	vec4 c = vec4(scene.params.param0, scene.params.param1, scene.params.param2, scene.params.param3);
 	vec4 z = vec4(pos, 0.0);
 	float md2 = 1.0;

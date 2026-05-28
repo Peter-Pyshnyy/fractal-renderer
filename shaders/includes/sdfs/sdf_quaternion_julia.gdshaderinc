@@ -41,7 +41,7 @@ float sdf(vec3 pos) {
 	return 0.5 * log(m) * m / max(dm, 1e-8);
 }
 
-float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
+float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	vec4 za = vec4(pos, 0.0);
 	vec4 zb = vec4(0.0);
 	vec4 dza = vec4(1.0, 0.0, 0.0, 0.0);

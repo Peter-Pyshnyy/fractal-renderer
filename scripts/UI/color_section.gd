@@ -2,51 +2,51 @@ extends VBoxContainer
 
 var _syncing := false
 
-@onready var color_mode_dropdown: OptionButton      = $ColorModeDropdown
+@onready var color_mode_dropdown:  OptionButton      = $ColorModeDropdown
 
-@onready var uniform_group:       VBoxContainer     = $UniformGroup
+@onready var uniform_group:        VBoxContainer     = $UniformGroup
 @onready var uniform_color_picker: ColorPickerButton = $UniformGroup/UniformColorPicker
 
-@onready var iter_group:          VBoxContainer     = $IterGroup
-@onready var iter_norm_a_lbl:     Label             = $IterGroup/IterNormALbl
-@onready var iter_norm_a_slider:  HSlider           = $IterGroup/IterNormASlider
-@onready var iter_norm_b_lbl:     Label             = $IterGroup/IterNormBLbl
-@onready var iter_norm_b_slider:  HSlider           = $IterGroup/IterNormBSlider
-@onready var iter_bw_preview:     CheckBox          = $IterGroup/IterBWPreview
+@onready var iter_group:           VBoxContainer     = $IterGroup
+@onready var iter_norm_a_lbl:      Label             = $IterGroup/IterNormALbl
+@onready var iter_norm_a_slider:   HSlider           = $IterGroup/IterNormASlider
+@onready var iter_norm_b_lbl:      Label             = $IterGroup/IterNormBLbl
+@onready var iter_norm_b_slider:   HSlider           = $IterGroup/IterNormBSlider
+@onready var iter_bw_preview:      CheckBox          = $IterGroup/IterBWPreview
 
-@onready var trap_group:          VBoxContainer     = $TrapGroup
-@onready var trap_shape_dropdown: OptionButton      = $TrapGroup/TrapShapeDropdown
-@onready var trap_pos_x_lbl:      Label             = $TrapGroup/TrapPosXLbl
-@onready var trap_pos_x_slider:   HSlider           = $TrapGroup/TrapPosXSlider
-@onready var trap_pos_y_lbl:      Label             = $TrapGroup/TrapPosYLbl
-@onready var trap_pos_y_slider:   HSlider           = $TrapGroup/TrapPosYSlider
-@onready var trap_pos_z_lbl:      Label             = $TrapGroup/TrapPosZLbl
-@onready var trap_pos_z_slider:   HSlider           = $TrapGroup/TrapPosZSlider
-@onready var trap_size_lbl:       Label             = $TrapGroup/TrapSizeLbl
-@onready var trap_size_slider:    HSlider           = $TrapGroup/TrapSizeSlider
-@onready var trap_norm_a_lbl:     Label             = $TrapGroup/TrapNormALbl
-@onready var trap_norm_a_slider:  HSlider           = $TrapGroup/TrapNormASlider
-@onready var trap_norm_b_lbl:     Label             = $TrapGroup/TrapNormBLbl
-@onready var trap_norm_b_slider:  HSlider           = $TrapGroup/TrapNormBSlider
-@onready var trap_lp_power_lbl:   Label             = $TrapGroup/TrapLpPowerLbl
-@onready var trap_lp_power_slider: HSlider          = $TrapGroup/TrapLpPowerSlider
-@onready var trap_bw_preview:     CheckBox          = $TrapGroup/TrapBWPreview
+@onready var trap_group:           VBoxContainer     = $TrapGroup
+@onready var trap_shape_dropdown:  OptionButton      = $TrapGroup/TrapShapeDropdown
+@onready var trap_pos_x_lbl:       Label             = $TrapGroup/TrapPosXLbl
+@onready var trap_pos_x_slider:    HSlider           = $TrapGroup/TrapPosXSlider
+@onready var trap_pos_y_lbl:       Label             = $TrapGroup/TrapPosYLbl
+@onready var trap_pos_y_slider:    HSlider           = $TrapGroup/TrapPosYSlider
+@onready var trap_pos_z_lbl:       Label             = $TrapGroup/TrapPosZLbl
+@onready var trap_pos_z_slider:    HSlider           = $TrapGroup/TrapPosZSlider
+@onready var trap_size_lbl:        Label             = $TrapGroup/TrapSizeLbl
+@onready var trap_size_slider:     HSlider           = $TrapGroup/TrapSizeSlider
+@onready var trap_norm_a_lbl:      Label             = $TrapGroup/TrapNormALbl
+@onready var trap_norm_a_slider:   HSlider           = $TrapGroup/TrapNormASlider
+@onready var trap_norm_b_lbl:      Label             = $TrapGroup/TrapNormBLbl
+@onready var trap_norm_b_slider:   HSlider           = $TrapGroup/TrapNormBSlider
+@onready var trap_lp_power_lbl:    Label             = $TrapGroup/TrapLpPowerLbl
+@onready var trap_lp_power_slider: HSlider           = $TrapGroup/TrapLpPowerSlider
+@onready var trap_bw_preview:      CheckBox          = $TrapGroup/TrapBWPreview
 
-@onready var palette_group:       VBoxContainer     = $PaletteGroup
-@onready var palette_dropdown:    OptionButton      = $PaletteGroup/PaletteDropdown
+@onready var palette_group:        VBoxContainer     = $PaletteGroup
+@onready var palette_dropdown:     OptionButton      = $PaletteGroup/PaletteDropdown
 
-@onready var color_blend_params:  VBoxContainer     = $PaletteGroup/ColorBlendParams
-@onready var color_a_picker:      ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorAPicker
-@onready var color_b_picker:      ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorBPicker
+@onready var color_blend_params:   VBoxContainer     = $PaletteGroup/ColorBlendParams
+@onready var color_a_picker:       ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorAPicker
+@onready var color_b_picker:       ColorPickerButton = $PaletteGroup/ColorBlendParams/ColorBPicker
 
-@onready var hsv_params:          VBoxContainer     = $PaletteGroup/HSVParams
-@onready var hsv_cycles_lbl:      Label             = $PaletteGroup/HSVParams/HSVCyclesLbl
-@onready var hsv_cycles_slider:   HSlider           = $PaletteGroup/HSVParams/HSVCyclesSlider
-@onready var hsv_offset_lbl:      Label             = $PaletteGroup/HSVParams/HSVOffsetLbl
-@onready var hsv_offset_slider:   HSlider           = $PaletteGroup/HSVParams/HSVOffsetSlider
-@onready var hsv_blend_lbl:       Label             = $PaletteGroup/HSVParams/HSVBlendLbl
-@onready var hsv_blend_slider:    HSlider           = $PaletteGroup/HSVParams/HSVBlendSlider
-@onready var hsv_base_picker:     ColorPickerButton = $PaletteGroup/HSVParams/HSVBasePicker
+@onready var hsv_params:           VBoxContainer     = $PaletteGroup/HSVParams
+@onready var hsv_cycles_lbl:       Label             = $PaletteGroup/HSVParams/HSVCyclesLbl
+@onready var hsv_cycles_slider:    HSlider           = $PaletteGroup/HSVParams/HSVCyclesSlider
+@onready var hsv_offset_lbl:       Label             = $PaletteGroup/HSVParams/HSVOffsetLbl
+@onready var hsv_offset_slider:    HSlider           = $PaletteGroup/HSVParams/HSVOffsetSlider
+@onready var hsv_blend_lbl:        Label             = $PaletteGroup/HSVParams/HSVBlendLbl
+@onready var hsv_blend_slider:     HSlider           = $PaletteGroup/HSVParams/HSVBlendSlider
+@onready var hsv_base_picker:      ColorPickerButton = $PaletteGroup/HSVParams/HSVBasePicker
 
 
 func _ready() -> void:
@@ -56,19 +56,14 @@ func _ready() -> void:
 
 
 func _wire_signals() -> void:
-	color_mode_dropdown.add_item("Uniform")
-	color_mode_dropdown.add_item("Iteration Count")
-	color_mode_dropdown.add_item("Orbit Trap")
 	color_mode_dropdown.item_selected.connect(func(i):
 		if not _syncing: StateBus.scene.color_mode = i)
 
-	_configure_slider(iter_norm_a_slider, -2.5, 2.5, 0.01)
 	iter_norm_a_slider.value_changed.connect(func(v):
 		if _syncing: return
 		iter_norm_a_lbl.text = "Iter Norm A: %.2f" % v
 		StateBus.scene.iter_norm_a = v)
 
-	_configure_slider(iter_norm_b_slider, 1.0, 30.0, 0.01)
 	iter_norm_b_slider.value_changed.connect(func(v):
 		if _syncing: return
 		iter_norm_b_lbl.text = "Iter Norm B: %.1f" % v
@@ -77,53 +72,41 @@ func _wire_signals() -> void:
 	iter_bw_preview.toggled.connect(func(v):
 		if not _syncing: StateBus.scene.iter_bw_preview = v)
 
-	trap_shape_dropdown.add_item("Sphere")
-	trap_shape_dropdown.add_item("XZ-Plane")
-	trap_shape_dropdown.add_item("Box")
-	trap_shape_dropdown.add_item("XYZ-Axes")
-	trap_shape_dropdown.add_item("Cylinder")
 	trap_shape_dropdown.item_selected.connect(func(i):
 		if not _syncing:
 			StateBus.scene.trap_shape = i
 			_update_params_visibility(i))
 
-	_configure_slider(trap_pos_x_slider, -3.0, 3.0, 0.01)
 	trap_pos_x_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_pos_x_lbl.text = "Trap X: %.2f" % v
 		StateBus.scene.trap_position = Vector3(v, StateBus.scene.trap_position.y, StateBus.scene.trap_position.z))
 
-	_configure_slider(trap_pos_y_slider, -3.0, 3.0, 0.01)
 	trap_pos_y_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_pos_y_lbl.text = "Trap Y: %.2f" % v
 		StateBus.scene.trap_position = Vector3(StateBus.scene.trap_position.x, v, StateBus.scene.trap_position.z))
 
-	_configure_slider(trap_pos_z_slider, -3.0, 3.0, 0.01)
 	trap_pos_z_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_pos_z_lbl.text = "Trap Z: %.2f" % v
 		StateBus.scene.trap_position = Vector3(StateBus.scene.trap_position.x, StateBus.scene.trap_position.y, v))
 
-	_configure_slider(trap_size_slider, 0.01, 5.0, 0.01)
 	trap_size_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_size_lbl.text = "Trap Size: %.2f" % v
 		StateBus.scene.trap_size = v)
 
-	_configure_slider(trap_norm_a_slider, -30.0, 30.0, 0.01)
 	trap_norm_a_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_norm_a_lbl.text = "Trap Norm A: %.2f" % v
 		StateBus.scene.trap_norm_a = v)
 
-	_configure_slider(trap_norm_b_slider, 0.0, 1.5, 0.01)
 	trap_norm_b_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_norm_b_lbl.text = "Trap Norm B: %.2f" % v
 		StateBus.scene.trap_norm_b = v)
 
-	_configure_slider(trap_lp_power_slider, 0.5, 8.0, 0.05)
 	trap_lp_power_slider.value_changed.connect(func(v):
 		if _syncing: return
 		trap_lp_power_lbl.text = "Lp Power: %.2f" % v
@@ -132,12 +115,6 @@ func _wire_signals() -> void:
 	trap_bw_preview.toggled.connect(func(v):
 		if not _syncing: StateBus.scene.trap_bw_preview = v)
 
-	palette_dropdown.add_item("Color Blend")
-	palette_dropdown.add_item("Palette1")
-	palette_dropdown.add_item("Palette2")
-	palette_dropdown.add_item("Palette3")
-	palette_dropdown.add_item("Palette4")
-	palette_dropdown.add_item("Palette5")
 	palette_dropdown.item_selected.connect(func(i):
 		if not _syncing: StateBus.scene.palette_type = i)
 
@@ -146,19 +123,16 @@ func _wire_signals() -> void:
 	color_b_picker.color_changed.connect(func(c):
 		if not _syncing: StateBus.scene.set_color_b(c))
 
-	_configure_slider(hsv_cycles_slider, 0.1, 10.0, 0.01)
 	hsv_cycles_slider.value_changed.connect(func(v):
 		if _syncing: return
 		hsv_cycles_lbl.text = "Color Cycles: %.2f" % v
 		StateBus.scene.hsv_cycles = v)
 
-	_configure_slider(hsv_offset_slider, 0.0, 1.0, 0.01)
 	hsv_offset_slider.value_changed.connect(func(v):
 		if _syncing: return
 		hsv_offset_lbl.text = "Color Offset: %.2f" % v
 		StateBus.scene.hsv_hue_offset = v)
 
-	_configure_slider(hsv_blend_slider, 0.0, 1.0, 0.01)
 	hsv_blend_slider.value_changed.connect(func(v):
 		if _syncing: return
 		hsv_blend_lbl.text = "Color Blend: %.2f" % v
@@ -171,25 +145,21 @@ func _wire_signals() -> void:
 		if not _syncing: StateBus.scene.uniform_color = c)
 
 
-func _configure_slider(s: HSlider, mn: float, mx: float, st: float) -> void:
-	s.min_value = mn; s.max_value = mx; s.step = st
-
-
 func _connect_state() -> void:
 	StateBus.scene.changed.connect(_sync)
 
 
 func _update_params_visibility(shape: int) -> void:
-	trap_size_lbl.visible  = shape != 3
-	trap_size_slider.visible = shape != 3
-	trap_pos_x_lbl.visible = shape != 1
-	trap_pos_x_slider.visible = shape != 1
-	trap_pos_z_lbl.visible = shape != 1
-	trap_pos_z_slider.visible = shape != 1
-	trap_lp_power_lbl.visible = shape != 1
+	trap_size_lbl.visible        = shape != 3
+	trap_size_slider.visible     = shape != 3
+	trap_pos_x_lbl.visible       = shape != 1
+	trap_pos_x_slider.visible    = shape != 1
+	trap_pos_z_lbl.visible       = shape != 1
+	trap_pos_z_slider.visible    = shape != 1
+	trap_lp_power_lbl.visible    = shape != 1
 	trap_lp_power_slider.visible = shape != 1
-	trap_pos_y_lbl.visible = shape != 4
-	trap_pos_y_slider.visible = shape != 4
+	trap_pos_y_lbl.visible       = shape != 4
+	trap_pos_y_slider.visible    = shape != 4
 
 
 func _sync() -> void:
@@ -216,22 +186,22 @@ func _sync() -> void:
 	trap_pos_x_lbl.text = "Trap X: %.2f" % s.trap_position.x; trap_pos_x_slider.value = s.trap_position.x
 	trap_pos_y_lbl.text = "Trap Y: %.2f" % s.trap_position.y; trap_pos_y_slider.value = s.trap_position.y
 	trap_pos_z_lbl.text = "Trap Z: %.2f" % s.trap_position.z; trap_pos_z_slider.value = s.trap_position.z
-	trap_size_lbl.text  = "Trap Size: %.2f" % s.trap_size;    trap_size_slider.value  = s.trap_size
-	trap_norm_a_lbl.text = "Trap Norm A: %.2f" % s.trap_norm_a;   trap_norm_a_slider.value = s.trap_norm_a
-	trap_norm_b_lbl.text = "Trap Norm B: %.2f" % s.trap_norm_b;   trap_norm_b_slider.value = s.trap_norm_b
-	trap_lp_power_lbl.text = "Lp Power: %.2f" % s.trap_lp_power; trap_lp_power_slider.value = s.trap_lp_power
+	trap_size_lbl.text  = "Trap Size: %.2f" % s.trap_size;    trap_size_slider.value   = s.trap_size
+	trap_norm_a_lbl.text   = "Trap Norm A: %.2f" % s.trap_norm_a;  trap_norm_a_slider.value   = s.trap_norm_a
+	trap_norm_b_lbl.text   = "Trap Norm B: %.2f" % s.trap_norm_b;  trap_norm_b_slider.value   = s.trap_norm_b
+	trap_lp_power_lbl.text = "Lp Power: %.2f" % s.trap_lp_power;   trap_lp_power_slider.value = s.trap_lp_power
 	trap_bw_preview.button_pressed = s.trap_bw_preview
 
-	palette_dropdown.selected = s.palette_type
+	palette_dropdown.selected  = s.palette_type
 	color_blend_params.visible = (s.palette_type == 0)
 	hsv_params.visible         = (s.palette_type != 0)
 
-	color_a_picker.color   = s.material.color0
-	color_b_picker.color   = s.material.color1
+	color_a_picker.color = s.material.color0
+	color_b_picker.color = s.material.color1
 
-	hsv_cycles_lbl.text  = "Palette Cycles: %.2f" % s.hsv_cycles;   hsv_cycles_slider.value  = s.hsv_cycles
-	hsv_offset_lbl.text  = "Palette Offset: %.2f" % s.hsv_hue_offset; hsv_offset_slider.value = s.hsv_hue_offset
-	hsv_blend_lbl.text   = "Color Blend: %.2f" % s.hsv_blend;    hsv_blend_slider.value   = s.hsv_blend
+	hsv_cycles_lbl.text  = "Palette Cycles: %.2f" % s.hsv_cycles;     hsv_cycles_slider.value  = s.hsv_cycles
+	hsv_offset_lbl.text  = "Palette Offset: %.2f" % s.hsv_hue_offset; hsv_offset_slider.value  = s.hsv_hue_offset
+	hsv_blend_lbl.text   = "Color Blend: %.2f" % s.hsv_blend;         hsv_blend_slider.value   = s.hsv_blend
 	hsv_base_picker.color = s.material.color0
 
 	_syncing = false

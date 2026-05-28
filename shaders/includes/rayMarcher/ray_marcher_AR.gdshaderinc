@@ -61,7 +61,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	float trap;
 	int iter_count;
 	vec3 hit_pos = cam.position.xyz + rayDir * bestT;
-	sdf_with_trap(hit_pos, trap, iter_count);
+	sdf_with_color(hit_pos, trap, iter_count);
 
 	vec3 albedo;
 

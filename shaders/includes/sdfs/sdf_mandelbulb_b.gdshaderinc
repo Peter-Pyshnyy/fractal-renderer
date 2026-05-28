@@ -21,7 +21,7 @@ float sdf(vec3 pos) {
 	return 0.5 * log(r) * r / dr;
 }
 
-float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
+float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	vec3 z = pos;
 	float r = 0.0;
 	float dr = 1.0;

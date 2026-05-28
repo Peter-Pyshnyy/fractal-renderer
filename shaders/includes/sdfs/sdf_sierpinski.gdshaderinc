@@ -23,7 +23,7 @@ float sdf(vec3 pos) {
 	return length(z) * pow(scale, -float(n));
 }
 
-float sdf_with_trap(vec3 pos, out float trap, out int iter_count) {
+float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	vec3 z = pos;
 	float scale = scene.params.param0;
 	float alpha = scene.params.param1;

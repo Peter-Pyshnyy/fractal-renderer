@@ -1,35 +1,41 @@
 extends VBoxContainer
 
 var _syncing := false
+
 @onready var sensitivity_slider: HSlider = $SensitivitySlider
-@onready var sensitivity_lbl: Label = $SensitivityLbl
-@onready var mode_button: Button = $CameraModeSwitch
-@onready var fov_slider: HSlider = $FOVSlider
-@onready var fov_lbl: Label = $FOVLbl
+@onready var sensitivity_lbl:    Label   = $SensitivityLbl
+@onready var mode_button:        Button  = $CameraModeSwitch
+@onready var fov_slider:         HSlider = $FOVSlider
+@onready var fov_lbl:            Label   = $FOVLbl
+
 
 func _ready() -> void:
 	_wire_signals()
 	_connect_state()
 	_sync()
 
+
 func _wire_signals() -> void:
-	sensitivity_slider.min_value = 0.001; sensitivity_slider.max_value = 0.1; sensitivity_slider.step = 0.001
 	sensitivity_slider.value_changed.connect(func(v):
 		if _syncing: return
 		sensitivity_lbl.text = "Sensitivity: %.3f" % v
 		StateBus.camera.mouse_sensitivity = v)
+
 	mode_button.pressed.connect(_on_mode_pressed)
-	fov_slider.min_value = 20.0; fov_slider.max_value = 120.0; fov_slider.step = 1.0
+
 	fov_slider.value_changed.connect(func(v):
 		if _syncing: return
 		fov_lbl.text = "FOV: %.0f" % v
 		StateBus.camera.fov = v)
 
+
 func _on_mode_pressed() -> void:
-	StateBus.camera.mode = 1 - StateBus.camera.mode 
+	StateBus.camera.mode = 1 - StateBus.camera.mode
+
 
 func _connect_state() -> void:
 	StateBus.camera.changed.connect(_sync)
+
 
 func _sync() -> void:
 	_syncing = true
