@@ -191,7 +191,6 @@ func _zoom_fps(direction: int) -> void:
 
 func _zoom_orbit(direction: int) -> void:
 	if direction > 0:
-		print("zooming")
 		orbit_radius += orbit_zoom_speed
 
 		var reverse_speed := _get_reverse_scalar(orbit_zoom_factor)

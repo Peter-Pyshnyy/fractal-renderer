@@ -11,6 +11,7 @@ static var quaternion_julia_data: QuaternionJuliaSetBasic = QuaternionJuliaSetBa
 static var menger_koleidoscope_data: MengerKoleidoscope = MengerKoleidoscope.new()
 static var mandelbox_data: Mandelbox = Mandelbox.new()
 static var sierpinski_data: SierpinskiTetrahedron = SierpinskiTetrahedron.new()
-static var g_data_arr: Array[FractalData] = [mandelbulb_a_data, mandelbulb_b_data, 
-mandelbulb_c_data, quaternion_julia_data, dual_quaternion_julia_data, sierpinski_data, 
-menger_koleidoscope_data, mandelbox_data]
+static var custom_fractal_data: CustomFractalData = CustomFractalData.new()
+static var g_data_arr: Array[FractalData] = [mandelbulb_a_data, mandelbulb_b_data,
+mandelbulb_c_data, quaternion_julia_data, dual_quaternion_julia_data, sierpinski_data,
+menger_koleidoscope_data, mandelbox_data, custom_fractal_data]

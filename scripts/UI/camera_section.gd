@@ -35,7 +35,7 @@ func _sync() -> void:
 	_syncing = true
 	sensitivity_slider.value = StateBus.camera.mouse_sensitivity
 	sensitivity_lbl.text = "Sensitivity: %.3f" % StateBus.camera.mouse_sensitivity
-	var mode_name := "FPS" if StateBus.camera.mode == 0 else "Orbit"
+	var mode_name := "Free Flight" if StateBus.camera.mode == 0 else "Orbit"
 	mode_button.text = "Camera Mode: %s" % mode_name
 	fov_slider.value = StateBus.camera.fov
 	fov_lbl.text = "FOV: %.0f" % StateBus.camera.fov

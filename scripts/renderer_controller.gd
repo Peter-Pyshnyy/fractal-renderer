@@ -30,6 +30,7 @@ var last_motion_version := -1
 var pipelines: Dictionary = {}
 var current_pipeline: RID
 var shader_layout_rid: RID
+var _custom_shader_rid: RID
 
 var _last_fractal_index := -1
 var _scene_dirty := true
@@ -50,12 +51,14 @@ func _ready() -> void:
 	_create_camera_buffer()
 	_create_scene_buffer()
 	_create_pipeline()
+	compile_custom_shader(Global.custom_fractal_data.glsl_source)
 
 	texture_rect.resized.connect(_on_texture_rect_resized)
 	StateBus.scene.changed.connect(_on_scene_changed)
 	StateBus.render.changed.connect(_mark_motion)
 	StateBus.camera.changed.connect(_mark_motion)
-
+	
+	StateBus.renderer_controller = self
 	_last_fractal_index = StateBus.scene.fractal_index
 	current_pipeline = pipelines[_last_fractal_index]
 
@@ -185,7 +188,8 @@ func _on_scene_changed() -> void:
 	_scene_dirty = true
 	if StateBus.scene.fractal_index != _last_fractal_index:
 		_last_fractal_index = StateBus.scene.fractal_index
-		current_pipeline = pipelines[_last_fractal_index]
+		if pipelines.has(_last_fractal_index):
+			current_pipeline = pipelines[_last_fractal_index]
 	_mark_motion()
 
 func _process(_delta: float) -> void:
@@ -268,12 +272,39 @@ func _halton(index: int, base: int) -> float:
 		f /= float(base); r += f * float(i % base); i = int(i / base)
 	return r
 
+func compile_custom_shader(sdf_source: String) -> String:
+	var src := ShaderAssembler.build(sdf_source)
+	var rd_src := RDShaderSource.new()
+	rd_src.source_compute = src
+	var spirv: RDShaderSPIRV = rd.shader_compile_spirv_from_source(rd_src)
+	if spirv.compile_error_compute != "":
+		return spirv.compile_error_compute
+
+	var new_shader_rid := rd.shader_create_from_spirv(spirv)
+	var new_pipeline := rd.compute_pipeline_create(new_shader_rid)
+
+	if pipelines.has(8) and pipelines[8].is_valid():
+		rd.free_rid(pipelines[8])
+	if _custom_shader_rid.is_valid():
+		rd.free_rid(_custom_shader_rid)
+
+	_custom_shader_rid = new_shader_rid
+	pipelines[8] = new_pipeline
+
+	if StateBus.scene.fractal_index == 8:
+		current_pipeline = pipelines[8]
+		_mark_motion()
+
+	return ""
+
 func _exit_tree() -> void:
 	if not rd: return
+	StateBus.renderer_controller = null
 	texture_rect.texture = null
 	for u in uniform_sets: if u.is_valid(): rd.free_rid(u)
 	for t in texture_rids: if t.is_valid(): rd.free_rid(t)
 	for p in pipelines.values(): if p.is_valid(): rd.free_rid(p)
+	if _custom_shader_rid.is_valid(): rd.free_rid(_custom_shader_rid)
 	if camera_buffer_rid.is_valid(): rd.free_rid(camera_buffer_rid)
 	if scene_buffer_rid.is_valid():  rd.free_rid(scene_buffer_rid)
 	uniform_sets.clear(); texture_rids.clear()

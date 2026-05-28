@@ -149,18 +149,18 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(0, 280)
 layout_mode = 2
 size_flags_vertical = 3
-text = "ORBIT CAMERA
+text = "GENERAL
+C: Change Camera
+Ctrl+Scroll: FOV Zoom
+
+ORBIT CAMERA
 LMB: Rotate
 Scroll: Zoom
 
 FREE FLIGHT
 RMB: Enable
 WASDEQ: Move
-Scroll: Adjust Speed
-
-GENERAL
-C: Change Camera
-Ctrl+Scroll: FOV Zoom"
+Scroll: Adjust Speed"
 
 [node name="Section_Fractal_Btn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu" node_paths=PackedStringArray("content")]
 custom_minimum_size = Vector2(0, 36)

@@ -9,6 +9,7 @@ var _syncing := false
 var _param_rows: Array
 var _param_labels: Array
 var _param_sliders: Array
+var _custom_section: CustomFractalSection
 
 func _ready() -> void:
 	_build_param_rows()
@@ -29,6 +30,10 @@ func _build_param_rows() -> void:
 		_param_rows.append(row)
 		_param_labels.append(row.get_node("FractalParamLbl"))
 		_param_sliders.append(row.get_node("FractalParamSlider"))
+	
+	_custom_section = CustomFractalSection.new()
+	_custom_section.visible = false
+	add_child(_custom_section)
 
 func _wire_signals() -> void:
 	dropdown.add_item("Mandelbulb A")
@@ -39,6 +44,7 @@ func _wire_signals() -> void:
 	dropdown.add_item("Sierpinski Koleidoscope")
 	dropdown.add_item("Menger Koleidoscope")
 	dropdown.add_item("Mandelbox")
+	dropdown.add_item("Custom GLSL")
 	dropdown.item_selected.connect(func(i): if not _syncing: _on_fractal_selected(i))
 	iter_slider.min_value = 1; iter_slider.max_value = 60; iter_slider.step = 1
 	iter_slider.value_changed.connect(func(v):
@@ -70,12 +76,14 @@ func _sync() -> void:
 	if StateBus.scene.fractal_data == null: return
 	_syncing = true
 	dropdown.selected = StateBus.scene.fractal_index
+	var is_custom := StateBus.scene.fractal_index == 8
+	_custom_section.visible = is_custom
 	var fd := StateBus.scene.fractal_data
 	iter_slider.value = fd.iterations
 	iter_lbl.text = "Iterations: %d" % fd.iterations
 	var defs := fd.get_param_definitions()
 	for i in _param_rows.size():
-		var active := i < defs.size()
+		var active := (not is_custom) and (i < defs.size())
 		_param_rows[i].visible = active
 		if not active: continue
 		_param_sliders[i].min_value = defs[i].get("min", 0.0)
