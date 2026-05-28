@@ -2,13 +2,15 @@ extends Node3D
 
 enum CameraMode { FPS, ORBIT }
 
-@export var current_mode: CameraMode = CameraMode.ORBIT
-@export var mouse_sensitivity := 0.03
-@export var orbit_radius := 2.0
+const FPS_ZOOM_MIN := 0.000005
+const FPS_ZOOM_MAX := 0.5
 
-@export var zoom_speed := 0.1
-@export var max_orbit_radius := 4.0
-@export var smooth_orbit := true
+var current_mode: CameraMode = CameraMode.ORBIT
+var mouse_sensitivity := 0.0015
+var orbit_radius := 2.0
+
+var max_orbit_radius := 2.0
+var smooth_orbit := true
 
 @onready var camera: Camera3D = $VirtualCamera
 @onready var anchor: Node3D = $Anchor
@@ -22,9 +24,8 @@ var orbit_sensitivity := 0.003
 var max_zoom_speed := 0.05
 
 var fps_zoom_speed := 0.1
-var fps_zoom_factor := 0.33
-var fps_move_speed := 0.05
-var fps_zoom_lock := false
+var fps_transition_factor := 1.35
+var fps_scroll_factor := 0.175
 
 var dist_to_sdf := 1.0
 var is_moving := false
@@ -52,11 +53,11 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("switch_camera"):
 		_switch_mode()
-	
+
 	if event.is_action_pressed("Screenshot"):
 		var img = get_viewport().get_texture().get_image()
 		img.save_png("user://screenshot.png")
-	
+
 	if event is InputEventMouseButton:
 		_handle_mouse_buttons(event)
 
@@ -79,6 +80,8 @@ func _switch_mode() -> void:
 		anchor.position = Vector3.ZERO
 		camera.position = Vector3.ZERO
 		_sync_precise()
+		_update_sdf_metrics()
+		fps_zoom_speed = clamp(dist_to_sdf * fps_transition_factor, FPS_ZOOM_MIN, FPS_ZOOM_MAX)
 	else:
 		current_mode = CameraMode.ORBIT
 		camera.fov = StateBus.camera.fov
@@ -94,10 +97,14 @@ func _reset_position() -> void:
 	rotation = Vector3.ZERO
 	orbit_radius = 2.0
 	orbit_zoom_speed = 0.1
+
 	precise_x = 0.0
 	precise_y = 0.0
-	precise_z = 0.0
-	position = Vector3.ZERO
+	precise_z = orbit_radius if current_mode == CameraMode.FPS else 0.0
+	position = Vector3(precise_x, precise_y, precise_z)
+
+	_update_sdf_metrics()
+	fps_zoom_speed = clamp(dist_to_sdf * fps_transition_factor, FPS_ZOOM_MIN, FPS_ZOOM_MAX)
 	_mark_motion()
 
 func _on_scene_changed_fractal_check() -> void:
@@ -143,51 +150,27 @@ func _update_sdf_metrics() -> void:
 	if StateBus.scene.fractal_data == null: return
 	dist_to_sdf = StateBus.scene.fractal_data.sdf(anchor.global_position)
 	orbit_sensitivity = (dist_to_sdf * orbit_zoom_factor) * mouse_sensitivity
-	fps_move_speed = dist_to_sdf * fps_zoom_factor * 10.0
-
-	if fps_move_speed < 0.000045:
-		fps_move_speed = 0.000045
-		fps_zoom_lock = true
-	else:
-		fps_zoom_lock = false
 
 func _zoom(direction: int) -> void:
-	_mark_motion()
-	
 	if Input.is_action_pressed("fov_zoom"):
 		camera.fov += direction * 2
+		_mark_motion()
 		return
-	
-	_update_sdf_metrics()
 
-	if current_mode != CameraMode.ORBIT:
-		_zoom_fps(direction)
-	else:
+	if current_mode == CameraMode.ORBIT:
+		_update_sdf_metrics()
 		_zoom_orbit(direction)
-
-	_update_sdf_metrics()
+		_update_sdf_metrics()
+		_mark_motion()
+	else:
+		_zoom_fps(direction)
 
 
 func _zoom_fps(direction: int) -> void:
-	if dist_to_sdf < 0.0:
-		return
-
-	var forward := -camera.global_basis.z
-
-	if direction < 0:
-		if fps_zoom_lock: return
-		fps_zoom_speed = min(dist_to_sdf * fps_zoom_factor, max_zoom_speed)
-		precise_x += forward.x * fps_zoom_speed
-		precise_y += forward.y * fps_zoom_speed
-		precise_z += forward.z * fps_zoom_speed
+	if direction > 0:
+		fps_zoom_speed = max(fps_zoom_speed * (1.0 - fps_scroll_factor), FPS_ZOOM_MIN)
 	else:
-		var reverse_speed := _get_reverse_scalar(fps_zoom_factor)
-		fps_zoom_speed = min(fps_zoom_speed * reverse_speed, max_zoom_speed)
-		precise_x -= forward.x * fps_zoom_speed
-		precise_y -= forward.y * fps_zoom_speed
-		precise_z -= forward.z * fps_zoom_speed
-
-	position = Vector3(precise_x, precise_y, precise_z)
+		fps_zoom_speed = min(fps_zoom_speed * _get_reverse_scalar(fps_scroll_factor), FPS_ZOOM_MAX)
 
 func _zoom_orbit(direction: int) -> void:
 	if direction > 0:
@@ -206,7 +189,7 @@ func _zoom_orbit(direction: int) -> void:
 		else:
 			orbit_zoom_speed = dist_to_sdf * orbit_zoom_factor
 			orbit_radius -= orbit_zoom_speed
-			
+
 
 func _handle_rotation(event: InputEventMouseMotion) -> void:
 	var rotating := (
@@ -240,9 +223,7 @@ func _process_fps(delta: float) -> void:
 		dir = dir.normalized()
 
 		if not dir.is_equal_approx(Vector3.ZERO):
-			#if fps_zoom_lock: return
-
-			var step := fps_move_speed * delta
+			var step := fps_zoom_speed * delta
 			precise_x += dir.x * step
 			precise_y += dir.y * step
 			precise_z += dir.z * step
@@ -255,7 +236,7 @@ func _process_orbit(delta: float) -> void:
 	var target := Vector3(0, 0, orbit_radius)
 
 	anchor.position = target
-	
+
 	if smooth_orbit:
 		camera.position = camera.position.lerp(target, delta * 15.0)
 	else:
