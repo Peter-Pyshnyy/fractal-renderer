@@ -50,7 +50,7 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float hsv_blend;
 	float trap_lp_power;
 	float trap_norm_b;
-	float _pad_s0;
+	float light_is_point;
 	float _pad_s1;
 	float _pad_s2;
 	float _pad_s3;

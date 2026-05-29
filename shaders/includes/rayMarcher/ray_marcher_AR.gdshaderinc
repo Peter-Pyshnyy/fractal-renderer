@@ -88,7 +88,7 @@ vec3 raymarch_AR(vec3 rayDir) {
 	vec3 norm = calcNormal(hit_pos, normal_h);
 	float ao = calcAO(hit_pos, norm);
 	if (scene.use_pbr == 1) {
-		return PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao);
+		return PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao, bestT);
 	}
 	return albedo * (ao + 0.1);
 }

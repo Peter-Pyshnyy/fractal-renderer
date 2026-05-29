@@ -21,21 +21,21 @@ float calcAO(vec3 pos, vec3 norm) {
 	return clamp(1.0 - 3.0 * occ, 0.0, 1.0);
 }
 
-float softshadow( in vec3 ro, in vec3 rd, float mint, float maxt, float w )
+float softshadow(in vec3 ro, in vec3 rd, float mint, float maxt, float w)
 {
 	float res = 1.0;
-	float ph = 1e20;
-	float t = mint;
-	for( int i=0; i<256 && t<maxt; i++ )
+	float ph  = 1e20;
+	float t   = mint;
+	for (int i = 0; i < 256 && t < maxt; i++)
 	{
-		float h = sdf(ro + rd*t);
-		if( h<mint * 0.5)
+		float h = sdf(ro + rd * t);
+		if (h < mint * 0.5)
 			return 0.0;
-		float y = h*h/(2.0*ph);
-		float d = sqrt(h*h-y*y);
-		res = min( res, d/(w*max(0.0,t-y)) );
-		ph = h;
-		t += h;
+		float y = h * h / (2.0 * ph);
+		float d = sqrt(h * h - y * y);
+		res = min(res, d / (w * max(0.0, t - y)));
+		ph  = h;
+		t  += h;
 	}
 	return res;
 }
@@ -61,22 +61,36 @@ float G_Smith(float NdotV, float NdotL, float roughness) {
 	return G_SchlickGGX(NdotV, roughness) * G_SchlickGGX(NdotL, roughness);
 }
 
-vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
-	vec3 L = normalize(scene.light_dir.xyz);
-	vec3 H = normalize(V + L);
+vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao, float t) {
+	vec3  toLight;
+	float attenuation;
+	float maxt;
+	if (scene.light_is_point == 0.0) {
+		toLight     = normalize(scene.light_dir.xyz);
+		attenuation = 1.0;
+		maxt        = 5.0;
+	} else {
+		vec3  delta = cam.position.xyz - fragPos;
+		float dist  = max(length(delta), 0.000001);
+		toLight     = delta / dist;
+		float r     = t * 10.0;
+		attenuation = pow(max(0.0, 1.0 - (dist / r)), 2.0) / (dist * dist);
+		maxt        = dist;
+	}
 
+	vec3  L    = toLight;
+	vec3  H    = normalize(V + L);
 	float NdotL = max(dot(N, L), 0.0);
 	float NdotV = max(dot(N, V), 0.001);
 	float NdotH = max(dot(N, H), 0.0);
 	float HdotV = max(dot(H, V), 0.0);
 
-	vec3 F0 = mix(vec3(0.04), albedo, scene.metallic);
-
+	vec3  F0             = mix(vec3(0.04), albedo, scene.metallic);
 	float conv_roughness = max(1e-3, scene.roughness * scene.roughness);
 
-	vec3 bias = N * N_h * 1.5;
+	vec3  bias        = N * N_h * 1.5;
 	float adaptiveMint = N_h * 3.0;
-	float s = softshadow(fragPos + bias, scene.light_dir.xyz, adaptiveMint, 5.0, 2.5);
+	float s = softshadow(fragPos + bias, L, adaptiveMint, maxt, 2.5);
 	NdotL *= s;
 
 	float D = D_GGX(NdotH, conv_roughness);
@@ -84,11 +98,12 @@ vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao) {
 	float G = G_Smith(NdotV, NdotL, conv_roughness);
 
 	vec3 specular = (D * F * G) / max(4.0 * NdotV * NdotL, 0.0001);
+	vec3 kD       = (1.0 - F) * (1.0 - scene.metallic);
+	vec3 diffuse  = kD * albedo / PI;
+	vec3 ambient  = vec3(0.03) * albedo * ao;
 
-	vec3 kD = (1.0 - F) * (1.0 - scene.metallic);
-	vec3 diffuse = kD * albedo / PI;
-
-	vec3 ambient = vec3(0.03) * albedo * ao;
-	vec3 lightColor = vec3(2.0);
-	return (diffuse + specular) * lightColor * NdotL + ambient;
+	vec3 lightColor = scene.light_is_point == 0.0
+		? vec3(0.5)
+		: vec3(1.0 * t * t);
+	return (diffuse + specular) * lightColor * attenuation * NdotL + ambient;
 }

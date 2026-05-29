@@ -3,7 +3,7 @@ extends Node3D
 enum CameraMode { FPS, ORBIT }
 
 const FPS_ZOOM_MIN := 0.000005
-const FPS_ZOOM_MAX := 0.5
+const FPS_ZOOM_MAX := 2.0
 
 var current_mode: CameraMode = CameraMode.ORBIT
 var mouse_sensitivity := 0.0015
