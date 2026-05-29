@@ -3,6 +3,7 @@ extends FractalData
 
 var sphere_radius: float = 1.15
 var glsl_source: String = ""
+var fractal_params: Array[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 func _init() -> void:
 	iterations = 15
@@ -10,7 +11,7 @@ func _init() -> void:
 	vec3 z = pos;
 	float r = 1.2;
 	float dr = 1.0;
-	float power = 8.0;
+	float power = scene.params.param0;
 	float powerMinus1 = power - 1.0;
 
 	for (int i = 0; i < scene.iterations; i++) {
@@ -35,7 +36,7 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	vec3 z = pos;
 	float r = 1.2;
 	float dr = 1.0;
-	float power = 8.0;
+	float power = scene.params.param0;
 	float powerMinus1 = power - 1.0;
 
 	trap = 1e6;
@@ -62,8 +63,10 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 }"
 
 func get_shader_params() -> PackedFloat32Array:
-	var arr := super.get_shader_params()
-	arr[0] = 8.0
+	var arr := PackedFloat32Array()
+	arr.resize(8)
+	for i in 8:
+		arr[i] = fractal_params[i]
 	return arr
 
 func sdf(pos: Vector3) -> float:
