@@ -399,7 +399,6 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	}
 	return 0.5 * log(r) * r / dr;
 }"
-scroll_vertical = 42.0
 
 [node name="CompileBtn" type="Button" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_Fractal_Content/CustomFractalSection"]
 layout_mode = 2

@@ -20,7 +20,7 @@ class_name SceneStateR extends Resource
 	set(v): sdf_scalar = v; emit_changed()
 @export_range(0.1, 2.0, 0.01) var lod_scalar: float = 0.75:
 	set(v): lod_scalar = v; emit_changed()
-@export_range(1, 1000, 1) var max_steps: int = 250:
+@export_range(1, 1500, 1) var max_steps: int = 500:
 	set(v): max_steps = v; emit_changed()
 @export var background_color: Color = Color(0.75, 0.75, 0.75, 1.0):
 	set(v): background_color = v; emit_changed()
