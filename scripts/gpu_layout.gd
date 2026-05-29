@@ -42,7 +42,12 @@ static func pack_scene(s: SceneStateR) -> PackedByteArray:
 	out.append_array(PackedFloat32Array([
 		s.hsv_cycles, s.hsv_hue_offset,
 		s.hsv_blend, s.trap_lp_power,
-		s.trap_norm_b, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		s.trap_norm_b,
+	]).to_byte_array())
+	out.append_array(PackedInt32Array([s.light_type]).to_byte_array())
+	out.append_array(PackedFloat32Array([s.light_multiplier, s.light_radius_mult]).to_byte_array())
+	out.append_array(PackedFloat32Array([
+		s.light_color.r, s.light_color.g, s.light_color.b, s.light_color.a,
 	]).to_byte_array())
 
 	return out

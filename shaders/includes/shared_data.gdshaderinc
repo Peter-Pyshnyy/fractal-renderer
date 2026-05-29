@@ -50,14 +50,11 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 	float hsv_blend;
 	float trap_lp_power;
 	float trap_norm_b;
-	float light_is_point;
-	float _pad_s1;
-	float _pad_s2;
-	float _pad_s3;
-	float _pad_s4;
-	float _pad_s5;
-	float _pad_s6;
-} scene;                  // total: 224 B
+	int   light_type;        // 0=dirlight, 1=pointlight, 2=egolight
+	float light_multiplier;
+	float light_radius_mult;
+	vec4  light_color;
+} scene;
 
 layout(push_constant, std430) uniform FrameConstants {
 	vec2  jitter;         //  8 B

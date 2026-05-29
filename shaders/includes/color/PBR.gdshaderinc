@@ -65,18 +65,26 @@ vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao, float t
 	vec3  toLight;
 	float attenuation;
 	float maxt;
-	if (scene.light_is_point == 0.0) {
+	if (scene.light_type == 0) { // dirLight
 		toLight     = normalize(scene.light_dir.xyz);
 		attenuation = 1.0;
 		maxt        = 5.0;
-	} else {
-		vec3  delta = cam.position.xyz - fragPos;
-		float dist  = max(length(delta), 0.000001);
-		toLight     = delta / dist;
-		float r     = t * 10.0;
-		attenuation = pow(max(0.0, 1.0 - (dist / r)), 2.0) / (dist * dist);
-		maxt        = dist;
-	}
+	} else { // pointLight
+		vec3 lightPos = scene.light_type == 1 ? scene.light_dir.xyz : cam.position.xyz;
+		vec3  delta   = lightPos - fragPos;
+		float dist    = max(length(delta), 0.000001);
+		toLight       = delta / dist;
+		float r       = scene.light_radius_mult;
+		attenuation = pow(max(0.0, 1.0 - (dist / r)), 2.0);
+		maxt          = dist; }
+	//} else { // egoLight
+	//vec3  delta = cam.position.xyz - fragPos;
+	//float dist  = max(length(delta), 0.000001);
+	//toLight     = delta / dist;
+	//float r     = scene.light_radius_mult * t;
+	//attenuation = pow(max(0.0, 1.0 - (dist / r)), 2.0) / (dist * dist);
+	//maxt        = dist;
+//}
 
 	vec3  L    = toLight;
 	vec3  H    = normalize(V + L);
@@ -102,8 +110,6 @@ vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao, float t
 	vec3 diffuse  = kD * albedo / PI;
 	vec3 ambient  = vec3(0.03) * albedo * ao;
 
-	vec3 lightColor = scene.light_is_point == 0.0
-		? vec3(0.5)
-		: vec3(1.0 * t * t);
+	vec3 lightColor = scene.light_color.rgb * scene.light_multiplier;
 	return (diffuse + specular) * lightColor * attenuation * NdotL + ambient;
 }

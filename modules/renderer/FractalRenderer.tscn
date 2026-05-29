@@ -512,6 +512,95 @@ script = ExtResource("10_bn4l7")
 layout_mode = 2
 text = "Enable PBR"
 
+[node name="LightTypeDropdown" type="OptionButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "DirLight"
+popup/item_0/id = 0
+popup/item_1/text = "PointLight"
+popup/item_1/id = 1
+popup/item_2/text = "EgoLight"
+popup/item_2/id = 2
+
+[node name="DirPosGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+
+[node name="LightXLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/DirPosGroup"]
+layout_mode = 2
+text = "Dir X: 1.00"
+
+[node name="LightXSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/DirPosGroup"]
+layout_mode = 2
+min_value = -5.0
+max_value = 5.0
+step = 0.01
+value = 1.0
+scrollable = false
+
+[node name="LightYLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/DirPosGroup"]
+layout_mode = 2
+text = "Dir Y: 1.00"
+
+[node name="LightYSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/DirPosGroup"]
+layout_mode = 2
+min_value = -5.0
+max_value = 5.0
+step = 0.01
+value = 1.0
+scrollable = false
+
+[node name="LightZLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/DirPosGroup"]
+layout_mode = 2
+text = "Dir Z: 1.00"
+
+[node name="LightZSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/DirPosGroup"]
+layout_mode = 2
+min_value = -5.0
+max_value = 5.0
+step = 0.01
+value = 1.0
+scrollable = false
+
+[node name="RadiusGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+visible = false
+layout_mode = 2
+
+[node name="LightRadiusLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/RadiusGroup"]
+layout_mode = 2
+text = "Radius Mult: 10.0"
+
+[node name="LightRadiusSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/RadiusGroup"]
+layout_mode = 2
+min_value = 0.1
+max_value = 15.0
+step = 0.1
+value = 10.0
+scrollable = false
+
+[node name="LightColorGroup" type="VBoxContainer" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
+layout_mode = 2
+
+[node name="LightColorLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/LightColorGroup"]
+layout_mode = 2
+text = "Light Color"
+
+[node name="LightColorPicker" type="ColorPickerButton" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/LightColorGroup"]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+
+[node name="LightMultiplierLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/LightColorGroup"]
+layout_mode = 2
+text = "Brightness: 1.00"
+
+[node name="LightMultiplierSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content/LightColorGroup"]
+layout_mode = 2
+max_value = 10.0
+step = 0.01
+value = 1.0
+scrollable = false
+
 [node name="MetallicLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
 layout_mode = 2
 text = "Metallic: 0.23"
@@ -532,42 +621,6 @@ layout_mode = 2
 max_value = 1.0
 step = 0.01
 value = 0.42
-scrollable = false
-
-[node name="LightXLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
-layout_mode = 2
-text = "Light X: 0.50"
-
-[node name="LightXSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
-layout_mode = 2
-min_value = -5.0
-max_value = 5.0
-step = 0.01
-value = 0.5
-scrollable = false
-
-[node name="LightYLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
-layout_mode = 2
-text = "Light Y: 1.58"
-
-[node name="LightYSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
-layout_mode = 2
-min_value = -5.0
-max_value = 5.0
-step = 0.01
-value = 2.0
-scrollable = false
-
-[node name="LightZLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
-layout_mode = 2
-text = "Light Z: 1.00"
-
-[node name="LightZSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
-layout_mode = 2
-min_value = -5.0
-max_value = 5.0
-step = 0.01
-value = 1.0
 scrollable = false
 
 [node name="ExposureLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
