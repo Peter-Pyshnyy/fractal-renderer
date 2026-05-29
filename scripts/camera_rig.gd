@@ -9,7 +9,7 @@ var current_mode: CameraMode = CameraMode.ORBIT
 var mouse_sensitivity := 0.0015
 var orbit_radius := 2.0
 
-var max_orbit_radius := 2.0
+var max_orbit_radius := 3.0
 var smooth_orbit := true
 
 @onready var camera: Camera3D = $VirtualCamera
