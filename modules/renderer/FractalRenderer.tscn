@@ -40,11 +40,11 @@ near = 0.066
 
 [node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("texture_rect", "target_camera", "VRSTimer")]
 script = ExtResource("2_dws3f")
-initial_fractal = SubResource("Resource_b4yyk")
-initial_material = SubResource("Resource_5o5ty")
 texture_rect = NodePath("../UI_Root/MainSplit/FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
+initial_fractal = SubResource("Resource_b4yyk")
+initial_material = SubResource("Resource_5o5ty")
 
 [node name="VRSTimer" type="Timer" parent="RendererController"]
 one_shot = true
@@ -52,7 +52,8 @@ one_shot = true
 [node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
-benchmark_radius = 1.1
+benchmark_mode = 1
+benchmark_radius = 1.03
 
 [node name="UI_Root" type="Control" parent="."]
 layout_mode = 3
@@ -90,7 +91,6 @@ texture = ExtResource("2_c2qj7")
 expand_mode = 1
 
 [node name="Sidebar" type="PanelContainer" parent="UI_Root/MainSplit"]
-visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_horizontal = 3

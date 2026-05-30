@@ -48,7 +48,7 @@ func _ready() -> void:
 	camera_rig = target_camera.get_parent()
 	rd = RenderingServer.get_rendering_device()
 
-	render_resolution = texture_rect.size.max(Vector2.ONE)
+	render_resolution = Vector2i(1920, 1080)
 
 	_create_texture()
 	_create_camera_buffer()
@@ -89,11 +89,11 @@ func _create_texture() -> void:
 
 
 func _on_texture_rect_resized() -> void:
-	var new_size := texture_rect.size.floor()
-	if new_size.x < 1 or new_size.y < 1: return
-	if new_size == render_resolution: return
-
-	render_resolution = new_size
+	#var new_size := texture_rect.size.floor()
+	#if new_size.x < 1 or new_size.y < 1: return
+	#if new_size == render_resolution: return
+#
+	#render_resolution = new_size
 
 	for u in uniform_sets:
 		if u.is_valid(): rd.free_rid(u)

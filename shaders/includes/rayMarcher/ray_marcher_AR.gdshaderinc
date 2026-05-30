@@ -1,94 +1,96 @@
+const float BENCH_BETA            = 0.3;   // ARST relaxation 
+const float BENCH_SURFACE_EPSILON = 0.00001;
+const float BENCH_EPSILON_CLAMP   = 1e-7;  
+
 vec3 getRayDirection(vec2 resolution, vec2 uv) {
-	float aspect = resolution.x / resolution.y;
-
-	vec2 screen = uv * 2.0 - 1.0;
-	screen.x *= aspect;
-	screen *= cam.fovScale;
-
-	return normalize(
-		cam.forward.xyz +
-		cam.right.xyz * screen.x +
-		cam.up.xyz * screen.y
-	);
+    float aspect = resolution.x / resolution.y;
+    vec2 screen = uv * 2.0 - 1.0;
+    screen.x *= aspect;
+    screen *= cam.fovScale;
+    return normalize(
+        cam.forward.xyz +
+        cam.right.xyz * screen.x +
+        cam.up.xyz * screen.y
+    );
 }
 
+float bench_pixelRadius() {
+	return cam.fovScale / cam.resolution.y;
+}
 
-vec3 raymarch_AR(vec3 rayDir) {
-	float sdfScaler = scene.sdf_scalar;
-	float beta = 0.3;
-	float pixelRadius = cam.fovScale / cam.resolution.y;
-	float LODScalar = scene.lod_scalar;
+float bench_lodThreshold(float t) {
+	return max(t * bench_pixelRadius() * scene.lod_scalar, BENCH_EPSILON_CLAMP);
+}
 
+vec3 raymarch_ST(vec3 rayDir) {
 	float t = 0.0;
-	float r = sdf(cam.position.xyz) * sdfScaler;
+	int i;
+	for (i = 0; i < MAX_STEPS; i++) {
+		float r = sdf(cam.position.xyz + rayDir * t);
+		if (r < BENCH_SURFACE_EPSILON || t >= MAX_DIST) break;
+		t += r;
+	}
+	return vec3(float(i) / float(MAX_STEPS));
+}
+
+vec3 raymarch_ST_LOD(vec3 rayDir) {
+	float t = 0.0;
+	int i;
+	for (i = 0; i < MAX_STEPS; i++) {
+		float r = sdf(cam.position.xyz + rayDir * t);
+		if (r < bench_lodThreshold(t) || t >= MAX_DIST) break;
+		t += r;
+	}
+	return vec3(float(i) / float(MAX_STEPS));
+}
+
+vec3 raymarch_ARST(vec3 rayDir) {
+	float t = 0.0;
+	float r = sdf(cam.position.xyz);
 	float z = r;
 	float m = -1.0;
-
-	float bestT    = t;
-	float bestError = 1e9;
-
-	for (int i = 0; i < MAX_STEPS; i++) {
-		float pixelError = r / max(t * pixelRadius * LODScalar, 1e-7);
-
-		if (pixelError < bestError) {
-			bestError = pixelError;
-			bestT     = t;
-		}
-
-		if (pixelError < 1.0 || t >= MAX_DIST) break;
-
+	int i;
+	for (i = 0; i < MAX_STEPS; i++) {
+		if (r < BENCH_SURFACE_EPSILON || t >= MAX_DIST) break;
 		float T = t + z;
-		vec3  pos = cam.position.xyz + rayDir * T;
-
-		float R = sdf(pos) * sdfScaler;
-
+		float R = sdf(cam.position.xyz + rayDir * T);
 		if (z <= r + abs(R)) {
 			float M = (R - r) / (T - t);
-			m = (1.0 - beta) * m + beta * M;
+			m = (1.0 - BENCH_BETA) * m + BENCH_BETA * M;
 			t = T;
 			r = R;
 		} else {
 			m = -1.0;
 		}
-
 		z = 2.0 * r / (1.0 - m);
 	}
+	return vec3(float(i) / float(MAX_STEPS));
+}
 
-	if (bestError >= 1.0 || bestT >= MAX_DIST) {
-		return scene.background_color.rgb;
-	}
-
-	float trap;
-	int iter_count;
-	vec3 hit_pos = cam.position.xyz + rayDir * bestT;
-	sdf_with_color(hit_pos, trap, iter_count);
-
-	vec3 albedo;
-
-	if (scene.color_mode == 0) {
-		albedo = scene.uniform_color.rgb;
-
-	} else if (scene.color_mode == 1) {
-		float t = 1.0 / (1.0 + exp(scene.iter_norm_a * (scene.iter_norm_b - float(iter_count))));
-		if (scene.iter_bw_preview == 1) {
-			return vec3(t);
+vec3 raymarch_ARST_LOD(vec3 rayDir) {
+	float t = 0.0;
+	float r = sdf(cam.position.xyz);
+	float z = r;
+	float m = -1.0;
+	int i;
+	for (i = 0; i < MAX_STEPS; i++) {
+		if (r < bench_lodThreshold(t) || t >= MAX_DIST) break;
+		float T = t + z;
+		float R = sdf(cam.position.xyz + rayDir * T);
+		if (z <= r + abs(R)) {
+			float M = (R - r) / (T - t);
+			m = (1.0 - BENCH_BETA) * m + BENCH_BETA * M;
+			t = T;
+			r = R;
+		} else {
+			m = -1.0;
 		}
-		albedo = get_palette_color(t);
-
-	} else {
-		float trap_normalized = get_normalized_trap(trap);
-		if (scene.trap_bw_preview == 1) {
-			return vec3(trap_normalized);
-		}
-		albedo = get_palette_color(trap_normalized);
+		z = 2.0 * r / (1.0 - m);
 	}
+	return vec3(float(i) / float(MAX_STEPS));
+}
 
-	albedo = mix(vec3(1.0), albedo, 0.85);
-	float normal_h = clamp(bestT * pixelRadius * LODScalar, 1e-7, 0.01);
-	vec3 norm = calcNormal(hit_pos, normal_h);
-	float ao = calcAO(hit_pos, norm);
-	if (scene.use_pbr == 1) {
-		return PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao, bestT);
-	}
-	return albedo * (ao + 0.1);
+// raymarch_ST, raymarch_ST_LOD, raymarch_ARST, raymarch_ARST_LOD
+vec3 raymarch_AR(vec3 rayDir) {
+	return raymarch_ST(rayDir);
 }

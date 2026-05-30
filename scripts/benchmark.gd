@@ -44,7 +44,7 @@ func start_profiling() -> void:
 
 	print("\nWarming up GPU...")
 
-	await _warmup_frames(3)
+	await _warmup_frames(50)
 
 	var duration := _get_duration()
 	print("=== BENCHMARK START: ", duration, "s ===")
@@ -52,6 +52,7 @@ func start_profiling() -> void:
 	is_profiling = true
 	time_accum = 0.0
 	frame_count = 0
+	de_accum = 0.0
 
 
 func _process(delta: float) -> void:
@@ -63,7 +64,7 @@ func _process(delta: float) -> void:
 	
 	var fd := StateBus.scene.fractal_data
 	if fd != null:
-		de_accum += camera_rig.dist_to_sdf
+		de_accum += StateBus.scene.fractal_data.sdf(virtual_camera.global_position)
 
 	var duration := _get_duration()
 	var progress := time_accum / duration
@@ -123,7 +124,7 @@ func _get_duration() -> float:
 
 
 func _get_cycles() -> float:
-	return 1.0 if benchmark_mode == BenchmarkMode.SHORT_10S else 3.0
+	return 1.0 if benchmark_mode == BenchmarkMode.SHORT_10S else 1.0
 
 func _finish_profiling() -> void:
 	is_profiling = false
