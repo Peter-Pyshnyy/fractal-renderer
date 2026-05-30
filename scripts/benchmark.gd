@@ -22,7 +22,12 @@ const ZOOM_LEVEL := 2.0
 var user_yaw := 0.0
 var user_pitch := 0.0
 var user_radius := 0.0
-var radii: Array[float] = [1.03, 1.425, 2.13]
+var radii_MB: Array[float] = [1.1, 1.425, 2.13]
+var radii_QJ: Array[float] = [0.95, 1.375, 2.15]
+var radii_DQJ: Array[float] = [0.90, 1.325, 2.125]
+var radii_KS: Array[float] = [0.35, 1.15, 1.75]
+var radii_KM: Array[float] = [0.55, 1.12, 1.82]
+var radii_MBX: Array[float] = [0.98, 1.44, 2.05]
 
 var run := 0
 
@@ -32,7 +37,7 @@ func _input(event: InputEvent) -> void:
 
 
 func start_profiling() -> void:
-	benchmark_radius = radii[run]
+	benchmark_radius = radii_MBX[run]
 	if not camera_rig:
 		push_error("Profiler: CameraRig not assigned")
 		return

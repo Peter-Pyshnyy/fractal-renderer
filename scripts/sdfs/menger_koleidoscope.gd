@@ -11,9 +11,9 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "Scale", "min": 1.1, "max": 4.0, "step": 0.01, "default": 3.0},
+		{"name": "Scale", "min": 1.1, "max": 4.0, "step": 0.01, "default": 2.5},
 		{"name": "Alpha", "min": 0.0, "max": 1.5, "step": 0.01, "default": 0.0},
-		{"name": "Beta", "min": -1.0, "max": 1.0, "step": 0.01, "default": 0.0},
+		{"name": "Beta", "min": -1.0, "max": 1.0, "step": 0.01, "default": -0.75},
 	]
 
 func get_param_value(index: int) -> float:

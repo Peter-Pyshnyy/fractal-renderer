@@ -10,8 +10,8 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "Scale", "min": -2.75, "max": -1.75, "step": 0.01, "default": -2.0},
-		{"name": "Fixed Radius", "min": 0.5, "max": 1.75, "step": 0.01, "default": 0.9},
+		{"name": "Scale", "min": -2.75, "max": -1.75, "step": 0.01, "default": -2.1},
+		{"name": "Fixed Radius", "min": 0.5, "max": 1.75, "step": 0.01, "default": 1.0},
 		{"name": "Min Radius", "min": 0.01, "max": 1.0, "step": 0.01, "default": 0.5},
 	]
 

@@ -15,13 +15,13 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "cReal X", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.2},
-		{"name": "cReal Y", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.53},
-		{"name": "cReal Z", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.39},
-		{"name": "cReal W", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.57},
-		{"name": "cDual X", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.35},
+		{"name": "cReal X", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.5},
+		{"name": "cReal Y", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.63},
+		{"name": "cReal Z", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.05},
+		{"name": "cReal W", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.13},
+		{"name": "cDual X", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.05},
 		{"name": "cDual Y", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.1},
-		{"name": "cDual Z", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
+		{"name": "cDual Z", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.2},
 		{"name": "cDual W", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
 	]
 

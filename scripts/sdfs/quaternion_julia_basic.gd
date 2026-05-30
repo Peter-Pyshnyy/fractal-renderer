@@ -11,7 +11,7 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "C X", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.2},
+		{"name": "C X", "min": -1.5, "max": 1.5, "step": 0.01, "default": -0.4},
 		{"name": "C Y", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.7},
 		{"name": "C Z", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
 		{"name": "C W", "min": -1.5, "max": 1.5, "step": 0.01, "default": 0.0},
