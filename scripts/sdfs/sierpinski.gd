@@ -10,7 +10,7 @@ func _init():
 
 func get_param_definitions() -> Array[Dictionary]:
 	return [
-		{"name": "Scale", "min": 1.1, "max": 2.3, "step": 0.01, "default": 2.0},
+		{"name": "Scale", "min": 1.1, "max": 2.15, "step": 0.01, "default": 2.0},
 		{"name": "Alpha", "min": 0.0, "max": 3.14, "step": 0.01, "default": 0.0},
 		{"name": "Beta", "min": 0.0, "max": 3.14, "step": 0.01, "default": 0.0},
 	]

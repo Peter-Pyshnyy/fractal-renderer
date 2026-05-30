@@ -85,6 +85,7 @@ func _switch_mode() -> void:
 	else:
 		current_mode = CameraMode.ORBIT
 		camera.fov = StateBus.camera.fov
+		orbit_radius = 2.0
 		position = Vector3.ZERO
 		_sync_precise()
 	camera_mode_changed.emit(current_mode)
