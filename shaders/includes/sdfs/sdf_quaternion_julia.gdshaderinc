@@ -21,8 +21,8 @@ float sdf(vec3 pos) {
 	vec4 zb = vec4(0.0);
 	vec4 dza = vec4(1.0, 0.0, 0.0, 0.0);
 	vec4 dzb = vec4(0.0);
-	vec4 cReal = vec4(scene.params.param0, scene.params.param1, scene.params.param2, scene.params.param3);
-	vec4 cDual = vec4(scene.params.param4, scene.params.param5, scene.params.param6, scene.params.param7);
+	vec4 cReal = vec4(-0.5, 0.63, -0.05, -0.13);
+	vec4 cDual = vec4(-0.05, -0.1, -0.2, 0.0);
 	float m2 = dot(za, za) + dot(zb, zb);
 	for (int i = 0; i < scene.iterations; i++) {
 		vec4 dza_new = 2.0 * qmul(za, dza);

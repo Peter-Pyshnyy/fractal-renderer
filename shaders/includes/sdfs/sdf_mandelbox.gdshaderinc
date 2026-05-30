@@ -1,9 +1,9 @@
 float sdf(vec3 pos) {
 	vec3 z = pos;
 	vec3 c = pos;
-	float scale       = scene.params.param0;
-	float fixedRadius = scene.params.param1;
-	float minRadius       = scene.params.param2;
+	float scale       = -2.1;
+	float fixedRadius = 1.0;
+	float minRadius       = 0.5;
 	float limit   = 0.4;
 
 	float fR2 = fixedRadius * fixedRadius;

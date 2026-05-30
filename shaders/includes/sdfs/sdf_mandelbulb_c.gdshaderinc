@@ -2,10 +2,10 @@ float sdf(vec3 pos) {
 	vec3 z = pos;
 	float r = 0.0;
 	float dr = 1.0;
-	float power = scene.params.param0;
+	float power = 8.0;
 	float powerMinus1 = power - 1.0;
-	float t = scene.params.param1;
-	float phaseAngle = scene.params.param2;
+	float t = 0.75;
+	float phaseAngle = 0.8;
 	float cosA = cos(phaseAngle);
 	float sinA = sin(phaseAngle);
 

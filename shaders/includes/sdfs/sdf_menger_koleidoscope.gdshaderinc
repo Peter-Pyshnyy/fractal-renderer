@@ -1,8 +1,8 @@
 float sdf(vec3 pos) {
 	vec3 z = pos;
-	float scale = scene.params.param0;
-	float alpha = scene.params.param1;
-	float beta  = scene.params.param2;
+	float scale = 2.5;
+	float alpha = 0.0;
+	float beta  = -0.75;
 	float c     = 0.8;
 	float ca = cos(alpha), sa = sin(alpha);
 	float cb = cos(beta),  sb = sin(beta);
