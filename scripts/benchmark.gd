@@ -4,11 +4,15 @@ enum BenchmarkMode { SHORT_10S, LONG_60S }
 
 @export var camera_rig: Node3D
 @export var benchmark_mode: BenchmarkMode = BenchmarkMode.SHORT_10S
+@export var benchmark_radius: float = 3.0
 @onready var vrs_timer: Timer = $"../RendererController/VRSTimer"
+@onready var virtual_camera: Camera3D = $"../CameraRig/VirtualCamera"
+
 
 var is_profiling := false
 var time_accum := 0.0
 var frame_count := 0
+var de_accum := 0.0
 
 const BENCHMARK_YAW := 0.0
 const BENCHMARK_PITCH := 0.3
@@ -56,6 +60,10 @@ func _process(delta: float) -> void:
 
 	time_accum += delta
 	frame_count += 1
+	
+	var fd := StateBus.scene.fractal_data
+	if fd != null:
+		de_accum += camera_rig.dist_to_sdf
 
 	var duration := _get_duration()
 	var progress := time_accum / duration
@@ -84,7 +92,7 @@ func _set_benchmark_state() -> void:
 	# instant teleport to start pose
 	camera_rig.yaw = BENCHMARK_YAW
 	camera_rig.pitch = BENCHMARK_PITCH
-	camera_rig.orbit_radius = BENCHMARK_RADIUS
+	camera_rig.orbit_radius = benchmark_radius
 	_apply_rotation(BENCHMARK_PITCH, BENCHMARK_YAW)
 
 
@@ -104,12 +112,9 @@ func _update_camera(progress: float) -> void:
 
 	var pitch = BENCHMARK_PITCH + sin(progress * TAU * cycles) * 0.4
 
-	# zoom in/out (use abs() to ensure it only zooms inward across multiple cycles)
-	var radius = BENCHMARK_RADIUS - abs(sin(progress * PI * cycles)) * ZOOM_LEVEL
-
 	camera_rig.yaw = yaw
 	camera_rig.pitch = pitch
-	camera_rig.orbit_radius = radius
+	camera_rig.orbit_radius = benchmark_radius
 
 	_apply_rotation(pitch, yaw)
 
@@ -127,9 +132,11 @@ func _finish_profiling() -> void:
 
 	var avg_frame_time_ms = (time_accum / frame_count) * 1000.0
 	var avg_fps = frame_count / time_accum
+	var avg_de = de_accum / frame_count if frame_count > 0 else 0.0
 
 	print("=== BENCHMARK DONE ===")
 	print("Frames: ", frame_count)
 	print("Avg FPS: ", avg_fps)
+	print("Avg DE value: ", avg_de)
 	print("Avg frame (ms): ", avg_frame_time_ms)
 	print("======================\n")

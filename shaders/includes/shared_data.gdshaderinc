@@ -19,22 +19,22 @@ layout(set = 0, binding = 1, std430) buffer CameraData {
 } cam;
 
 layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
-	FractalData params;  
+	FractalData params;
 	MaterialData material;
-	vec4  light_dir;     
-	float metallic;       
-	float roughness;      
-	float sdf_scalar;     
-	float lod_scalar;     
+	vec4  light_dir;
+	float metallic;
+	float roughness;
+	float sdf_scalar;
+	float lod_scalar;
 	vec4  background_color;
 	float exposure;
 	float iter_norm_a;
 	float iter_norm_b;
 	float _pad_exp;
-	int   iterations;    
-	int   use_pbr;       
-	int   max_steps;         
-	int   _pad3;         
+	int   iterations;
+	int   use_pbr;
+	int   max_steps;
+	int   _pad3;
 	int   color_mode;
 	int   palette_type;
 	float _pad_color0;
@@ -59,7 +59,7 @@ layout(set = 0, binding = 3, std430) restrict readonly buffer SceneBuffer {
 layout(push_constant, std430) uniform FrameConstants {
 	vec2  jitter;         //  8 B
 	float history_blend;  //  4 B
-	float _pad_f0;        //  4 B 
+	float _pad_f0;        //  4 B
 	int   resolution_scale; // 4 B
 	int   frame_index;    //  4 B
 	int   _pad_i0;        //  4 B

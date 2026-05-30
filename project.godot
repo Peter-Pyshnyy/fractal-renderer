@@ -20,8 +20,8 @@ StateBus="*res://scripts/state/state_bus.gd"
 
 [display]
 
-window/size/viewport_width=960
-window/size/viewport_height=540
+window/size/viewport_width=2035
+window/size/viewport_height=965
 window/vsync/vsync_mode=0
 
 [input]
