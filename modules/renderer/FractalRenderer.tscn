@@ -52,7 +52,6 @@ one_shot = true
 [node name="Benchmark" type="Node" parent="." node_paths=PackedStringArray("camera_rig")]
 script = ExtResource("4_mq4g3")
 camera_rig = NodePath("../CameraRig")
-benchmark_mode = 1
 benchmark_radius = 1.03
 
 [node name="UI_Root" type="Control" parent="."]
@@ -91,6 +90,7 @@ texture = ExtResource("2_c2qj7")
 expand_mode = 1
 
 [node name="Sidebar" type="PanelContainer" parent="UI_Root/MainSplit"]
+visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_horizontal = 3

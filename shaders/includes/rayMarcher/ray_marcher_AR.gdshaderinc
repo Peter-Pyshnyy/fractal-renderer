@@ -92,5 +92,5 @@ vec3 raymarch_ARST_LOD(vec3 rayDir) {
 
 // raymarch_ST, raymarch_ST_LOD, raymarch_ARST, raymarch_ARST_LOD
 vec3 raymarch_AR(vec3 rayDir) {
-	return raymarch_ST(rayDir);
+	return raymarch_ARST(rayDir);
 }

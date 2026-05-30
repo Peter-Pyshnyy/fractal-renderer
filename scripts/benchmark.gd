@@ -22,7 +22,9 @@ const ZOOM_LEVEL := 2.0
 var user_yaw := 0.0
 var user_pitch := 0.0
 var user_radius := 0.0
+var radii: Array[float] = [1.03, 1.425, 2.13]
 
+var run := 0
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("benchmark") and not is_profiling:
@@ -30,6 +32,7 @@ func _input(event: InputEvent) -> void:
 
 
 func start_profiling() -> void:
+	benchmark_radius = radii[run]
 	if not camera_rig:
 		push_error("Profiler: CameraRig not assigned")
 		return
@@ -141,3 +144,9 @@ func _finish_profiling() -> void:
 	print("Avg DE value: ", avg_de)
 	print("Avg frame (ms): ", avg_frame_time_ms)
 	print("======================\n")
+	
+	if run < 2:
+		run += 1
+		start_profiling()
+	else:
+		run = 0
