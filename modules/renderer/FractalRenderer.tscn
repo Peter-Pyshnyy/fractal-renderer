@@ -40,11 +40,11 @@ near = 0.066
 
 [node name="RendererController" type="Node" parent="." node_paths=PackedStringArray("texture_rect", "target_camera", "VRSTimer")]
 script = ExtResource("2_dws3f")
-initial_fractal = SubResource("Resource_b4yyk")
-initial_material = SubResource("Resource_5o5ty")
 texture_rect = NodePath("../UI_Root/MainSplit/FractalScreen/TextureRect")
 target_camera = NodePath("../CameraRig/VirtualCamera")
 VRSTimer = NodePath("VRSTimer")
+initial_fractal = SubResource("Resource_b4yyk")
+initial_material = SubResource("Resource_5o5ty")
 
 [node name="VRSTimer" type="Timer" parent="RendererController"]
 one_shot = true

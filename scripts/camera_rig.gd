@@ -10,7 +10,7 @@ var mouse_sensitivity := 0.0015
 var orbit_radius := 2.0
 
 var max_orbit_radius := 3.0
-var smooth_orbit := true
+var smooth_orbit := false
 
 @onready var camera: Camera3D = $VirtualCamera
 @onready var anchor: Node3D = $Anchor
@@ -139,7 +139,7 @@ func _set_mouse_capture(active: bool) -> void:
 	)
 
 func _on_render_state_changed() -> void:
-	smooth_orbit = not StateBus.render.vrs_enabled
+	smooth_orbit = false
 
 func _on_camera_state_changed() -> void:
 	mouse_sensitivity = StateBus.camera.mouse_sensitivity
