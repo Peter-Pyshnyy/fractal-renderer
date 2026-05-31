@@ -24,24 +24,14 @@ var user_pitch := 0.0
 var user_radius := 0.0
 var user_fractal_index := 0
 
-var is_frame_time_testing := false
-var frame_test_duration := 5.0
-
-var radii_MB: Array[float] = [1.425]
-var radii_MBC: Array[float] = [1.425]
-var radii_QJ: Array[float] = [1.4]
-var radii_DQJ: Array[float] = [1.375]
-var radii_KS: Array[float] = [0.97]
-var radii_KM: Array[float] = [1.3]
-var radii_MBX: Array[float] = [1.4]
-
-#var radii_MB: Array[float] = [1.1, 1.425, 2.13]
-#var radii_MBC: Array[float] = [1.15, 1.425, 2.13]
-#var radii_QJ: Array[float] = [0.97, 1.4, 2.15]
-#var radii_DQJ: Array[float] = [0.975, 1.375, 2.15]
-#var radii_KS: Array[float] = [0.58, 1.0, 1.6]
-#var radii_KM: Array[float] = [0.55, 1.3, 1.95]
-#var radii_MBX: Array[float] = [0.975, 1.4, 2.05]
+var radii_MB: Array[float] = [1.1, 1.425, 2.13]
+var radii_MBC: Array[float] = [1.15, 1.425, 2.13]
+var radii_QJ: Array[float] = [0.97, 1.4, 2.15]
+var radii_DQJ: Array[float] = [0.975, 1.375, 2.15]
+#var radii_KS: Array[float] = [0.25, 0.25, 0.25]
+var radii_KS: Array[float] = [0.58, 0.94, 1.6]
+var radii_KM: Array[float] = [0.55, 1.3, 1.95]
+var radii_MBX: Array[float] = [0.975, 1.4, 2.05]
 
 # Each entry: [fractal_index_in_g_data_arr, display_name, radii_array]
 var benchmark_sequence: Array = []
@@ -50,30 +40,21 @@ var run := 0      # which radius within the current entry
 
 func _ready() -> void:
 	benchmark_sequence = [
-		[0, "Mandelbulb A",              radii_MB, 3],
-		[1, "Mandelbulb B",              radii_MB, 3],
-		[2, "Mandelbulb C",              radii_MBC, 3],
-		[3, "Quaternion Julia (Standard)", radii_QJ, 6],
-		[4, "Dual Quaternion Julia",     radii_DQJ, 6],
-		[5, "Sierpinski Tetrahedron",    radii_KS, 8],
-		[6, "Menger Koleidoscope",       radii_KM, 8],
-		[7, "Mandelbox",                 radii_MBX, 5],
+		[0, "Mandelbulb A",              radii_MB],
+		[1, "Mandelbulb B",              radii_MB],
+		[2, "Mandelbulb C",              radii_MBC],
+		[3, "Quaternion Julia (Standard)", radii_QJ],
+		[4, "Dual Quaternion Julia",     radii_DQJ],
+		[5, "Sierpinski Tetrahedron",    radii_KS],
+		[6, "Menger Koleidoscope",       radii_KM],
+		[7, "Mandelbox",                 radii_MBX],
 	]
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("benchmark") and not is_profiling and not is_frame_time_testing:
+	if event.is_action_pressed("benchmark") and not is_profiling:
 		seq_idx = 0
 		run = 0
-		StateBus.scene.fractal_data.iterations = 1.0
 		start_profiling()
-	
-	
-	
-	if event.is_action_pressed("frame_time_test") and not is_profiling and not is_frame_time_testing:
-		start_frame_time_test()
-	
-	if event.is_action_pressed("check_dist") and not is_profiling and not is_frame_time_testing:
-		print(StateBus.scene.fractal_data.sdf(virtual_camera.global_position))
 
 
 func start_profiling() -> void:
@@ -112,13 +93,6 @@ func start_profiling() -> void:
 
 
 func _process(delta: float) -> void:
-	if is_frame_time_testing:
-		time_accum += delta
-		frame_count += 1
-		if time_accum >= frame_test_duration:
-			_finish_frame_time_test()
-		return
-	
 	if not is_profiling:
 		return
 
@@ -208,56 +182,14 @@ func _finish_profiling() -> void:
 	print("======================\n")
 
 	run += 1
-	if run == 1:
-		StateBus.scene.fractal_data.iterations = entry[3]
+	if run < radii_count:
 		start_profiling()
 	else:
-		StateBus.scene.fractal_data.iterations += entry[3]
-		if run > 4:
-			seq_idx += 1
+		run = 0
+		seq_idx += 1
 		if seq_idx < benchmark_sequence.size():
 			start_profiling()
 		else:
 			seq_idx = 0
-			run = 0
 			_restore_user_state()
 			print("=== FULL BENCHMARK COMPLETE ===\n")
-
-	#run += 1
-	#if run < radii_count:
-		#start_profiling()
-	#else:
-		#run = 0
-		#seq_idx += 1
-		#if seq_idx < benchmark_sequence.size():
-			#start_profiling()
-		#else:
-			#seq_idx = 0
-			#_restore_user_state()
-			#print("=== FULL BENCHMARK COMPLETE ===\n")
-	
-func start_frame_time_test() -> void:
-	if not camera_rig:
-		push_error("FrameTimeTest: CameraRig not assigned")
-		return
-	vrs_timer.paused = true
-	camera_rig.is_moving = true
-	print("\nWarming up GPU for frame time test...")
-	await _warmup_frames(30)
-	print("=== FRAME TIME TEST START | %.0fs ===" % frame_test_duration)
-	is_frame_time_testing = true
-	time_accum = 0.0
-	frame_count = 0
-
-
-func _finish_frame_time_test() -> void:
-	vrs_timer.paused = false
-	camera_rig.is_moving = false
-	is_frame_time_testing = false
-	var avg_frame_time_ms := (time_accum / frame_count) * 1000.0
-	var avg_fps := frame_count / time_accum
-	print("=== FRAME TIME TEST DONE ===")
-	print("Frames: ", frame_count)
-	print("Avg FPS: %.2f" % avg_fps)
-	print("Avg frame time (ms): %.3f" % avg_frame_time_ms)
-	print("============================\n")

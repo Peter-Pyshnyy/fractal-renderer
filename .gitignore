@@ -6,5 +6,3 @@ app.exe
 app.pck
 export_presets.cfg
 fractal-renderer.pck
-*.png
-*.import
