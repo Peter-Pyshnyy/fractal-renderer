@@ -2,3 +2,7 @@
 .godot/
 .png
 /android/
+app.exe
+app.pck
+export_presets.cfg
+fractal-renderer.pck
