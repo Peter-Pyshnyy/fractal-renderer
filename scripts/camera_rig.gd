@@ -52,7 +52,9 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("set_position"):
-		print(camera.global_position)
+		rotation = Vector3(-0.04, 0.3, 0.0)
+		orbit_radius = 2.45
+		camera.fov = 60
 	
 	if event.is_action_pressed("switch_camera"):
 		_switch_mode()

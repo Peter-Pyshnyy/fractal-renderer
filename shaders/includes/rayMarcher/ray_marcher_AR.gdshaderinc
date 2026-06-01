@@ -90,6 +90,6 @@ vec3 raymarch_AR(vec3 rayDir) {
 	albedo = vec3(0.4);
 	vec3 final_color;
 	//final_color = PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao, bestT);
-	//final_color = albedo * (ao + 0.1);
-	return albedo;
+	final_color = albedo * (ao + 0.1);
+	return final_color;
 }
