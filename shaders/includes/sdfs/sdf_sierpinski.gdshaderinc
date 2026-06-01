@@ -4,7 +4,6 @@ float sdf(vec3 pos) {
 	float alpha = scene.params.param1;
 	float beta  = scene.params.param2;
 	float limit = 0.8;
-	float bailout = 100.0;
 
 	float ca = cos(alpha), sa = sin(alpha);
 	float cb = cos(beta),  sb = sin(beta);
@@ -21,7 +20,6 @@ float sdf(vec3 pos) {
 		z.yz = vec2(cb * z.y - sb * z.z, sb * z.y + cb * z.z);
 		n++;
 		
-		if (dot(z, z) > bailout) break;
 	}
 	return length(z) * pow(scale, -float(n));
 }
@@ -32,7 +30,6 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	float alpha = scene.params.param1;
 	float beta  = scene.params.param2;
 	float limit = 0.8;
-	float bailout = 100.0;
 
 	float ca = cos(alpha), sa = sin(alpha);
 	float cb = cos(beta),  sb = sin(beta);
@@ -56,7 +53,6 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 		trap = min(trap, d / r);
 
 		n++;
-		if (dot(z, z) > bailout) break;
 	}
 	return length(z) * pow(scale, -float(n));
 }
