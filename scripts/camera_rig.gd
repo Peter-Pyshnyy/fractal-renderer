@@ -51,6 +51,9 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("set_position"):
+		print(camera.global_position)
+	
 	if event.is_action_pressed("switch_camera"):
 		_switch_mode()
 
