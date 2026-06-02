@@ -87,9 +87,10 @@ vec3 raymarch_AR(vec3 rayDir) {
 	float normal_h = clamp(bestT * pixelRadius * LODScalar, 1e-7, 0.01);
 	vec3 norm = calcNormal(hit_pos, normal_h);
 	float ao = calcAO(hit_pos, norm);
-	albedo = vec3(0.4);
-	vec3 final_color;
-	//final_color = PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao, bestT);
-	final_color = albedo * (ao + 0.1);
-	return final_color;
+	if (scene.use_pbr == 1) {
+		return PBR(norm, normal_h, -rayDir, hit_pos, albedo, ao, bestT);
+	}
+	return albedo * (ao + 0.1);
+	//return albedo;
+	//return final_color;
 }

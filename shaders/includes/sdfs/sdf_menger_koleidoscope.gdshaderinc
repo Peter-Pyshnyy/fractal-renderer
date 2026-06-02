@@ -22,7 +22,7 @@ float sdf(vec3 pos) {
 		if (z.z > c * (scale - 1.0) * 0.5) z.z = z.z - c * (scale - 1.0);
 		n++;
 		r2 = dot(z, z);
-		if (r2 > bailout) break;
+		//if (r2 > bailout) break;
 	}
 	return (sqrt(r2) - 2.0) * pow(scale, -float(n));
 }

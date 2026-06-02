@@ -13,21 +13,21 @@ float sdf(vec3 pos) {
 	for (int i = 0; i < scene.iterations; i++) {
 		if (z.x >  limit) z.x =  2.0 * limit - z.x;
 		else if (z.x < -limit) z.x = -2.0 * limit - z.x;
-		
+
 		if (z.y >  limit) z.y =  2.0 * limit - z.y;
 		else if (z.y < -limit) z.y = -2.0 * limit - z.y;
-		
+
 		if (z.z >  limit) z.z =  2.0 * limit - z.z;
 		else if (z.z < -limit) z.z = -2.0 * limit - z.z;
 
 		float r2 = dot(z, z);
 		if (r2 < mR2) { z *= fR2 / mR2; DEfactor *= fR2 / mR2; }
 		else if (r2 < fR2) { z *= fR2 / r2; DEfactor *= fR2 / r2; }
-		
+
 		z = z * scale + c;
 		DEfactor *= scale;
 	}
-	
+
 	return length(z) / abs(DEfactor);
 }
 
@@ -46,10 +46,10 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	for (int i = 0; i < scene.iterations; i++) {
 		if (z.x >  limit) z.x =  2.0 * limit - z.x;
 		else if (z.x < -limit) z.x = -2.0 * limit - z.x;
-		
+
 		if (z.y >  limit) z.y =  2.0 * limit - z.y;
 		else if (z.y < -limit) z.y = -2.0 * limit - z.y;
-		
+
 		if (z.z >  limit) z.z =  2.0 * limit - z.z;
 		else if (z.z < -limit) z.z = -2.0 * limit - z.z;
 		float r2 = dot(z, z);

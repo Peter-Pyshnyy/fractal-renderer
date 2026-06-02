@@ -99,7 +99,7 @@ vec3 PBR(vec3 N, float N_h, vec3 V, vec3 fragPos, vec3 albedo, float ao, float t
 	vec3  bias        = N * N_h * 1.5;
 	float adaptiveMint = N_h * 3.0;
 	float s = softshadow(fragPos + bias, L, adaptiveMint, maxt, 2.5);
-	//NdotL *= s;
+	NdotL *= s;
 
 	float D = D_GGX(NdotH, conv_roughness);
 	vec3  F = F_Schlick(HdotV, F0);
