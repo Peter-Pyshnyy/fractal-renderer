@@ -4,26 +4,22 @@ float sdf(vec3 pos) {
 	float dr = 1.0;
 	float power = scene.params.param0;
 	float powerMinus1 = power - 1.0;
-	float t = scene.params.param1;
-	float phaseAngle = scene.params.param2;
+	float t = scene.params.param2;
+	float phaseAngle = scene.params.param3;
+	float alpha = scene.params.param1;
 	float cosA = cos(phaseAngle);
 	float sinA = sin(phaseAngle);
-
 	for (int i = 0; i < scene.iterations; i++) {
 		r = length(z);
 		if (r > 2.0) break;
-
 		float invR = 1.0 / max(r, 1e-8);
-		float theta = acos(clamp(z.z * invR, -1.0, 1.0));
-		float phi = atan(z.y, z.x);
+		float theta = (acos(clamp(z.z * invR, -1.0, 1.0)) + alpha) * power;
+		float phi = atan(z.y, z.x) * power;
 		float rPow = pow(r, powerMinus1);
 		dr = rPow * power * dr + 1.0;
 		float zr = rPow * r;
-		theta *= power;
-		phi *= power;
 		float sinTheta = sin(theta);
 		z = zr * vec3(sinTheta * cos(phi), sinTheta * sin(phi), cos(theta));
-
 		float fi = float(i);
 		z += 0.2 * vec3(
 			sin(0.5 * t + 0.1 * fi),
@@ -33,7 +29,6 @@ float sdf(vec3 pos) {
 		z.xy = vec2(cosA * z.x - sinA * z.y, sinA * z.x + cosA * z.y);
 		z += pos;
 	}
-
 	return 0.5 * log(r) * r / dr;
 }
 
@@ -43,8 +38,9 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 	float dr = 1.0;
 	float power = scene.params.param0;
 	float powerMinus1 = power - 1.0;
-	float t = scene.params.param1;
-	float phaseAngle = scene.params.param2;
+	float t = scene.params.param2;
+	float phaseAngle = scene.params.param3;
+	float alpha = scene.params.param1;
 	float cosA = cos(phaseAngle);
 	float sinA = sin(phaseAngle);
 	trap = 1e6;
@@ -55,8 +51,8 @@ float sdf_with_color(vec3 pos, out float trap, out int iter_count) {
 		if (r > 2.0) { iter_count = i; break; }
 
 		float invR = 1.0 / max(r, 1e-8);
-		float theta = acos(clamp(z.z * invR, -1.0, 1.0));
-		float phi = atan(z.y, z.x);
+		float theta = (acos(clamp(z.z * invR, -1.0, 1.0)) + alpha) * power;
+		float phi = atan(z.y, z.x) * power;
 		float rPow = pow(r, powerMinus1);
 		dr = rPow * power * dr + 1.0;
 		float zr = rPow * r;

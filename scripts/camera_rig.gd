@@ -52,9 +52,13 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("set_position"):
-		rotation = Vector3(-0.04, 0.3, 0.0)
+		rotation = Vector3(0.0, 0.0, 0.0)
 		orbit_radius = 2.45
-		camera.fov = 60
+		camera.fov = 75
+		#is_moving = !is_moving
+		#---#
+		#print(StateBus.scene.fractal_data.sdf(anchor.global_position))
+		#print(orbit_radius)
 	
 	if event.is_action_pressed("switch_camera"):
 		_switch_mode()
