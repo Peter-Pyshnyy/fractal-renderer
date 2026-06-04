@@ -647,9 +647,10 @@ text = "Roughness: 0.42"
 
 [node name="RoughnessSlider" type="HSlider" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
 layout_mode = 2
+min_value = 0.5
 max_value = 1.0
 step = 0.01
-value = 0.42
+value = 0.5
 scrollable = false
 
 [node name="ExposureLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_PBR_Content"]
