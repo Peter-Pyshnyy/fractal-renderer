@@ -158,7 +158,7 @@ LMB: Rotate
 Scroll: Zoom
 
 FREE FLIGHT
-RMB: Enable
+RMB: Enable Movement
 WASDEQ: Move
 Scroll: Adjust Speed"
 
@@ -1046,7 +1046,7 @@ script = ExtResource("11_i0rrr")
 
 [node name="MASToggle" type="CheckBox" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Content"]
 layout_mode = 2
-text = "Enable MAS (VRS)"
+text = "Enable MAS"
 
 [node name="MASScaleLbl" type="Label" parent="UI_Root/MainSplit/Sidebar/MarginContainer/VBoxContainer/ScrollContainer/AccordionMenu/Section_MAS_Content"]
 layout_mode = 2

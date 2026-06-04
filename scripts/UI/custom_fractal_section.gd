@@ -39,7 +39,7 @@ func _on_param_changed(idx: int) -> void:
 	var v := float(raw) if raw.is_valid_float() else 0.0
 	_param_inputs[idx].text = str(v)
 	Global.custom_fractal_data.fractal_params[idx] = v
-	if StateBus.scene.fractal_index == 8:
+	if StateBus.scene.fractal_index == 7:
 		StateBus.scene.emit_changed()
 
 

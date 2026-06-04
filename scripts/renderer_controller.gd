@@ -289,16 +289,16 @@ func compile_custom_shader(sdf_source: String) -> String:
 	var new_shader_rid := rd.shader_create_from_spirv(spirv)
 	var new_pipeline := rd.compute_pipeline_create(new_shader_rid)
 
-	if pipelines.has(8) and pipelines[8].is_valid():
-		rd.free_rid(pipelines[8])
+	if pipelines.has(7) and pipelines[7].is_valid():
+		rd.free_rid(pipelines[7])
 	if _custom_shader_rid.is_valid():
 		rd.free_rid(_custom_shader_rid)
 
 	_custom_shader_rid = new_shader_rid
-	pipelines[8] = new_pipeline
+	pipelines[7] = new_pipeline
 
-	if StateBus.scene.fractal_index == 8:
-		current_pipeline = pipelines[8]
+	if StateBus.scene.fractal_index == 7:
+		current_pipeline = pipelines[7]
 		_mark_motion()
 
 	return ""

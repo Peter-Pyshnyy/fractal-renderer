@@ -78,7 +78,7 @@ func _sync() -> void:
 	if StateBus.scene.fractal_data == null: return
 	_syncing = true
 	dropdown.selected = StateBus.scene.fractal_index
-	var is_custom := StateBus.scene.fractal_index == 8
+	var is_custom := StateBus.scene.fractal_index == 7
 	_custom_section.visible = is_custom
 	var fd   := StateBus.scene.fractal_data
 	var defs := fd.get_param_definitions()
