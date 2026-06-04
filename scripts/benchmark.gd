@@ -56,6 +56,7 @@ func _ready() -> void:
 	]
 
 func _input(event: InputEvent) -> void:
+	return # TURN OFF FOR EXPORT
 	if event.is_action_pressed("benchmark") and not is_profiling:
 		seq_idx = 0
 		run = 0

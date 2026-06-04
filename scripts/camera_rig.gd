@@ -52,6 +52,7 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("set_position"):
+		return # TURN OFF FOR EXPORT
 		rotation = Vector3(0.0, 0.0, 0.0)
 		orbit_radius = 2.45
 		camera.fov = 75
@@ -62,10 +63,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	if event.is_action_pressed("switch_camera"):
 		_switch_mode()
-
-	if event.is_action_pressed("Screenshot"):
-		var img = get_viewport().get_texture().get_image()
-		img.save_png("user://screenshot.png")
 
 	if event is InputEventMouseButton:
 		_handle_mouse_buttons(event)
