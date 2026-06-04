@@ -3,7 +3,7 @@ extends FractalData
 
 var sphere_radius: float = 1.15
 var glsl_source: String = ""
-var fractal_params: Array[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+var fractal_params: Array[float] = [8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 func _init() -> void:
 	iterations = 15

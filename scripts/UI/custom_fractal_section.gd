@@ -61,7 +61,7 @@ func _on_compile_pressed() -> void:
 	var err: String = StateBus.renderer_controller.compile_custom_shader(data.glsl_source)
 	if err == "":
 		_set_status("Compiled OK", false)
-		StateBus.scene.switch_fractal(8, data)
+		StateBus.scene.switch_fractal(7, data)
 	else:
 		var short := err.substr(0, 200)
 		_set_status("Error: " + short, true)
